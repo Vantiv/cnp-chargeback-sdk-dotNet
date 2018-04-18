@@ -102,6 +102,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Certification\TestCertification1.cs" />
     <Compile Include="Functional\TestCommunication.cs" />
     <Compile Include="Functional\TestConfiguration.cs" />
     <Compile Include="Program.cs" />
@@ -141,7 +142,6 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Certification" />
     <Folder Include="Unit" />
   </ItemGroup>
   <ItemGroup>

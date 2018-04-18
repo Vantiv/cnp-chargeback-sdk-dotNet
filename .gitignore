@@ -1,1 +1,5 @@
 /.idea
+/ChargebackForDotNet/bin/
+/ChargebackForDotNet/object/
+/ChargebackForDotNetTest/bin/
+/ChargebackForDotNetTest/object/

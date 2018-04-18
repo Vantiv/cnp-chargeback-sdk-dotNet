@@ -96,7 +96,7 @@ namespace ChargebackForDotNet
 
     public class UserAssignRequest:chargebackUpdateRequest
     {
-        public UserAssignRequest(long caseId, string assignedTo, string note):base(caseId)
+        public UserAssignRequest(long caseId, string assignedTo = null, string note = null):base(caseId)
         {
             base.activityType = activityType.ASSIGN_TO_USER;
             base.assignedTo = assignedTo;
@@ -106,7 +106,7 @@ namespace ChargebackForDotNet
 
     public class NoteRequest:chargebackUpdateRequest
     {
-        public NoteRequest(long caseId, string note):base(caseId)
+        public NoteRequest(long caseId, string note = null):base(caseId)
         {
             base.activityType = activityType.ADD_NOTE;
             base.note = note;
@@ -115,7 +115,7 @@ namespace ChargebackForDotNet
 
     public class MerchantAcceptsLiability:chargebackUpdateRequest
     {
-        public MerchantAcceptsLiability(long caseId, string note):base(caseId)
+        public MerchantAcceptsLiability(long caseId, string note = null):base(caseId)
         {
             base.activityType = activityType.MERCHANT_ACCEPTS_LIABILITY;
             base.note = note;
@@ -124,18 +124,24 @@ namespace ChargebackForDotNet
 
     public class MerchantRepresent : chargebackUpdateRequest
     {
-        public MerchantRepresent(long caseId, string note, long representedAmount):base(caseId)
+        public MerchantRepresent(long caseId, long representedAmount, string note = null):base(caseId)
         {
             base.activityType = activityType.MERCHANT_REPRESENT;
             base.note = note;
             base.representedAmount = representedAmount;
             base.representedAmountFieldSpecified = true;
         }
+        
+        public MerchantRepresent(long caseId, string note = null):base(caseId)
+        {
+            base.activityType = activityType.MERCHANT_REPRESENT;
+            base.note = note;
+        }
     }
 
     public class MerchantResponse : chargebackUpdateRequest
     {
-        public MerchantResponse(long caseId, string note):base(caseId)
+        public MerchantResponse(long caseId, string note = null):base(caseId)
         {
             base.activityType = activityType.MERCHANT_RESPOND;
             base.note = note;
@@ -144,7 +150,7 @@ namespace ChargebackForDotNet
 
     public class MerchantRequestsArbitration : chargebackUpdateRequest
     {
-        public MerchantRequestsArbitration(long caseId, string note):base(caseId)
+        public MerchantRequestsArbitration(long caseId, string note = null):base(caseId)
         {
             base.activityType = activityType.MERCHANT_REQUESTS_ARBITRATION;
             base.note = note;

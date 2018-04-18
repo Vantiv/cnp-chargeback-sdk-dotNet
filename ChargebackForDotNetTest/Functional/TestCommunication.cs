@@ -24,26 +24,9 @@ namespace ChargebackForDotNetTest.Functional
                 Assert.True(true);
             }
             
-            [Test]
-            public void TestAddNote()
-            {
-                Configuration conf = new Configuration();
-                chargebackUpdateRequest request = new NoteRequest(1288791001, "Learn something new everyday!");
-                request.config = conf;
-                    chargebackUpdateResponse response = request.sendUpdateRequest();
-                    Assert.NotNull(response);
-            }
             
-            [Test]
-            public void TestRetrieveByActivityDate()
-            {
-                Configuration conf = new Configuration();
-                ChargebackRetrievalRequest request = new ChargebackRetrievalRequest();
-                request.config = conf;
-                chargebackRetrievalResponse response = request.retrieveByActivityDate(new DateTime(2013, 1, 1));
-                Assert.NotNull(response);
-                Assert.AreEqual(11, response.chargebackCase.Length);
-            }
+            
+            
 
             [Test]
             public void TestRetrieveByActivityDateWithFinancialImpact()
