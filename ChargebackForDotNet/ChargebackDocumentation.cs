@@ -21,11 +21,20 @@ namespace ChargebackForDotNet
                 if (configurationField == null)
                 {
                     // Load from Settings.
-                    return null;
+                    return new Configuration();
                 }
-                return this.configurationField;
+                return configurationField;
             }
-            set { this.configurationField = value; }
+            set { configurationField = value; }
+        }
+
+        public ChargebackDocumentationRequest()
+        {
+        }
+
+        public ChargebackDocumentationRequest(Configuration config)
+        {
+            this.configurationField = config;
         }
 
         public chargebackDocumentUploadResponse uploadDocument(long caseId, string filePath)

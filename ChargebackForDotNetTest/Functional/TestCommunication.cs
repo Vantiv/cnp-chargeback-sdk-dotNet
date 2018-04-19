@@ -17,16 +17,12 @@ namespace ChargebackForDotNetTest.Functional
                 Configuration conf = new Configuration();
                 string date = "?date=2013-01-01";
                 List<byte> bytes = new List<byte>();
-                string contentType =Communication.get(conf, "/services/chargebacks/"+date,bytes);
+                string contentType = Communication.get(conf, "/services/chargebacks/"+date,bytes);
                 Console.WriteLine("Content type returned from the server::"+contentType);
                 String xmlResponse = Utils.bytesToString(bytes);
                 Console.WriteLine(xmlResponse);
                 Assert.True(true);
             }
-            
-            
-            
-            
 
             [Test]
             public void TestRetrieveByActivityDateWithFinancialImpact()
@@ -100,7 +96,8 @@ namespace ChargebackForDotNetTest.Functional
                 ChargebackDocumentationRequest request = new ChargebackDocumentationRequest();
                 conf.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
                 request.config = conf;
-                chargebackDocumentUploadResponse response = (chargebackDocumentUploadResponse)request.retrieveDocument(10009, "testDoc.tiff");
+                chargebackDocumentUploadResponse response
+                    = (chargebackDocumentUploadResponse)request.retrieveDocument(10009, "testDoc.tiff");
                 Assert.NotNull(response);
                 Assert.AreEqual("009", response.responseCode);
                 Assert.AreEqual("Document Not Found".ToLower(), response.responseMessage.ToLower());
@@ -123,7 +120,6 @@ namespace ChargebackForDotNetTest.Functional
             [Test]
             public void TestDeleteDocument()
             {
-                
                 Configuration conf = new Configuration();
                 ChargebackDocumentationRequest request = new ChargebackDocumentationRequest();
                 conf.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");

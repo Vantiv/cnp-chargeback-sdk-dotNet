@@ -102,7 +102,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Certification\TestCertification1.cs" />
+    <Compile Include="Certification\TestCertificationChargebackAPI.cs" />
+    <Compile Include="Certification\TestCertificationChargebackDocumentationAPI.cs" />
     <Compile Include="Functional\TestCommunication.cs" />
     <Compile Include="Functional\TestConfiguration.cs" />
     <Compile Include="Program.cs" />

@@ -27,11 +27,20 @@ namespace ChargebackForDotNet
                 if (configurationField == null)
                 {
                     // Load from Settings.
-                    return null;
+                    return new Configuration();
                 }
-                return this.configurationField;
+                return configurationField;
             }
-            set { this.configurationField = value; }
+            set { configurationField = value; }
+        }
+
+        public ChargebackRetrievalRequest()
+        {
+        }
+
+        public ChargebackRetrievalRequest(Configuration config)
+        {
+            this.configurationField = config;
         }
 
         private string sendRequest(string urlRoute)

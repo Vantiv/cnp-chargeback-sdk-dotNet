@@ -8,26 +8,25 @@ using ChargebackForDotNet.Properties;
 
 namespace ChargebackForDotNet
 {
-    public abstract partial class chargebackUpdateRequest
+    public partial class chargebackUpdateRequest
     {
     
-        protected activityType activityType;
-    
-        protected string assignedTo;
-    
-        protected string note;
-    
-        protected long representedAmount;
-    
-        protected bool representedAmountFieldSpecified;
+        private activityType activityType;
+        private string assignedTo;
+        private string note;
+        private long representedAmount;
+        private bool representedAmountFieldSpecified;
+        private long caseId;
         
         private Configuration configurationField;
 
-        private long caseId;
-
-        public chargebackUpdateRequest(long caseId)
+        public chargebackUpdateRequest()
         {
-            this.caseId = caseId;
+        }
+
+        public chargebackUpdateRequest(Configuration config)
+        {
+            this.configurationField = config;
         }
 
         public Configuration config
@@ -37,14 +36,11 @@ namespace ChargebackForDotNet
                 if (configurationField == null)
                 {
                     // load from file
-                    return null;
+                    return new Configuration();
                 }
-                else
-                {
-                    return this.configurationField;
-                }
+                return configurationField;
             }
-            set { this.configurationField = value; }
+            set { configurationField = value; }
         }
 
         private string Serialize()
@@ -72,9 +68,18 @@ namespace ChargebackForDotNet
             return header+body+footer;
         }
 
-        public chargebackUpdateResponse sendUpdateRequest()    
+        private void clearVariables()
+        {
+            assignedTo = null;
+            note = null;
+            representedAmount = 0;
+            representedAmountFieldSpecified = false;
+        }
+
+        private chargebackUpdateResponse sendUpdateRequest()    
         {
             string xml = this.Serialize();
+            clearVariables();
             try
             {
                 List<byte> bytes = new List<byte>();
@@ -82,78 +87,73 @@ namespace ChargebackForDotNet
                     Utils.stringToBytes(xml), bytes);
                 String xmlResponse = Utils.bytesToString(bytes);
                 Console.WriteLine(xmlResponse);
-                
                 return Utils.DeserializeResponse<chargebackUpdateResponse>(xmlResponse);
             }
             catch (WebException we)
             {
                 HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
                 throw new ChargebackException(
-                    String.Format("Update Failed - HTTP {0} Error", (int)errorResponse.StatusCode), errorResponse);
+                    String.Format("Update Failed - HTTP {0} Error", (int) errorResponse.StatusCode), errorResponse);
             }
         }
-    }
-
-    public class UserAssignRequest:chargebackUpdateRequest
-    {
-        public UserAssignRequest(long caseId, string assignedTo = null, string note = null):base(caseId)
+        
+        public chargebackUpdateResponse AssignToUser(long caseId, string assignedTo = null, string note = null)
         {
-            base.activityType = activityType.ASSIGN_TO_USER;
-            base.assignedTo = assignedTo;
-            base.note = note;
-        }
-    }
-
-    public class NoteRequest:chargebackUpdateRequest
-    {
-        public NoteRequest(long caseId, string note = null):base(caseId)
-        {
-            base.activityType = activityType.ADD_NOTE;
-            base.note = note;
-        }
-    }
-
-    public class MerchantAcceptsLiability:chargebackUpdateRequest
-    {
-        public MerchantAcceptsLiability(long caseId, string note = null):base(caseId)
-        {
-            base.activityType = activityType.MERCHANT_ACCEPTS_LIABILITY;
-            base.note = note;
-        }
-    }
-
-    public class MerchantRepresent : chargebackUpdateRequest
-    {
-        public MerchantRepresent(long caseId, long representedAmount, string note = null):base(caseId)
-        {
-            base.activityType = activityType.MERCHANT_REPRESENT;
-            base.note = note;
-            base.representedAmount = representedAmount;
-            base.representedAmountFieldSpecified = true;
+            this.caseId = caseId;
+            this.activityType = activityType.ASSIGN_TO_USER;
+            this.assignedTo = assignedTo;
+            this.note = note;
+            return sendUpdateRequest();
         }
         
-        public MerchantRepresent(long caseId, string note = null):base(caseId)
+        public chargebackUpdateResponse AddNote(long caseId, string note = null)
         {
-            base.activityType = activityType.MERCHANT_REPRESENT;
-            base.note = note;
+            this.caseId = caseId;
+            this.activityType = activityType.ADD_NOTE;
+            this.note = note;
+            return sendUpdateRequest();
         }
-    }
-
-    public class MerchantResponse : chargebackUpdateRequest
-    {
-        public MerchantResponse(long caseId, string note = null):base(caseId)
+        
+        public chargebackUpdateResponse AcceptLiability(long caseId, string note = null)
         {
-            base.activityType = activityType.MERCHANT_RESPOND;
-            base.note = note;
+            this.caseId = caseId;
+            this.activityType = activityType.MERCHANT_ACCEPTS_LIABILITY;
+            this.note = note;
+            return sendUpdateRequest();
         }
-    }
-
-    public class MerchantRequestsArbitration : chargebackUpdateRequest
-    {
-        public MerchantRequestsArbitration(long caseId, string note = null):base(caseId)
+        
+        public chargebackUpdateResponse Represent(long caseId, long representedAmount, string note = null)
         {
-            base.activityType = activityType.MERCHANT_REQUESTS_ARBITRATION;
-            base.note = note;
+            this.caseId = caseId;
+            this.activityType = activityType.MERCHANT_REPRESENT;
+            this.note = note;
+            this.representedAmount = representedAmount;
+            this.representedAmountFieldSpecified = true;
+            return sendUpdateRequest();
+        }
+        
+        public chargebackUpdateResponse Represent(long caseId, string note = null)
+        {
+            this.caseId = caseId;
+            this.activityType = activityType.MERCHANT_REPRESENT;
+            this.note = note;
+            return sendUpdateRequest();
+        }
+        
+        public chargebackUpdateResponse Respond(long caseId, string note = null)
+        {
+            this.caseId = caseId;
+            this.activityType = activityType.MERCHANT_RESPOND;
+            this.note = note;
+            return sendUpdateRequest();
+        }
+        
+        public chargebackUpdateResponse RequestArbitration(long caseId, string note = null)
+        {
+            this.caseId = caseId;
+            this.activityType = activityType.MERCHANT_REQUESTS_ARBITRATION;
+            this.note = note;
+            return sendUpdateRequest();
         }
     }
      
