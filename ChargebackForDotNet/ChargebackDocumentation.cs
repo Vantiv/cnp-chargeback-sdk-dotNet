@@ -39,20 +39,14 @@ namespace ChargebackForDotNet
 
         public chargebackDocumentUploadResponse uploadDocument(long caseId, string filePath)
         {
-            int maxSizeMB = 2;
-            long maxSizeByte = 2 * 1024 * 1024;
             List<byte> fileBytes = File.ReadAllBytes(filePath).ToList();
-            if (fileBytes.Count > maxSizeByte)
-            {
-                throw new ChargebackException("File size should not exceed 2 MBs.");
-            }
             List<byte> responseBytes = new List<byte>();
             string documentId = Path.GetFileName(filePath);
             try
             {
 
                 Communication c = createUploadCommunication();
-                
+                c.setContentLength(fileBytes.Count);
                 string contentType = c.post(
                     "/services/chargebacks/upload/" + caseId + "/" + documentId, fileBytes, responseBytes);
                 if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
@@ -71,7 +65,11 @@ namespace ChargebackForDotNet
             }
             catch (WebException we)
             {
-                throw new ChargebackException("Call Vantiv. \n" + we.Status.ToString() + "\n" + we.StackTrace);
+                HttpWebResponse httpResponse = (HttpWebResponse) we.Response;
+                
+                throw new ChargebackException("Call Vantiv. HTTP Status Code:" 
+                                              + httpResponse.StatusCode
+                                              + "\n" + we.Message + "\n" + we.StackTrace);
             }
         }
 
@@ -82,7 +80,7 @@ namespace ChargebackForDotNet
             try
             {
                 Communication c = createUploadCommunication();
-                
+                c.setContentLength(fileBytes.Count);
                 string contentType = c.put(
                     "/services/chargebacks/replace/" + caseId + "/" + documentId, fileBytes, responseBytes);
                 if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
