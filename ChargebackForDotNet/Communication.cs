@@ -50,12 +50,6 @@ namespace ChargebackForDotNet
         {
             this.accept = accept;
         }
-
-        public void setContentLength(long lengthInBytes)
-        {
-            this.contentLength = lengthInBytes;
-            contentLengthSet = true;
-        }
         
         private void createHttpRequest(string urlRoute)
         {
@@ -109,16 +103,22 @@ namespace ChargebackForDotNet
             HttpWebResponse response = (HttpWebResponse) httpRequest.GetResponse();
             return readBytes(response, receivingbytes);
         }
+        
+        public string delete(string urlRoute, List<byte> receivingbytes)
+        {
+            createHttpRequest(urlRoute);
+            httpRequest.Method = "DELETE";
+            HttpWebResponse response = (HttpWebResponse) httpRequest.GetResponse();
+            return readBytes(response, receivingbytes);
+        }
 
         public string put(string urlRoute, List<byte> sendingBytes, List<byte> receivingbytes)
         {
             createHttpRequest(urlRoute);
             httpRequest.Method = "PUT";
+            httpRequest.ContentLength = sendingBytes.Count;
             Stream inStream = httpRequest.GetRequestStream();
-            foreach (var b in sendingBytes)
-            {
-                inStream.WriteByte(b);
-            }
+            inStream.Write(sendingBytes.ToArray(), 0, sendingBytes.Count);
             inStream.Close();
             
             HttpWebResponse response = (HttpWebResponse) httpRequest.GetResponse();
@@ -129,20 +129,11 @@ namespace ChargebackForDotNet
         {
             createHttpRequest(urlRoute);
             httpRequest.Method = "POST";
+            httpRequest.ContentLength = sendingBytes.Count;
             Stream inStream = httpRequest.GetRequestStream();
-            foreach (var b in sendingBytes)
-            {
-                inStream.WriteByte(b);
-            }
+            inStream.Write(sendingBytes.ToArray(), 0, sendingBytes.Count);
             inStream.Close();
-            HttpWebResponse response = (HttpWebResponse) httpRequest.GetResponse();
-            return readBytes(response, receivingbytes);
-        }
-        
-        public string delete(string urlRoute, List<byte> receivingbytes)
-        {
-            createHttpRequest(urlRoute);
-            httpRequest.Method = "DELETE";
+            Console.WriteLine("Finish writing bytes to Request Stream.");
             HttpWebResponse response = (HttpWebResponse) httpRequest.GetResponse();
             return readBytes(response, receivingbytes);
         }

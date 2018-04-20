@@ -46,7 +46,6 @@ namespace ChargebackForDotNet
             {
 
                 Communication c = createUploadCommunication();
-                c.setContentLength(fileBytes.Count);
                 string contentType = c.post(
                     "/services/chargebacks/upload/" + caseId + "/" + documentId, fileBytes, responseBytes);
                 if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
@@ -80,7 +79,6 @@ namespace ChargebackForDotNet
             try
             {
                 Communication c = createUploadCommunication();
-                c.setContentLength(fileBytes.Count);
                 string contentType = c.put(
                     "/services/chargebacks/replace/" + caseId + "/" + documentId, fileBytes, responseBytes);
                 if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))

@@ -35,7 +35,7 @@ namespace ChargebackForDotNetTest.Certification
             
             ChargebackDocumentationRequest docRequest
                 = new ChargebackDocumentationRequest();
-            docRequest.config.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
+//            docRequest.config.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
             string test1Directory = Path.Combine(Directory.GetCurrentDirectory(), "TestCase1");
             Directory.CreateDirectory(test1Directory);
             docRequest.config.setConfigValue("downloadDirectory", test1Directory);
@@ -126,7 +126,7 @@ namespace ChargebackForDotNetTest.Certification
             chargebackDocumentUploadResponse tiffResponse
                 = docRequest.uploadDocument(caseId, tiffFilename);
             
-            // Step 2. Verify that you receive the response code 002.
+            // Step 2. Verify that you receive the response code 010.
             Assert.AreEqual("010", tiffResponse.responseCode);
             Assert.AreEqual("Case not in valid cycle".ToLower(), tiffResponse.responseMessage.ToLower());
             
@@ -148,7 +148,7 @@ namespace ChargebackForDotNetTest.Certification
             chargebackDocumentUploadResponse tiffResponse
                 = docRequest.uploadDocument(caseId, tiffFilename);
             
-            // Step 2. Verify that you receive the response code 003.
+            // Step 2. Verify that you receive the response code 004.
             Assert.AreEqual("004", tiffResponse.responseCode);
             Assert.AreEqual("Case not in Merchant Queue".ToLower(), tiffResponse.responseMessage.ToLower());
             
@@ -163,32 +163,29 @@ namespace ChargebackForDotNetTest.Certification
 //            docRequest.config.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
             
             // Step 1. Upload the file named maxsize.tif to the fourth test location.
-            int tiffSize = 1024; // 1024 bytes = 1KB.
-            string tiffFilename = "maxsize.tif";
-            FileStream fileCreator = File.OpenWrite(tiffFilename);
-            for (int i = 0; i < tiffSize; i++)
-            {
-                fileCreator.WriteByte(1);
-            }
+            int tifSize = 1024; // 1024 bytes = 1KB.
+            string tifFilename = "maxsize.tif";
+            FileStream fileCreator = File.OpenWrite(tifFilename);
+            byte[] fileBytes = new byte[tifSize];
+            fileCreator.Write(fileBytes, 0, fileBytes.Length);
             fileCreator.Close();
             long caseId = Int32.Parse(docRequest.config.getConfig("merchantId") + "004");
             chargebackDocumentUploadResponse maxSizeResponse
-                = docRequest.uploadDocument(caseId, tiffFilename);
-            File.Delete(tiffFilename);
+                = docRequest.uploadDocument(caseId, tifFilename);
+            File.Delete(tifFilename);
             
             // Step 2. Verify that you receive the response code 005.
             Assert.AreEqual("005", maxSizeResponse.responseCode);
             Assert.AreEqual("Document already exists".ToLower(), maxSizeResponse.responseMessage.ToLower());
             
             // Step 3. Upload a file with a size greather than 2MB.
-            int hugeSize = 3 * 1024 * 1024; // 3MB * 1024KB/MB * 1024byte/KB = xyz bytes. 
-            string hugeFilename = "huge.tiff";
+            int hugeSize = 2 * 1024 * 1024 + 1024; // 2MB * 1024KB/MB * 1024byte/KB + 1024bytes; 
+            string hugeFilename = "huge.tif";
+            fileBytes = new byte[hugeSize];
             fileCreator = File.OpenWrite(hugeFilename);
-            for (int i = 0; i < hugeSize; i++)
-            {
-                fileCreator.WriteByte(1);
-            }
+            fileCreator.Write(fileBytes, 0, fileBytes.Length);
             fileCreator.Close();
+            Console.WriteLine("Finish writing the file " + hugeFilename);
             chargebackDocumentUploadResponse hugeSizeResponse
                 = docRequest.uploadDocument(caseId, hugeFilename);
             File.Delete(hugeFilename);
@@ -199,12 +196,10 @@ namespace ChargebackForDotNetTest.Certification
             
             // Step 5. Upload a file greater than 100KB, but less than 1MB.
             int mediumSize = 512000; // 500KB * 1024byte/KB = 512000 bytes.
-            string mediumFilename = "medium.tiff";
+            string mediumFilename = "medium.tif";
+            fileBytes = new byte[mediumSize];
             fileCreator = File.OpenWrite(mediumFilename);
-            for (int i = 0; i < mediumSize; i++)
-            {
-                fileCreator.WriteByte(1);
-            }
+            fileCreator.Write(fileBytes, 0, fileBytes.Length);
             fileCreator.Close();
             chargebackDocumentUploadResponse mediumSizeResponse
                 = docRequest.uploadDocument(caseId, mediumFilename);

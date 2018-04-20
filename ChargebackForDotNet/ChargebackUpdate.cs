@@ -17,6 +17,7 @@ namespace ChargebackForDotNet
         private long representedAmount;
         private bool representedAmountFieldSpecified;
         private long caseId;
+        private const string SERVICE_ROUTE = "/chargebacks";
         
         private Configuration configurationField;
 
@@ -85,7 +86,7 @@ namespace ChargebackForDotNet
                 List<byte> bytes = new List<byte>();
 
                 Communication c = createCommunication();
-                c.put("/chargebacks/" + caseId, Utils.stringToBytes(xml), bytes);
+                c.put(SERVICE_ROUTE + "/" + caseId, Utils.stringToBytes(xml), bytes);
                 
                 String xmlResponse = Utils.bytesToString(bytes);
                 Console.WriteLine(xmlResponse);
