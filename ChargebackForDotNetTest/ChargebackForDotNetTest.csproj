@@ -104,11 +104,14 @@
   <ItemGroup>
     <Compile Include="Certification\TestCertificationChargebackAPI.cs" />
     <Compile Include="Certification\TestCertificationChargebackDocumentationAPI.cs" />
+    <Compile Include="Functional\TestChargebackrRetrieval.cs" />
+    <Compile Include="Functional\TestChargebackUpdate.cs" />
     <Compile Include="Functional\TestCommunication.cs" />
-    <Compile Include="Functional\TestConfiguration.cs" />
+    <Compile Include="Functional\TestDocumentation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\TestCommunication.cs" />
+    <Compile Include="Unit\TestConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

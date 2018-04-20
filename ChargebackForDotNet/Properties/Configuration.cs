@@ -16,7 +16,7 @@ namespace ChargebackForDotNet.Properties
             string configPath = Environment.GetEnvironmentVariable("configPath");
             if (configPath == null)
             {
-                throw new ChargebackException("No config file. Please set the environment variable 'ConfigPath'" +
+                throw new ChargebackException("No configuration file. Please set the environment variable 'configPath'" +
                                               " to the location of config file.");
             }
 
