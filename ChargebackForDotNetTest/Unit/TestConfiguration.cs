@@ -11,7 +11,7 @@ using ChargebackForDotNet.Properties;
 using NUnit.Core;
 
 
-namespace ChargebackForDotNetTest.Functional
+namespace ChargebackForDotNetTest.Unit
 {
     [TestFixture]
     class TestConfiguration
@@ -150,5 +150,27 @@ namespace ChargebackForDotNetTest.Functional
             string extraKey = config.getConfig("extraKey");
         }
 
+        [Test]
+        public void TestPasswordWithEqualsSignInConfigFile()
+        {
+            Console.WriteLine(Directory.GetCurrentDirectory());
+            string filename = "TestConfigurationFromFile";
+            StreamWriter writer = new StreamWriter(File.Create(filename));
+            writer.WriteLine("username=username");
+            writer.WriteLine("password=pass=word");
+            writer.WriteLine("merchantId=merchantId  ");
+            writer.WriteLine("host=host");
+            writer.WriteLine("downloadDirectory=downloadDirectory");
+            writer.WriteLine("printXml=false");
+            writer.WriteLine("proxyHost=proxyHost");
+            writer.WriteLine("proxyPort=proxyPort");
+            writer.Close();
+            
+            Configuration config = new Configuration(filename);
+            
+            Assert.AreEqual("pass=word", config.getConfig("password"));
+            
+            File.Delete(filename);
+        }
     }
 }
