@@ -108,7 +108,6 @@
     <Compile Include="Functional\TestConfiguration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unit\TestChargebackRetrieval.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -148,6 +147,9 @@
       <Project>{a9b08c48-3bd8-4c8a-b01c-76cc44ee5c4f}</Project>
       <Name>ChargebackForDotNet</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Unit" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
