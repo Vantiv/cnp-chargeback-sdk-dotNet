@@ -38,6 +38,12 @@ namespace ChargebackForDotNet
             return filePath;
         }
 
+        public static string encode64(string s, string encode)
+        {
+            return Convert.ToBase64String(System.Text.Encoding.GetEncoding(encode)
+                .GetBytes(s));
+        }
+
         public static T DeserializeResponse<T>(string xmlResponse)
         {
             return (T) (new XmlSerializer(typeof(T))).Deserialize(new StringReader(xmlResponse));

@@ -13,7 +13,8 @@ namespace ChargebackForDotNetTest.Certification
         {
             ChargebackDocumentationRequest docRequest
                 = new ChargebackDocumentationRequest();
-            string randomFilename = "random.pdf";
+            docRequest.config.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
+            string randomFilename = "random.tiff";
             StreamWriter writer = new StreamWriter(File.Create(randomFilename));
             writer.WriteLine("Prototype a file.");
             writer.Close();

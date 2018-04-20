@@ -83,8 +83,10 @@ namespace ChargebackForDotNet
             try
             {
                 List<byte> bytes = new List<byte>();
-                Communication.put(config, "/chargebacks/" + caseId,
-                    Utils.stringToBytes(xml), bytes);
+
+                Communication c = createCommunication();
+                c.put("/chargebacks/" + caseId, Utils.stringToBytes(xml), bytes);
+                
                 String xmlResponse = Utils.bytesToString(bytes);
                 Console.WriteLine(xmlResponse);
                 return Utils.DeserializeResponse<chargebackUpdateResponse>(xmlResponse);
@@ -95,6 +97,17 @@ namespace ChargebackForDotNet
                 throw new ChargebackException(
                     String.Format("Update Failed - HTTP {0} Error", (int) errorResponse.StatusCode), errorResponse);
             }
+        }
+
+        private Communication createCommunication()
+        {
+            Communication c= new Communication(config.getConfig("host"));
+            string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
+            c.addToHeader("Authorization", "Basic " + encoded);
+            c.setContentType("application/com.vantivcnp.services-v2+xml");
+            c.setAccept("application/com.vantivcnp.services-v2+xml");
+            c.setProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
+            return c;
         }
         
         public chargebackUpdateResponse AssignToUser(long caseId, string assignedTo = null, string note = null)

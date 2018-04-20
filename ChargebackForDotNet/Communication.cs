@@ -16,28 +16,64 @@ namespace ChargebackForDotNet
 
     public class Communication
     {
-        private static HttpWebRequest createHttpRequest(Configuration config, string urlRoute)
+        private HttpWebRequest httpRequest;
+        private WebHeaderCollection headers;
+        private WebProxy webProxy;
+        private string contentType;
+        private string accept;
+        private string host;
+        
+        public Communication(string host)
         {
-            // make http post to this config.
-            string url = config.getConfig("host") + urlRoute;
-            Console.WriteLine("Making a request to " + url);
-            // For TLS1.2
-            ServicePointManager.SecurityProtocol = (SecurityProtocolType) 3072;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            string username = config.getConfig("username");
-            string password = config.getConfig("password");
-            string merchantId = config.getConfig("merchantId");
-            string encoded = Convert.ToBase64String(System.Text.Encoding.GetEncoding("utf-8")
-                .GetBytes(username + ":" + password));
-            Console.WriteLine("Encoded is: " + encoded);
-            request.Headers.Add("Authorization", "Basic " + encoded);
-            request.ContentType = "application/com.vantivcnp.services-v2+xml";
-            request.Accept = "application/com.vantivcnp.services-v2+xml";
-            request.Proxy = new WebProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
-            return request;
+            this.host = host;
+            headers = new WebHeaderCollection();
         }
 
-        public static string readBytes(HttpWebResponse httpResponse, List<byte> receivingbytes)
+        public void addToHeader(string key, string value)
+        {
+            headers.Add(key, value);
+        }
+
+        public void setProxy(string host, int port)
+        {
+            webProxy = new WebProxy(host, port);
+        }
+
+        public void setContentType(string contentType)
+        {
+            this.contentType = contentType;
+        }
+
+        public void setAccept(string accept)
+        {
+            this.accept = accept;
+        }
+        
+        private void createHttpRequest(string urlRoute)
+        {
+            string url = host + urlRoute;
+            Console.WriteLine("Making a request to " + url);
+            // For TLS1.2.
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType) 3072;
+            httpRequest = (HttpWebRequest)WebRequest.Create(url);
+            httpRequest.Headers.Add(headers);
+            if (webProxy != null)
+            {
+                httpRequest.Proxy = webProxy;
+            }
+
+            if (contentType != null)
+            {
+                httpRequest.ContentType = contentType;
+            }
+
+            if (accept != null)
+            {
+                httpRequest.Accept = accept;
+            }
+        }
+
+        public string readBytes(HttpWebResponse httpResponse, List<byte> receivingbytes)
         {
             string contentType = httpResponse.ContentType;
             
@@ -53,50 +89,48 @@ namespace ChargebackForDotNet
             return contentType;
         }
         
-        public static string get(Configuration config, string urlRoute, List<byte> receivingbytes)
+        public string get(string urlRoute, List<byte> receivingbytes)
         {
-            HttpWebRequest request = createHttpRequest(config, urlRoute);
-            request.Method = "GET";
-            
-            HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+            createHttpRequest(urlRoute);
+            httpRequest.Method = "GET";
+            HttpWebResponse response = (HttpWebResponse) httpRequest.GetResponse();
             return readBytes(response, receivingbytes);
         }
 
-        public static string put(Configuration config, string urlRoute, List<byte> sendingBytes, List<byte> receivingbytes)
+        public string put(string urlRoute, List<byte> sendingBytes, List<byte> receivingbytes)
         {
-            HttpWebRequest request = createHttpRequest(config, urlRoute);
-            request.Method = "PUT";
-            Stream inStream = request.GetRequestStream();
+            createHttpRequest(urlRoute);
+            httpRequest.Method = "PUT";
+            Stream inStream = httpRequest.GetRequestStream();
             foreach (var b in sendingBytes)
             {
                 inStream.WriteByte(b);
             }
             inStream.Close();
             
-            HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+            HttpWebResponse response = (HttpWebResponse) httpRequest.GetResponse();
             return readBytes(response, receivingbytes);
         }
         
-        public static string post(Configuration config, string urlRoute, List<byte> sendingBytes, List<byte> receivingbytes)
+        public string post(string urlRoute, List<byte> sendingBytes, List<byte> receivingbytes)
         {
-            HttpWebRequest request = createHttpRequest(config, urlRoute);
-            request.Method = "POST";
-            Stream inStream = request.GetRequestStream();
+            createHttpRequest(urlRoute);
+            httpRequest.Method = "POST";
+            Stream inStream = httpRequest.GetRequestStream();
             foreach (var b in sendingBytes)
             {
                 inStream.WriteByte(b);
             }
             inStream.Close();
-            HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+            HttpWebResponse response = (HttpWebResponse) httpRequest.GetResponse();
             return readBytes(response, receivingbytes);
         }
         
-        public static string delete(Configuration config, string urlRoute, List<byte> receivingbytes)
+        public string delete(string urlRoute, List<byte> receivingbytes)
         {
-            HttpWebRequest request = createHttpRequest(config, urlRoute);
-            request.Method = "DELETE";
-            
-            HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+            createHttpRequest(urlRoute);
+            httpRequest.Method = "DELETE";
+            HttpWebResponse response = (HttpWebResponse) httpRequest.GetResponse();
             return readBytes(response, receivingbytes);
         }
     }

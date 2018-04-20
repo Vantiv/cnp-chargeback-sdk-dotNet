@@ -50,8 +50,11 @@ namespace ChargebackForDotNet
             string documentId = Path.GetFileName(filePath);
             try
             {
-                string contentType = Communication.post(
-                    config, "/services/chargebacks/upload/" + caseId + "/" + documentId, fileBytes, responseBytes);
+
+                Communication c = createUploadCommunication();
+                
+                string contentType = c.post(
+                    "/services/chargebacks/upload/" + caseId + "/" + documentId, fileBytes, responseBytes);
                 if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
                 {
                     string xmlResponse = Utils.bytesToString(responseBytes);
@@ -68,7 +71,7 @@ namespace ChargebackForDotNet
             }
             catch (WebException we)
             {
-                throw new ChargebackException("Call Vantiv. \n" + we.StackTrace);
+                throw new ChargebackException("Call Vantiv. \n" + we.Status.ToString() + "\n" + we.StackTrace);
             }
         }
 
@@ -78,8 +81,10 @@ namespace ChargebackForDotNet
             IDocumentResponse docResponse = null;
             try
             {
-                string contentType = Communication.get(
-                    config, String.Format("/services/chargebacks/retrieve/{0}/{1}", caseId, documentId), bytes);
+                Communication c = createCommunication();
+                
+                string contentType = c.get(
+                    String.Format("/services/chargebacks/retrieve/{0}/{1}", caseId, documentId), bytes);
                 if ("image/tiff".Equals(contentType))
                 {
                     string filePath = Path.Combine(config.getConfig("downloadDirectory"), documentId);
@@ -117,8 +122,10 @@ namespace ChargebackForDotNet
             List<byte> responseBytes = new List<byte>();
             try
             {
-                string contentType = Communication.put(
-                    config, "/services/chargebacks/replace/" + caseId + "/" + documentId, fileBytes, responseBytes);
+                Communication c = createUploadCommunication();
+                
+                string contentType = c.put(
+                    "/services/chargebacks/replace/" + caseId + "/" + documentId, fileBytes, responseBytes);
                 if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
                 {
                     string xmlResponse = Utils.bytesToString(responseBytes);
@@ -144,7 +151,10 @@ namespace ChargebackForDotNet
             try
             {
                 List<byte> bytes = new List<byte>();
-                string contentType = Communication.delete(config, string.Format("/services/chargebacks/remove/{0}/{1}", caseId, documentId), bytes);
+
+                Communication c = createCommunication();
+                
+                string contentType = c.delete(string.Format("/services/chargebacks/remove/{0}/{1}", caseId, documentId), bytes);
                 if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
                 {
                     string xmlResponse = Utils.bytesToString(bytes);
@@ -171,7 +181,10 @@ namespace ChargebackForDotNet
             try
             {
                 List<byte> bytes = new List<byte>();
-                string contentType = Communication.get(config, "/services/chargebacks/list/" + caseId, bytes);
+
+                Communication c = createCommunication();
+                
+                string contentType = c.get("/services/chargebacks/list/" + caseId, bytes);
                 if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
                 {
                     string xmlResponse = Utils.bytesToString(bytes);
@@ -191,6 +204,29 @@ namespace ChargebackForDotNet
             {
                 throw new ChargebackException("Call Vantiv. \n" + we.StackTrace);
             }
+        }
+
+        private Communication openAuthCommunication()
+        {
+            Communication c= new Communication(config.getConfig("host"));
+            string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
+            c.addToHeader("Authorization", "Basic " + encoded);
+            return c;
+        }
+        
+        private Communication createCommunication()
+        {
+            Communication c = openAuthCommunication();
+            c.setProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
+            return c;
+        }
+        
+        private Communication createUploadCommunication()
+        {
+            Communication c = openAuthCommunication();
+            c.setContentType("image/tiff");
+            c.setProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
+            return c;
         }
     }
 }

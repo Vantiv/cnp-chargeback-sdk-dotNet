@@ -14,10 +14,16 @@ namespace ChargebackForDotNetTest.Functional
             [Test]
             public void TestGet()
             {
-                Configuration conf = new Configuration();
+                Configuration config = new Configuration();
                 string date = "?date=2013-01-01";
                 List<byte> bytes = new List<byte>();
-                string contentType = Communication.get(conf, "/services/chargebacks/"+date,bytes);
+                Communication c = new Communication(config.getConfig("host"));
+                string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
+                c.addToHeader("Authorization", "Basic " + encoded);
+                c.setContentType("application/com.vantivcnp.services-v2+xml");
+                c.setAccept("application/com.vantivcnp.services-v2+xml");
+                c.setProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
+                string contentType = c.get("/services/chargebacks/"+date,bytes);
                 Console.WriteLine("Content type returned from the server::"+contentType);
                 String xmlResponse = Utils.bytesToString(bytes);
                 Console.WriteLine(xmlResponse);
@@ -128,7 +134,6 @@ namespace ChargebackForDotNetTest.Functional
                 Assert.NotNull(response);
                 Assert.AreEqual("000", response.responseCode);
                 Assert.AreEqual("Success".ToLower(), response.responseMessage.ToLower());
-                
             }
         }
 }
