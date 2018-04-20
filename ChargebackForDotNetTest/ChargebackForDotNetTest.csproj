@@ -108,6 +108,7 @@
     <Compile Include="Functional\TestConfiguration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\TestChargebackRetrieval.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -141,9 +142,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Unit" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ChargebackForDotNet\ChargebackForDotNet.csproj">

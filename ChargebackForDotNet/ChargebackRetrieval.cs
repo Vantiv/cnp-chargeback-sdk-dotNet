@@ -50,11 +50,6 @@ namespace ChargebackForDotNet
             {
                 List<byte> bytes = new List<byte>();
                 Communication c = createCommunication();
-                string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
-                c.addToHeader("Authorization", "Basic " + encoded);
-                c.setContentType("application/com.vantivcnp.services-v2+xml");
-                c.setAccept("application/com.vantivcnp.services-v2+xml");
-                c.setProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
                 string contentType = c.get(urlRoute, bytes);
                 String xmlResponse = Utils.bytesToString(bytes);
                 Console.WriteLine(xmlResponse);
