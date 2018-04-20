@@ -75,7 +75,7 @@ namespace ChargebackForDotNet
             }
         }
 
-        public chargebackDocumentUploadResponse replaceDocument(long caseId, long documentId, string filePath)
+        public chargebackDocumentUploadResponse replaceDocument(long caseId, string documentId, string filePath)
         {
             List<byte> fileBytes = File.ReadAllBytes(filePath).ToList();
             List<byte> responseBytes = new List<byte>();
