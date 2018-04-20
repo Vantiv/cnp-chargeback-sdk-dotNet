@@ -75,6 +75,36 @@ namespace ChargebackForDotNet
             }
         }
 
+        public chargebackDocumentUploadResponse replaceDocument(long caseId, long documentId, string filePath)
+        {
+            List<byte> fileBytes = File.ReadAllBytes(filePath).ToList();
+            List<byte> responseBytes = new List<byte>();
+            try
+            {
+                Communication c = createUploadCommunication();
+                
+                string contentType = c.put(
+                    "/services/chargebacks/replace/" + caseId + "/" + documentId, fileBytes, responseBytes);
+                if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
+                {
+                    string xmlResponse = Utils.bytesToString(responseBytes);
+                    Console.WriteLine(xmlResponse);
+                    chargebackDocumentUploadResponse docResponse
+                        = Utils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
+                    return docResponse;
+                }
+                string stringResponse = Utils.bytesToString(responseBytes);
+                throw new ChargebackException(
+                    String.Format("Unexpected returned Content-Type: {0}. Call Vantiv immediately!" +
+                                  "\nTrying to read the response as raw text:" +
+                                  "\n{1}", contentType, stringResponse));
+            }
+            catch (WebException we)
+            {
+                throw new ChargebackException("Call Vantiv. \n" + we.StackTrace);
+            }
+        }
+
         public IDocumentResponse retrieveDocument(long caseId, string documentId)
         {
             List<byte> bytes = new List<byte>();
@@ -114,36 +144,6 @@ namespace ChargebackForDotNet
                 throw new ChargebackException("Call Vantiv. \n" + we.StackTrace);
             }
             return docResponse;
-        }
-
-        public chargebackDocumentUploadResponse replaceDocument(long caseId, long documentId, string filePath)
-        {
-            List<byte> fileBytes = File.ReadAllBytes(filePath).ToList();
-            List<byte> responseBytes = new List<byte>();
-            try
-            {
-                Communication c = createUploadCommunication();
-                
-                string contentType = c.put(
-                    "/services/chargebacks/replace/" + caseId + "/" + documentId, fileBytes, responseBytes);
-                if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
-                {
-                    string xmlResponse = Utils.bytesToString(responseBytes);
-                    Console.WriteLine(xmlResponse);
-                    chargebackDocumentUploadResponse docResponse
-                        = Utils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
-                    return docResponse;
-                }
-                string stringResponse = Utils.bytesToString(responseBytes);
-                throw new ChargebackException(
-                    String.Format("Unexpected returned Content-Type: {0}. Call Vantiv immediately!" +
-                                  "\nTrying to read the response as raw text:" +
-                                  "\n{1}", contentType, stringResponse));
-            }
-            catch (WebException we)
-            {
-                throw new ChargebackException("Call Vantiv. \n" + we.StackTrace);
-            }
         }
 
         public chargebackDocumentUploadResponse deleteDocument(long caseId, string documentId)
@@ -206,26 +206,20 @@ namespace ChargebackForDotNet
             }
         }
 
-        private Communication openAuthCommunication()
+        
+        private Communication createCommunication()
         {
             Communication c= new Communication(config.getConfig("host"));
             string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
             c.addToHeader("Authorization", "Basic " + encoded);
-            return c;
-        }
-        
-        private Communication createCommunication()
-        {
-            Communication c = openAuthCommunication();
             c.setProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
             return c;
         }
         
         private Communication createUploadCommunication()
         {
-            Communication c = openAuthCommunication();
+            Communication c = createCommunication();
             c.setContentType("image/tiff");
-            c.setProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
             return c;
         }
     }
