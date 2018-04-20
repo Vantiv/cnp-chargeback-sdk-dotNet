@@ -27,7 +27,7 @@ namespace ChargebackForDotNet
                 if (configurationField == null)
                 {
                     // Load from Settings.
-                    return new Configuration();
+                     configurationField = new Configuration();
                 }
                 return configurationField;
             }

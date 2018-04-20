@@ -11,16 +11,18 @@ namespace ChargebackForDotNetTest.Certification
         [Test]
         public void TestCase1()
         {
-            ChargebackDocumentationRequest docRequest
-                = new ChargebackDocumentationRequest();
-            docRequest.config.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
             string randomFilename = "random.tiff";
             StreamWriter writer = new StreamWriter(File.Create(randomFilename));
             writer.WriteLine("Prototype a file.");
             writer.Close();
+            
+            ChargebackDocumentationRequest docRequest
+                = new ChargebackDocumentationRequest();
+            docRequest.config.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
+            long caseId = Int32.Parse(docRequest.config.getConfig("merchantId") + "001");
             chargebackDocumentUploadResponse documentUploadResponse
-                = docRequest.uploadDocument(Int32.Parse(docRequest.config.getConfig("merchantId")+"001"), randomFilename);
-//            documentUploadResponse
+                = docRequest.uploadDocument(caseId, randomFilename);
+            Assert.AreEqual(documentUploadResponse.caseId, caseId);
         }
         
         [Test]
