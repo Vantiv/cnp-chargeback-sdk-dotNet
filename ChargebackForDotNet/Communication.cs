@@ -13,7 +13,6 @@ using System.Threading;
 
 namespace ChargebackForDotNet
 {
-
     public class Communication
     {
         private HttpWebRequest httpRequest;
