@@ -8,8 +8,8 @@ namespace ChargebackForDotNetTest.Unit
         [TestFixtureSetUp]
         public void SetUp()
         {
+            
         }
-
         [Test]
         public void TestAddToHeader()
         {

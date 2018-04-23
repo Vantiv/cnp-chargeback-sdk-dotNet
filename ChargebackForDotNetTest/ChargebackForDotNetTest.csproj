@@ -110,8 +110,13 @@
     <Compile Include="Functional\TestDocumentation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\TestChargebackDocumentation.cs" />
+    <Compile Include="Unit\TestChargebackException.cs" />
+    <Compile Include="Unit\TestChargebackRetrieval.cs" />
+    <Compile Include="Unit\TestChargebackUpdate.cs" />
     <Compile Include="Unit\TestCommunication.cs" />
     <Compile Include="Unit\TestConfiguration.cs" />
+    <Compile Include="Unit\TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

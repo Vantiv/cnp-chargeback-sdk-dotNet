@@ -10,6 +10,9 @@ namespace ChargebackForDotNet
 
     public interface IDocumentResponse
     {
+        // The response of retrieving documents can return
+        // either a file or an xml string for error. Thus, returning an
+        // interface works for both cases.
     }
 
     public class chargebackDocumentReceivedResponse : IDocumentResponse
