@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
@@ -21,6 +22,8 @@ namespace ChargebackForDotNet
     {
         private Configuration configurationField;
 
+        private Communication communication;
+
         public Configuration config
         {
             get
@@ -37,11 +40,18 @@ namespace ChargebackForDotNet
 
         public ChargebackRetrievalRequest()
         {
+            communication = new Communication();
         }
 
         public ChargebackRetrievalRequest(Configuration config)
         {
             this.configurationField = config;
+            communication = new Communication();
+        }
+        
+        public void setCommunication(Communication comm)
+        {
+            communication = comm;
         }
 
         private const string SERVICE_ROUTE = "/chargebacks";
@@ -51,10 +61,10 @@ namespace ChargebackForDotNet
             // Handle exception.
             try
             {
-                List<byte> bytes = new List<byte>();
-                Communication c = createCommunication();
-                string contentType = c.get(urlRoute, bytes);
-                String xmlResponse = Utils.bytesToString(bytes);
+                SetUpCommunication();
+                var responseTuple = communication.get(urlRoute);
+                var receivedBytes = (List<byte>) responseTuple[1];
+                String xmlResponse = Utils.bytesToString(receivedBytes);
                 Console.WriteLine(xmlResponse);
                 return xmlResponse;
             }
@@ -66,15 +76,14 @@ namespace ChargebackForDotNet
             }
         }
         
-        private Communication createCommunication()
+        private void SetUpCommunication()
         {
-            Communication c= new Communication(config.getConfig("host"));
+            communication.setHost(config.getConfig("host"));
             string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
-            c.addToHeader("Authorization", "Basic " + encoded);
-            c.setContentType("application/com.vantivcnp.services-v2+xml");
-            c.setAccept("application/com.vantivcnp.services-v2+xml");
-            c.setProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
-            return c;
+            communication.addToHeader("Authorization", "Basic " + encoded);
+            communication.setContentType("application/com.vantivcnp.services-v2+xml");
+            communication.setAccept("application/com.vantivcnp.services-v2+xml");
+            communication.setProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
         }
         
         public chargebackRetrievalResponse retrieveByActivityDate(DateTime date)

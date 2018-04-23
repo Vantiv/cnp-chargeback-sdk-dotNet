@@ -21,13 +21,22 @@ namespace ChargebackForDotNet
         
         private Configuration configurationField;
 
+        private Communication communication;
+
         public chargebackUpdateRequest()
         {
+            communication = new Communication();
         }
 
         public chargebackUpdateRequest(Configuration config)
         {
             this.configurationField = config;
+            communication = new Communication();
+        }
+        
+        public void setCommunication(Communication comm)
+        {
+            communication = comm;
         }
 
         public Configuration config
@@ -80,15 +89,15 @@ namespace ChargebackForDotNet
         private chargebackUpdateResponse sendUpdateRequest()    
         {
             string xml = this.Serialize();
+            Console.WriteLine("Request is:");
+            Console.WriteLine(xml);
             clearVariables();
             try
             {
-                List<byte> bytes = new List<byte>();
-
-                Communication c = createCommunication();
-                c.put(SERVICE_ROUTE + "/" + caseId, Utils.stringToBytes(xml), bytes);
-                
-                String xmlResponse = Utils.bytesToString(bytes);
+                SetUpCommunication();
+                var responseTuple = communication.put(SERVICE_ROUTE + "/" + caseId, Utils.stringToBytes(xml));
+                var receivedBytes = (List<byte>) responseTuple[1];
+                string xmlResponse = Utils.bytesToString(receivedBytes);
                 Console.WriteLine(xmlResponse);
                 return Utils.DeserializeResponse<chargebackUpdateResponse>(xmlResponse);
             }
@@ -96,19 +105,18 @@ namespace ChargebackForDotNet
             {
                 HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
                 throw new ChargebackException(
-                    String.Format("Update Failed - HTTP {0} Error", (int) errorResponse.StatusCode), errorResponse);
+                    string.Format("Update Failed - HTTP {0} Error", (int) errorResponse.StatusCode), errorResponse);
             }
         }
 
-        private Communication createCommunication()
+        private void SetUpCommunication()
         {
-            Communication c= new Communication(config.getConfig("host"));
+            communication.setHost(config.getConfig("host"));
             string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
-            c.addToHeader("Authorization", "Basic " + encoded);
-            c.setContentType("application/com.vantivcnp.services-v2+xml");
-            c.setAccept("application/com.vantivcnp.services-v2+xml");
-            c.setProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
-            return c;
+            communication.addToHeader("Authorization", "Basic " + encoded);
+            communication.setContentType("application/com.vantivcnp.services-v2+xml");
+            communication.setAccept("application/com.vantivcnp.services-v2+xml");
+            communication.setProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
         }
         
         public chargebackUpdateResponse AssignToUser(long caseId, string assignedTo = null, string note = null)

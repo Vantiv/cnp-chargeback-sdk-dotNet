@@ -1,139 +1,165 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using ChargebackForDotNet;
 using ChargebackForDotNet.Properties;
 using NUnit.Framework;
 
 namespace ChargebackForDotNetTest.Functional
 {
-        [TestFixture]
-        class TestCommunication
+    [TestFixture]
+    class TestCommunication
+    {
+        private Communication comm;
+        private Configuration config;
+
+        [SetUp]
+        public void SetUp()
         {
-
-            [Test]
-            public void TestGet()
+            Dictionary<string, string> configDict = new Dictionary<string, string>();
+            configDict["username"] = "dotnet";
+            configDict["password"] = "dotnet";
+            configDict["merchantId"] = "101";
+            configDict["host"] = "https://www.testvantivcnp.com/sandbox/new";
+            configDict["downloadDirectory"] = "C:\\Vantiv\\chargebacks";
+            configDict["printXml"] = "true";
+            configDict["proxyHost"] = "websenseproxy";
+            configDict["proxyPort"] = "8080";
+            config = new Configuration(configDict);
+            
+            if (!Directory.Exists(configDict["downloadDirectory"]))
             {
-                Configuration config = new Configuration();
-                string date = "?date=2013-01-01";
-                List<byte> bytes = new List<byte>();
-                Communication c = new Communication(config.getConfig("host"));
-                string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
-                c.addToHeader("Authorization", "Basic " + encoded);
-                c.setContentType("application/com.vantivcnp.services-v2+xml");
-                c.setAccept("application/com.vantivcnp.services-v2+xml");
-                c.setProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
-                string contentType = c.get("/services/chargebacks/"+date,bytes);
-                Console.WriteLine("Content type returned from the server::"+contentType);
-                String xmlResponse = Utils.bytesToString(bytes);
-                Console.WriteLine(xmlResponse);
-                Assert.True(true);
+                Directory.CreateDirectory(configDict["downloadDirectory"]);
             }
 
-            [Test]
-            public void TestRetrieveByActivityDateWithFinancialImpact()
+            comm = new Communication();
+            comm.setHost(config.getConfig("host"));
+        }
+
+        [Test]
+        public void TestGet()
+        {
+            string date = "?date=2013-01-01";
+            string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"),
+                "utf-8");
+            comm.addToHeader("Authorization", "Basic " + encoded);
+            comm.setContentType("application/com.vantivcnp.services-v2+xml");
+            comm.setAccept("application/com.vantivcnp.services-v2+xml");
+            comm.setProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
+            var responseTuple = comm.get("/services/chargebacks/" + date);
+            var contentType = (string) responseTuple[0];
+            var receivedBytes = (List<byte>) responseTuple[1];
+            Assert.True(receivedBytes.Any());
+            Console.WriteLine("Content type returned from the server::" + contentType);
+            string xmlResponse = Regex.Replace(Utils.bytesToString(receivedBytes), @"\t|\n|\r", "");
+            Console.WriteLine(xmlResponse);
+            string pattern = @"<?xml version=.* encoding=.* standalone=.*?>.*" +
+                             "<chargebackRetrievalResponse xmlns=.*<transactionId>.*</transactionId>.*" +
+                             "<chargebackCase>.*</chargebackCase>.*</chargebackRetrievalResponse>";
+            Regex regex = new Regex(pattern, RegexOptions.Multiline);
+            Assert.True(regex.IsMatch(xmlResponse));
+        }
+
+        [Test]
+        public void TestPut()
+        {
+            List<byte> sendingBytes = new List<byte>();
+            string xmlRequest = "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>" +
+                                "<chargebackUpdateRequest xmlns='http://www.vantivcnp.com/chargebacks'>" +
+                                "<activityType>ADD_NOTE</activityType>" +
+                                "<note>Any note</note>" +
+                                "</chargebackUpdateRequest>";
+            sendingBytes = Utils.stringToBytes(xmlRequest);
+            long caseId = 1000;
+            string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"),
+                "utf-8");
+            comm.addToHeader("Authorization", "Basic " + encoded);
+            comm.setContentType("application/com.vantivcnp.services-v2+xml");
+            comm.setAccept("application/com.vantivcnp.services-v2+xml");
+            comm.setProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
+            var responseTuple = comm.put("/services/chargebacks/" + caseId, sendingBytes);
+            var contentType = (string) responseTuple[0];
+            var receivedBytes = (List<byte>) responseTuple[1];
+            Assert.True(receivedBytes.Any());
+            string xmlResponse = Regex.Replace(Utils.bytesToString(receivedBytes), @"\t|\n|\r", "");
+            string pattern = @"<?xml version=.* encoding=.* standalone=.*?>.*" +
+                             "<chargebackUpdateResponse xmlns=.*<transactionId>.*</transactionId>.*" +
+                             "</chargebackUpdateResponse>";
+            Regex regex = new Regex(pattern, RegexOptions.Multiline);
+            Assert.True(regex.IsMatch(xmlResponse));
+        }
+
+        [Test]
+        public void TestPost()
+        {
+            long caseId = 1000;
+            var sendingBytes = new List<byte>();
+            const string tiffFilename = "uploadTest.tiff";
+            var tiffFilePath = Path.Combine(config.getConfig("downloadDirectory"), tiffFilename);
+            var writer = new StreamWriter(File.Create(tiffFilePath));
+            writer.WriteLine("Prototype a file.");
+            writer.Close();
+            sendingBytes = File.ReadAllBytes(tiffFilePath).ToList();
+
+            string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
+            comm.addToHeader("Authorization", "Basic " + encoded);
+            comm.setProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
+            comm.setContentType("image/tiff");
+            try
             {
-                Configuration conf = new Configuration();
-                ChargebackRetrievalRequest request = new ChargebackRetrievalRequest();
-                request.config = conf;
-                chargebackRetrievalResponse response = 
-                    request.retrieveByActivityDateWithImpact(new DateTime(2013, 1, 1), true);
-                Assert.NotNull(response);
+                var responseTuple = comm.post("/services/chargebacks/upload/" + caseId + "/" + tiffFilename, sendingBytes);
+                var contentType = (string) responseTuple[0];
+                var receivedBytes = (List<byte>) responseTuple[1];
+                Assert.True(receivedBytes.Any());
+                string xmlResponse = Regex.Replace(Utils.bytesToString(receivedBytes), @"\t|\n|\r", "");
+                string pattern = @"<?xml version=.* encoding=.* standalone=.*?>.*" +
+                                 "<chargebackDocumentUploadResponse xmlns=.*<merchantId>.*</merchantId>.*" +
+                                 "<caseId>.*</caseId>.*" +
+                                 "<responseCode>000</responseCode>.*" +
+                                 "<responseMessage>Success</responseMessage>.*" +
+                                 "</chargebackDocumentUploadResponse>";
+                Regex regex = new Regex(pattern, RegexOptions.Multiline);
+                Assert.True(regex.IsMatch(xmlResponse));
             }
-            
-            [Test]
-            public void TestRetrieveActionable()
+            catch (Exception e)
             {
-                Configuration conf = new Configuration();
-                ChargebackRetrievalRequest request = new ChargebackRetrievalRequest();
-                request.config = conf;
-                chargebackRetrievalResponse response = request.retrieveActionable(true);
-                Assert.NotNull(response);
+                Assert.Fail("Post failed" + e);
             }
-            
-            [Test]
-            public void TestRetrieveByCaseId()
+            finally
             {
-                Configuration conf = new Configuration();
-                ChargebackRetrievalRequest request = new ChargebackRetrievalRequest();
-                request.config = conf;
-                chargebackRetrievalResponse response = request.retrieveByCaseId(1288791001);
-                Assert.NotNull(response);
-            }
-            
-            [Test]
-            public void TestRetrieveByCardNumber()
-            {
-                Configuration conf = new Configuration();
-                ChargebackRetrievalRequest request = new ChargebackRetrievalRequest();
-                request.config = conf;
-                chargebackRetrievalResponse response = 
-                    request.retrieveByCardNumber(0001.ToString(), new DateTime(2013, 1, 15));
-                Assert.NotNull(response);
-            }
-            
-            [Test]
-            public void TestRetrieveByArn()
-            {
-                Configuration conf = new Configuration();
-                ChargebackRetrievalRequest request = new ChargebackRetrievalRequest();
-                request.config = conf;
-                chargebackRetrievalResponse response = request.retrieveByArn(5555555551.ToString());
-                Assert.NotNull(response);
-            }
-            
-            [Test]
-            public void TestRetrieveDocument()
-            {
-                Configuration conf = new Configuration();
-                ChargebackDocumentationRequest request = new ChargebackDocumentationRequest();
-                conf.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
-                request.config = conf;
-                chargebackDocumentReceivedResponse response = 
-                    (chargebackDocumentReceivedResponse)request.retrieveDocument(1000, "doc.tiff");
-                Assert.NotNull(response);
-                Console.WriteLine(response.retrievedFilePath);
-            }
-            
-            [Test]
-            public void TestRetrieveDocument_DocumentNotFound_009()
-            {
-                Configuration conf = new Configuration();
-                ChargebackDocumentationRequest request = new ChargebackDocumentationRequest();
-                conf.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
-                request.config = conf;
-                chargebackDocumentUploadResponse response
-                    = (chargebackDocumentUploadResponse)request.retrieveDocument(10009, "testDoc.tiff");
-                Assert.NotNull(response);
-                Assert.AreEqual("009", response.responseCode);
-                Assert.AreEqual("Document Not Found".ToLower(), response.responseMessage.ToLower());
-            }
-            
-            [Test]
-            public void TestListDocument()
-            {
-                Configuration conf = new Configuration();
-                ChargebackDocumentationRequest request = new ChargebackDocumentationRequest();
-                conf.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
-                request.config = conf;
-                chargebackDocumentUploadResponse response = request.listDocuments(1000);
-                Assert.NotNull(response);
-                Assert.AreEqual("000", response.responseCode);
-                Assert.AreEqual("Success".ToLower(), response.responseMessage.ToLower());
-                
-            }
-            
-            [Test]
-            public void TestDeleteDocument()
-            {
-                Configuration conf = new Configuration();
-                ChargebackDocumentationRequest request = new ChargebackDocumentationRequest();
-                conf.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
-                request.config = conf;
-                chargebackDocumentUploadResponse response = request.deleteDocument(1000, "logo.tiff");
-                Assert.NotNull(response);
-                Assert.AreEqual("000", response.responseCode);
-                Assert.AreEqual("Success".ToLower(), response.responseMessage.ToLower());
+                File.Delete(tiffFilePath);
             }
         }
+
+        [Test]
+        public void TestDelete()
+        {
+            long caseId = 1000;
+            const string tiffFilename = "uploadTest.tiff";
+            string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
+            comm.addToHeader("Authorization", "Basic " + encoded);
+            comm.setProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
+            var responseTuple = comm.delete(string.Format("/services/chargebacks/remove/{0}/{1}", caseId, tiffFilename));
+            var contentType = (string) responseTuple[0];
+            var receivedBytes = (List<byte>) responseTuple[1];
+            Assert.True(receivedBytes.Any());
+            string xmlResponse = Regex.Replace(Utils.bytesToString(receivedBytes), @"\t|\n|\r", "");
+            string pattern = @"<?xml version=.* encoding=.* standalone=.*?>.*" +
+                             "<chargebackDocumentUploadResponse xmlns=.*<merchantId>.*</merchantId>.*" +
+                             "<caseId>.*</caseId>.*" +
+                             "<responseCode>000</responseCode>.*" +
+                             "<responseMessage>Success</responseMessage>.*" +
+                             "</chargebackDocumentUploadResponse>";
+            Regex regex = new Regex(pattern, RegexOptions.Multiline);
+            Assert.True(regex.IsMatch(xmlResponse));
+        }
+        
+        [TearDown]
+        public void TearDown()
+        {
+            Directory.Delete(config.getConfig("downloadDirectory"));
+        }
+    }
 }

@@ -41,7 +41,8 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestAddNote()
         {
-            var updateResponse = updateRequest.AddNote(1234, "Any note");
+            long caseId = 1000;
+            var updateResponse = updateRequest.AddNote(caseId, "Any note");
             Assert.NotNull(updateResponse);
             Assert.IsInstanceOf<chargebackUpdateResponse>(updateResponse);
             Assert.NotNull(updateResponse.transactionId);
@@ -50,6 +51,7 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestAcceptLiability()
         {
+            long caseId = 1000;
             var updateResponse = updateRequest.AcceptLiability(1234, "Accepting Liability");
             Assert.NotNull(updateResponse);
             Assert.IsInstanceOf<chargebackUpdateResponse>(updateResponse);
@@ -59,7 +61,9 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestRepresentWithRepresentedAmount()
         {
-            var updateResponse = updateRequest.Represent(1234, 1000, "Represinting with an amount");
+            long caseId = 1000;
+            long amount = 5000;
+            var updateResponse = updateRequest.Represent(caseId, amount, "Represinting with an amount");
             Assert.NotNull(updateResponse);
             Assert.IsInstanceOf<chargebackUpdateResponse>(updateResponse);
             Assert.NotNull(updateResponse.transactionId);
@@ -68,7 +72,8 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestRepresentWithoutRepresenedAmount()
         {
-            var updateResponse = updateRequest.Represent(1234, 1000, "Representig without an amount");
+            long caseId = 1000;
+            var updateResponse = updateRequest.Represent(caseId, "Representig without an amount");
             Assert.NotNull(updateResponse);
             Assert.IsInstanceOf<chargebackUpdateResponse>(updateResponse);
             Assert.NotNull(updateResponse.transactionId);
@@ -77,7 +82,8 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestRespond()
         {
-            var updateResponse = updateRequest.Respond(1234, "Respond to chargeback case");
+            long caseId = 1000;
+            var updateResponse = updateRequest.Respond(caseId, "Respond to chargeback case");
             Assert.NotNull(updateResponse);
             Assert.IsInstanceOf<chargebackUpdateResponse>(updateResponse);
             Assert.NotNull(updateResponse.transactionId);
@@ -86,7 +92,8 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestRequestArbitration()
         {
-            var updateResponse = updateRequest.RequestArbitration(1234, "Requestinng arbitration...");
+            long caseId = 1000;
+            var updateResponse = updateRequest.RequestArbitration(caseId, "Requestinng arbitration...");
             Assert.NotNull(updateResponse);
             Assert.IsInstanceOf<chargebackUpdateResponse>(updateResponse);
             Assert.NotNull(updateResponse.transactionId);
@@ -95,9 +102,10 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestErrorResponse404()
         {
+            long caseId = 1404;
             try
             {
-                var response = updateRequest.AddNote(1404, "Any note");
+                var response = updateRequest.AddNote(caseId, "Any note");
                 Assert.Fail("ChargebackException was expected with HTTP 404 Error. None thrown");
             }
             catch (ChargebackException ce)
@@ -110,9 +118,10 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestErrorResponse400()
         {
+            long caseId = 1400;
             try
             {
-                var response = updateRequest.AddNote(1400, "Any note");
+                var response = updateRequest.AddNote(caseId, "Any note");
                 Assert.Fail("ChargebackException was expected with HTTP 400 Error. None thrown");
             }
             catch (ChargebackException ce)
@@ -127,9 +136,10 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestErrorResponse401()
         {
+            long caseId = 1401;
             try
             {
-                var response = updateRequest.AddNote(1401, "Any note");
+                var response = updateRequest.AddNote(caseId, "Any note");
                 Assert.Fail("ChargebackException was expected with HTTP 401 Error. None thrown");
             }
             catch (ChargebackException ce)
@@ -143,9 +153,10 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestErrorResponse403()
         {
+            long caseId = 1403;
             try
             {
-                var response = updateRequest.AddNote(1403, "Any note");
+                var response = updateRequest.AddNote(caseId, "Any note");
                 Assert.Fail("ChargebackException was expected with HTTP 403 Error. None thrown");
             }
             catch (ChargebackException ce)
@@ -159,9 +170,10 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestErrorResponse500()
         {
+            long caseId = 1500;
             try
             {
-                var response = updateRequest.AddNote(1500, "Any note");
+                var response = updateRequest.AddNote(caseId, "Any note");
                 Assert.Fail("ChargebackException was expected with HTTP 500 Error. None thrown");
             }
             catch (ChargebackException ce)

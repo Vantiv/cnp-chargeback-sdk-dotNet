@@ -31,6 +31,8 @@ namespace ChargebackForDotNet
         // Additional implementation for errorResponse class
         // should be written here.
     }
+    
+    
    
     
 }

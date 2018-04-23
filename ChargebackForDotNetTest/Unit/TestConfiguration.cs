@@ -106,7 +106,7 @@ namespace ChargebackForDotNetTest.Unit
             }
             catch (ChargebackException ce)
             {
-                throw new ChargebackException(ce.StackTrace);
+                throw new ChargebackException("" + ce);
             }
             finally
             {
