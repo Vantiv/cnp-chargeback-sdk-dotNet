@@ -34,7 +34,7 @@ namespace ChargebackForDotNet
             communication = new Communication();
         }
         
-        public void setCommunication(Communication comm)
+        public chargebackUpdateRequest(Communication comm)
         {
             communication = comm;
         }

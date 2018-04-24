@@ -44,6 +44,16 @@ namespace ChargebackForDotNet
                 .GetBytes(s));
         }
 
+        public static DateTime parseDate(string date)
+        {
+            string[] splits = date.Split('-');
+            if (splits.Length != 3) return new DateTime(0,0,0);
+            int year = Int16.Parse(splits[0]);
+            int month = Int16.Parse(splits[1]);
+            int day = Int16.Parse(splits[2]);
+            return new DateTime(year, month, day);
+        }
+
         public static T DeserializeResponse<T>(string xmlResponse)
         {
             return (T) (new XmlSerializer(typeof(T))).Deserialize(new StringReader(xmlResponse));

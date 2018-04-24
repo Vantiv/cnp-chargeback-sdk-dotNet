@@ -127,7 +127,7 @@ namespace ChargebackForDotNetTest.Functional
             catch (ChargebackException ce)
             {
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 400 Error"));
-                string pattern = @"Cannot perform activity.*Merchant Accepts Liability.*Merchant Assumed.*";
+                string pattern = @".*Poorly formatted xml or cannot perform activity.*";
                 Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
                 Assert.True(regex.IsMatch(ce.errors[0]));
             }

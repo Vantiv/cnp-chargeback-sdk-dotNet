@@ -104,7 +104,7 @@
   <ItemGroup>
     <Compile Include="Certification\TestCertificationChargebackAPI.cs" />
     <Compile Include="Certification\TestCertificationChargebackDocumentationAPI.cs" />
-    <Compile Include="Functional\TestChargebackrRetrieval.cs" />
+    <Compile Include="Functional\TestChargebackRetrieval.cs" />
     <Compile Include="Functional\TestChargebackUpdate.cs" />
     <Compile Include="Functional\TestCommunication.cs" />
     <Compile Include="Functional\TestDocumentation.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
@@ -15,6 +16,8 @@ namespace ChargebackForDotNet
         private Configuration configurationField;
         private Communication communication;
 
+        private const string SERVICE_ROUTE = "/services/chargebacks";
+
         public Configuration config
         {
             get { return configurationField ?? (configurationField = new Configuration()); }
@@ -26,15 +29,15 @@ namespace ChargebackForDotNet
             communication = new Communication();
         }
 
+        public ChargebackDocumentationRequest(Communication comm)
+        {
+            communication = comm;
+        }
+
         public ChargebackDocumentationRequest(Configuration config)
         {
             this.configurationField = config;
             communication = new Communication();
-        }
-        
-        public void setCommunication(Communication comm)
-        {
-            communication = comm;
         }
 
         public chargebackDocumentUploadResponse uploadDocument(long caseId, string filePath)
@@ -45,30 +48,14 @@ namespace ChargebackForDotNet
             {
                 SetUpCommunicationForUpload();
                 var responseTuple = communication.post(
-                    "/services/chargebacks/upload/" + caseId + "/" + documentId, fileBytes);
-                var contentType = (string) responseTuple[0];
-                var responseBytes = (List<byte>) responseTuple[1];
-                if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
-                {
-                    string xmlResponse = Utils.bytesToString(responseBytes);
-                    Console.WriteLine(xmlResponse);
-                    chargebackDocumentUploadResponse docResponse 
-                        = Utils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
-                    return docResponse;
-                }
-                string stringResponse = Utils.bytesToString(responseBytes);
-                throw new ChargebackException(
-                    string.Format("Unexpected returned Content-Type: {0}. Call Vantiv immediately!" +
-                                  "\nTrying to read the response as raw text:" +
-                                  "\n{1}", contentType, stringResponse));
+                    SERVICE_ROUTE + "/upload/" + caseId + "/" + documentId, fileBytes);
+                return HandleResponse(responseTuple);
             }
             catch (WebException we)
             {
-                HttpWebResponse httpResponse = (HttpWebResponse) we.Response;
-                
-                throw new ChargebackException("Call Vantiv. HTTP Status Code:" 
-                                              + httpResponse.StatusCode
-                                              + "\n" + we.Message + "\n" + we);
+                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
+                throw new ChargebackException(
+                    string.Format("Upload Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) , errorResponse);
             }
         }
 
@@ -80,26 +67,14 @@ namespace ChargebackForDotNet
                 SetUpCommunicationForUpload();
                 
                 var responseTuple = communication.put(
-                    "/services/chargebacks/replace/" + caseId + "/" + documentId, fileBytes);
-                var contentType = (string) responseTuple[0];
-                var responseBytes = (List<byte>) responseTuple[1];
-                if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
-                {
-                    string xmlResponse = Utils.bytesToString(responseBytes);
-                    Console.WriteLine(xmlResponse);
-                    chargebackDocumentUploadResponse docResponse
-                        = Utils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
-                    return docResponse;
-                }
-                string stringResponse = Utils.bytesToString(responseBytes);
-                throw new ChargebackException(
-                    string.Format("Unexpected returned Content-Type: {0}. Call Vantiv immediately!" +
-                                  "\nTrying to read the response as raw text:" +
-                                  "\n{1}", contentType, stringResponse));
+                    SERVICE_ROUTE + "/replace/" + caseId + "/" + documentId, fileBytes);
+                return HandleResponse(responseTuple);
             }
             catch (WebException we)
             {
-                throw new ChargebackException("Call Vantiv. \n" + we);
+                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
+                throw new ChargebackException(
+                    string.Format("Replace Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) , errorResponse);
             }
         }
 
@@ -111,7 +86,7 @@ namespace ChargebackForDotNet
                 SetUpCommunication();
                 
                 var responseTuple = communication.get(
-                    string.Format("/services/chargebacks/retrieve/{0}/{1}", caseId, documentId));
+                    string.Format(SERVICE_ROUTE+"/retrieve/{0}/{1}", caseId, documentId));
                 var contentType = (string) responseTuple[0];
                 var responseBytes = (List<byte>) responseTuple[1];
                 if ("image/tiff".Equals(contentType))
@@ -127,25 +102,16 @@ namespace ChargebackForDotNet
                     fileReceivedResponse.retrievedFilePath = retrievedFilePath;
                     docResponse = fileReceivedResponse;
                 }
-                else if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
-                {
-                    string xmlResponse = Utils.bytesToString(responseBytes);
-                    Console.WriteLine(xmlResponse);
-                    docResponse 
-                        = Utils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
-                }
                 else
                 {
-                    string stringResponse = Utils.bytesToString(responseBytes);
-                    throw new ChargebackException(
-                        string.Format("Unexpected returned Content-Type: {0}. Call Vantiv immediately!" +
-                                      "\nTrying to read the response as raw text:" +
-                                      "\n{1}", contentType, stringResponse));
+                    return HandleResponse(responseTuple);
                 }
             }
             catch (WebException we)
             {
-                throw new ChargebackException("Call Vantiv. \n" + we);
+                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
+                throw new ChargebackException(
+                    string.Format("Retrieve Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) , errorResponse);
             }
             return docResponse;
         }
@@ -156,27 +122,16 @@ namespace ChargebackForDotNet
             {
                 SetUpCommunication();
                 
-                var responseTuple = communication.delete(string.Format("/services/chargebacks/remove/{0}/{1}", caseId, documentId));
-                var contentType = (string) responseTuple[0];
-                var responseBytes = (List<byte>) responseTuple[1];
-                if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
-                {
-                    string xmlResponse = Utils.bytesToString(responseBytes);
-                    Console.WriteLine(xmlResponse);
-                    chargebackDocumentUploadResponse docResponse
-                        = Utils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
-                    return docResponse;
-                }
-                string stringResponse = Utils.bytesToString(responseBytes);
-                throw new ChargebackException(
-                    string.Format("Unexpected returned Content-Type: {0}. Call Vantiv immediately!" +
-                                  "\nTrying to read the response as raw text:" +
-                                  "\n{1}", contentType, stringResponse));
+                var responseTuple = communication.delete(
+                    string.Format(SERVICE_ROUTE+"/remove/{0}/{1}", caseId, documentId));
+                return HandleResponse(responseTuple);
                               
             }
             catch (WebException we)
             {
-                throw new ChargebackException("Call Vantiv. \n" + we);
+                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
+                throw new ChargebackException(
+                    string.Format("Delete Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) , errorResponse);
             }
         }
 
@@ -186,35 +141,45 @@ namespace ChargebackForDotNet
             {
                 SetUpCommunication();
                 
-                var responseTuple = communication.get("/services/chargebacks/list/" + caseId);
-                var contentType = (string) responseTuple[0];
-                var responseBytes = (List<byte>) responseTuple[1];
-                if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
-                {
-                    string xmlResponse = Utils.bytesToString(responseBytes);
-                    Console.WriteLine(xmlResponse);
-                    chargebackDocumentUploadResponse docResponse
-                        = Utils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
-                    return docResponse;
-                }
-                string stringResponse = Utils.bytesToString(responseBytes);
-                throw new ChargebackException(
-                    string.Format("Unexpected returned Content-Type: {0}. Call Vantiv immediately!" +
-                                  "\nTrying to read the response as raw text:" +
-                                  "\n{1}", contentType, stringResponse));
-                              
+                var responseTuple = communication.get(
+                    SERVICE_ROUTE + "/list/" + caseId);
+                return HandleResponse(responseTuple);
+
             }
             catch (WebException we)
             {
-                throw new ChargebackException("Call Vantiv. \n" + we);
+                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
+                throw new ChargebackException(
+                    string.Format("List documents Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) , errorResponse);
             }
+        }
+
+        
+        private chargebackDocumentUploadResponse HandleResponse(ArrayList responseTuple)
+        {
+            var contentType = (string) responseTuple[0];
+            var responseBytes = (List<byte>) responseTuple[1];
+            if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
+            {
+                string xmlResponse = Utils.bytesToString(responseBytes);
+                Console.WriteLine(xmlResponse);
+                chargebackDocumentUploadResponse docResponse
+                    = Utils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
+                return docResponse;
+            }
+            string stringResponse = Utils.bytesToString(responseBytes);
+            throw new ChargebackException(
+                string.Format("Unexpected returned Content-Type: {0}. Call Vantiv immediately!" +
+                              "\nTrying to read the response as raw text:" +
+                              "\n{1}", contentType, stringResponse));
         }
 
         
         private void SetUpCommunication()
         {
             communication.setHost(config.getConfig("host"));
-            string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
+            string encoded = Utils.encode64(
+                config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
             communication.addToHeader("Authorization", "Basic " + encoded);
             communication.setProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
             communication.setContentType(null);
@@ -225,5 +190,24 @@ namespace ChargebackForDotNet
             SetUpCommunication();
             communication.setContentType("image/tiff");
         }
+        
+    }
+    
+    public interface IDocumentResponse
+    {
+        // The response of retrieving documents can return
+        // either a file or an xml string for error. Thus, returning an
+        // interface works for both cases.
+    }
+
+    public class chargebackDocumentReceivedResponse : IDocumentResponse
+    {
+        public string retrievedFilePath { get; set; }
+    }
+    
+    public partial class chargebackDocumentUploadResponse : IDocumentResponse
+    {
+        // Additional implementation for chargebackDocumentUploadResponse class
+        // should be written here.
     }
 }

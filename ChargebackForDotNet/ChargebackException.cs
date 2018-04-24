@@ -49,4 +49,10 @@ namespace ChargebackForDotNet
             }
         }
     }
+    
+    public partial class errorResponse
+    {
+        // Additional implementation for errorResponse class
+        // should be written here.
+    }
 }

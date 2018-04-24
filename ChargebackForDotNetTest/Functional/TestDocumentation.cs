@@ -76,7 +76,7 @@ namespace ChargebackForDotNetTest.Functional
         }
 
         [Test]
-        public void TesUploadDocument()
+        public void TestUploadDocument()
         {
             const string tiffFilename = "uploadTest.tiff";
             var tiffFilePath = Path.Combine(docRequest.config.getConfig("downloadDirectory"), tiffFilename);

@@ -24,6 +24,8 @@ namespace ChargebackForDotNet
 
         private Communication communication;
 
+        private const string SERVICE_ROUTE = "/chargebacks";
+
         public Configuration config
         {
             get
@@ -49,12 +51,10 @@ namespace ChargebackForDotNet
             communication = new Communication();
         }
         
-        public void setCommunication(Communication comm)
+        public ChargebackRetrievalRequest(Communication comm)
         {
             communication = comm;
         }
-
-        private const string SERVICE_ROUTE = "/chargebacks";
 
         private string sendRequest(string urlRoute)
         {
@@ -102,11 +102,10 @@ namespace ChargebackForDotNet
             return Utils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
         }
         
-        public chargebackRetrievalResponse retrieveActionable(bool actionable)
+        public chargebackRetrievalResponse retrieveByActionable(bool actionable)
         {
-            string queryActionable = actionable.ToString().ToLower();
             string xmlResponse = sendRequest(
-                string.Format(SERVICE_ROUTE+"/?actionable={0}", queryActionable));
+                string.Format(SERVICE_ROUTE+"/?actionable={0}", actionable));
             return Utils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
         }
         
@@ -124,8 +123,9 @@ namespace ChargebackForDotNet
             return Utils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
         }
         
-        public chargebackRetrievalResponse retrieveByCardNumber(string cardNumber, DateTime expirationDate)
+        public chargebackRetrievalResponse retrieveByCardNumber(string cardNumber, int month, int year)
         {
+            var expirationDate = new DateTime(year, month, 1);
             string queryExpirationDate = expirationDate.ToString("MMyy");
             string xmlResponse = sendRequest(
                 string.Format(SERVICE_ROUTE+"/?cardNumber={0}&expirationDate={1}",

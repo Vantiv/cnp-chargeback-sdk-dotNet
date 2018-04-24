@@ -14,7 +14,7 @@ namespace ChargebackForDotNetTest.Certification
         public void Test2_1_1RetrieveByAParticularDate()
         {
             ChargebackRetrievalRequest request = new ChargebackRetrievalRequest();
-            chargebackRetrievalResponse response = request.retrieveByActivityDate(new DateTime(2013, 1, 1));
+            chargebackRetrievalResponse response = request.retrieveByActivityDate(Utils.parseDate("2013-10-1"));
             Assert.NotNull(response);
             Assert.AreEqual(11, response.chargebackCase.Length);
             chargebackApiCase[] cases = response.chargebackCase;
@@ -45,8 +45,6 @@ namespace ChargebackForDotNetTest.Certification
         [Test]
         public void Test2_1_2AddNote()
         {
-            Configuration conf = new Configuration();
-            
             // Step 1. Perform a new activity for the case retrieved from ARN 1111111111.
             ChargebackRetrievalRequest retrievalRequest = new ChargebackRetrievalRequest();
             chargebackRetrievalResponse retrievalResponse = retrievalRequest.retrieveByArn("1111111111");
@@ -67,10 +65,8 @@ namespace ChargebackForDotNetTest.Certification
         [Test]
         public void Test2_1_3RequestRepresentment()
         {
-            Configuration conf = new Configuration();
             // Step 1. Perform a new activity for the case retrieved from ARN 2222222222.
             ChargebackRetrievalRequest retrievalRequest = new ChargebackRetrievalRequest();
-            retrievalRequest.config = conf;
             chargebackRetrievalResponse retrievalResponse = retrievalRequest.retrieveByArn("2222222222");
             long caseId = retrievalResponse.chargebackCase[0].caseId;
             chargebackUpdateRequest updateRequest = new chargebackUpdateRequest();

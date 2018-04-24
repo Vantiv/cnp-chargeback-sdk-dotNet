@@ -83,8 +83,9 @@ namespace ChargebackForDotNet
             }
         }
 
-        public ArrayList readBytes(HttpWebResponse httpResponse)
+        public ArrayList receiveResponse()
         {
+            HttpWebResponse httpResponse = (HttpWebResponse) httpRequest.GetResponse();
             var receivingbytes = new List<byte>();
             string contentType = httpResponse.ContentType;
 
@@ -105,23 +106,21 @@ namespace ChargebackForDotNet
         }
 
 
-        public ArrayList get(string urlRoute)
+        public virtual ArrayList get(string urlRoute)
         {
             createHttpRequest(urlRoute);
             httpRequest.Method = "GET";
-            HttpWebResponse response = (HttpWebResponse) httpRequest.GetResponse();
-            return readBytes(response);
+            return receiveResponse();
         }
 
-        public ArrayList delete(string urlRoute)
+        public virtual ArrayList delete(string urlRoute)
         {
             createHttpRequest(urlRoute);
             httpRequest.Method = "DELETE";
-            HttpWebResponse response = (HttpWebResponse) httpRequest.GetResponse();
-            return readBytes(response);
+            return receiveResponse();
         }
 
-        public ArrayList put(string urlRoute, List<byte> sendingBytes)
+        public virtual ArrayList put(string urlRoute, List<byte> sendingBytes)
         {
             createHttpRequest(urlRoute);
             httpRequest.Method = "PUT";
@@ -129,12 +128,10 @@ namespace ChargebackForDotNet
             Stream inStream = httpRequest.GetRequestStream();
             inStream.Write(sendingBytes.ToArray(), 0, sendingBytes.Count);
             inStream.Close();
-
-            HttpWebResponse response = (HttpWebResponse) httpRequest.GetResponse();
-            return readBytes(response);
+            return receiveResponse();
         }
 
-        public ArrayList post(string urlRoute, List<byte> sendingBytes)
+        public virtual ArrayList post(string urlRoute, List<byte> sendingBytes)
         {
             createHttpRequest(urlRoute);
             httpRequest.Method = "POST";
@@ -143,8 +140,7 @@ namespace ChargebackForDotNet
             inStream.Write(sendingBytes.ToArray(), 0, sendingBytes.Count);
             inStream.Close();
             Console.WriteLine("Finish writing bytes to Request Stream.");
-            HttpWebResponse response = (HttpWebResponse) httpRequest.GetResponse();
-            return readBytes(response);
+            return receiveResponse();
         }
     }
 }

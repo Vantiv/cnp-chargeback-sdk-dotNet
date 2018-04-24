@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using ChargebackForDotNet;
 using ChargebackForDotNet.Properties;
 using NUnit.Framework;
@@ -51,7 +52,7 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestRetrieveActionable()
         {
-            chargebackRetrievalResponse retrievalResponse = retrievalRequest.retrieveActionable(true);
+            chargebackRetrievalResponse retrievalResponse = retrievalRequest.retrieveByActionable(true);
             Assert.NotNull(retrievalResponse);
             Assert.NotNull(retrievalResponse.transactionId);
             Assert.NotNull(retrievalResponse.chargebackCase);
@@ -70,7 +71,7 @@ namespace ChargebackForDotNetTest.Functional
         public void TestRetrieveByCardNumber()
         {
             chargebackRetrievalResponse retrievalResponse = 
-                retrievalRequest.retrieveByCardNumber(0001.ToString(), new DateTime(2013, 1, 15));
+                retrievalRequest.retrieveByCardNumber(0001.ToString(), 2, 1998);
             Assert.NotNull(retrievalResponse);
             Assert.NotNull(retrievalResponse.transactionId);
             Assert.NotNull(retrievalResponse.chargebackCase);
