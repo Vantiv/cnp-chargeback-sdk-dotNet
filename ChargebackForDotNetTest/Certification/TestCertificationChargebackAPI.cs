@@ -11,7 +11,7 @@ namespace ChargebackForDotNetTest.Certification
     public class TestCertificationChargebackAPI
     {
         [Test]
-        public void Test2_1_1RetrieveByAParticularDate()
+        public void Test_2_1_1_RetrieveByAParticularDate()
         {
             ChargebackRetrievalRequest request = new ChargebackRetrievalRequest();
             chargebackRetrievalResponse response = request.RetrieveByActivityDate(ChargebackUtils.ParseDate("2013-1-1"));
@@ -43,7 +43,7 @@ namespace ChargebackForDotNetTest.Certification
         }
 
         [Test]
-        public void Test2_1_2AddNote()
+        public void Test_2_1_2_AddNote()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 1111111111.
             ChargebackRetrievalRequest retrievalRequest = new ChargebackRetrievalRequest();
@@ -72,7 +72,7 @@ namespace ChargebackForDotNetTest.Certification
         
         [Test]
         [Ignore("Cannot run multiple times on Prelive.")]
-        public void Test2_1_3RequestRepresentment()
+        public void Test_2_1_3_RequestRepresentment()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 2222222222.
             ChargebackRetrievalRequest retrievalRequest = new ChargebackRetrievalRequest();
@@ -99,7 +99,7 @@ namespace ChargebackForDotNetTest.Certification
         
         [Test]
         [Ignore("Cannot run multiple times on Prelive.")]
-        public void Test2_1_4AssumingLiability()
+        public void Test_2_1_4_AssumingLiability()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 4444444444.
             ChargebackRetrievalRequest retrievalRequest = new ChargebackRetrievalRequest();
@@ -115,7 +115,7 @@ namespace ChargebackForDotNetTest.Certification
         }
 
         [Test]
-        public void Test2_1_5ErrorMessage()
+        public void Test_2_1_5_ErrorMessage()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 4444444444.
             ChargebackRetrievalRequest retrievalRequest = new ChargebackRetrievalRequest();
@@ -152,7 +152,7 @@ namespace ChargebackForDotNetTest.Certification
 
         [Test]
         [Ignore("Cannot run multiple times on Prelive.")]
-        public void Test2_1_6DeclineAVisaPreArbitrationCase()
+        public void Test_2_1_6_DeclineAVisaPreArbitrationCase()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 5555555550.
             var retrievalRequest = new ChargebackRetrievalRequest();
@@ -180,7 +180,7 @@ namespace ChargebackForDotNetTest.Certification
         
         [Test]
         [Ignore("Cannot run multiple times on Prelive.")]
-        public void Test2_1_7AssumeLiabilityOfAVisaPreArbitration()
+        public void Test_2_1_7_AssumeLiabilityOfAVisaPreArbitration()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 5555555552.
             var retrievalRequest = new ChargebackRetrievalRequest();
@@ -197,7 +197,7 @@ namespace ChargebackForDotNetTest.Certification
         
         [Test]
         [Ignore("Cannot run multiple times on Prelive.")]
-        public void Test2_1_8AssumeLiabilityOfAVisaArbitration()
+        public void Test_2_1_8_AssumeLiabilityOfAVisaArbitration()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 6666666660.
             var retrievalRequest = new ChargebackRetrievalRequest();
@@ -214,7 +214,7 @@ namespace ChargebackForDotNetTest.Certification
         
         [Test]
         [Ignore("Cannot run multiple times on Prelive.")]
-        public void Test2_1_9DeclineAVisaIssuerDeclinedPreAbitrationCase()
+        public void Test_2_1_9_DeclineAVisaIssuerDeclinedPreAbitrationCase()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 7777777770.
             var retrievalRequest = new ChargebackRetrievalRequest();
@@ -242,7 +242,7 @@ namespace ChargebackForDotNetTest.Certification
 
         [Test]
         [Ignore("Cannot run multiple times on Prelive.")]
-        public void Test2_1_9AssumeLiabilityOfAVisaIssuerDeclinedPreAbitrationCase()
+        public void Test_2_1_9_AssumeLiabilityOfAVisaIssuerDeclinedPreAbitrationCase()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 7777777772.
             var retrievalRequest = new ChargebackRetrievalRequest();
