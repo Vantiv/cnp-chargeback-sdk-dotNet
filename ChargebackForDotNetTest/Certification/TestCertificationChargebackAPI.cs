@@ -71,6 +71,7 @@ namespace ChargebackForDotNetTest.Certification
         }
         
         [Test]
+        [Ignore("Cannot run multiple times on Prelive.")]
         public void Test2_1_3RequestRepresentment()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 2222222222.
@@ -97,6 +98,7 @@ namespace ChargebackForDotNetTest.Certification
         }
         
         [Test]
+        [Ignore("Cannot run multiple times on Prelive.")]
         public void Test2_1_4AssumingLiability()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 4444444444.
@@ -149,6 +151,7 @@ namespace ChargebackForDotNetTest.Certification
         }
 
         [Test]
+        [Ignore("Cannot run multiple times on Prelive.")]
         public void Test2_1_6DeclineAVisaPreArbitrationCase()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 5555555550.
@@ -176,6 +179,7 @@ namespace ChargebackForDotNetTest.Certification
         }
         
         [Test]
+        [Ignore("Cannot run multiple times on Prelive.")]
         public void Test2_1_7AssumeLiabilityOfAVisaPreArbitration()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 5555555552.
@@ -192,6 +196,7 @@ namespace ChargebackForDotNetTest.Certification
         }
         
         [Test]
+        [Ignore("Cannot run multiple times on Prelive.")]
         public void Test2_1_8AssumeLiabilityOfAVisaArbitration()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 6666666660.
@@ -208,6 +213,7 @@ namespace ChargebackForDotNetTest.Certification
         }
         
         [Test]
+        [Ignore("Cannot run multiple times on Prelive.")]
         public void Test2_1_9DeclineAVisaIssuerDeclinedPreAbitrationCase()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 7777777770.
@@ -235,6 +241,7 @@ namespace ChargebackForDotNetTest.Certification
         }
 
         [Test]
+        [Ignore("Cannot run multiple times on Prelive.")]
         public void Test2_1_9AssumeLiabilityOfAVisaIssuerDeclinedPreAbitrationCase()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 7777777772.

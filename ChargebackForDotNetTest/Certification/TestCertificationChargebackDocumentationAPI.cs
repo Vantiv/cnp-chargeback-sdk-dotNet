@@ -10,6 +10,7 @@ namespace ChargebackForDotNetTest.Certification
     {
         
         [Test]
+        [Ignore("Cannot run multiple times on Prelive.")]
         public void TestCase1()
         {
             // Step 1. Test uploading document.
@@ -39,7 +40,7 @@ namespace ChargebackForDotNetTest.Certification
             string test1Directory = Path.Combine(Directory.GetCurrentDirectory(), "TestCase1");
             Directory.CreateDirectory(test1Directory);
             docRequest.config.Set("downloadDirectory", test1Directory);
-            long caseId = Int32.Parse(docRequest.config.Get("merchantId") + "000");
+            long caseId = Int32.Parse(docRequest.config.Get("merchantId") + "001");
             chargebackDocumentUploadResponse tiffResponse
                 = docRequest.UploadDocument(caseId, tiffFilename);
             chargebackDocumentUploadResponse pdfResponse
@@ -112,6 +113,7 @@ namespace ChargebackForDotNetTest.Certification
         }
         
         [Test]
+        [Ignore("Cannot run multiple times on Prelive.")]
         public void TestCase2()
         {
             // Step 1. Upload one file to the second test location.
@@ -156,6 +158,7 @@ namespace ChargebackForDotNetTest.Certification
         }
         
         [Test]
+        [Ignore("Cannot run multiple times on Prelive.")]
         public void TestCase4()
         {
             ChargebackDocumentationRequest docRequest
