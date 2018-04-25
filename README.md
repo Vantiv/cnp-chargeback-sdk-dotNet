@@ -15,7 +15,7 @@ The Vantiv eCommerce .NET Chargeback SDK is a C# implementation of the [Vantiv e
 
 Each .NET Chargeback SDK release supports all of the functionality present in the associated Vantiv eCommerce Chargeback API version (e.g., Chargeback SDK v2.1 supports Vantiv eCommerce Chargeback API v2.1). Please see the online copy of our Chargeback XSD for Vantiv eCommerce XML to get more details on what the Vantiv eCommerce Chargeback API supports.
 
-This Chargeback SDK is implemented to support the .NET plaform, including C#, VB.NET and Managed C++ and was created by Vantiv eCommerce. Its intended use is for online transactions processing utilizing your account on the Vantiv eComerce payments engine.
+This Chargeback SDK is implemented to support the .NET plaform, including C#, VB.NET and Managed C++ and was created by Vantiv eCommerce. Its intended use is for managing your chargeback cases and uploading/downloading documents supporting your cases.
 
 See LICENSE file for details on using this software.
 
