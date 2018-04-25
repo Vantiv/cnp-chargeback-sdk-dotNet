@@ -86,7 +86,7 @@ namespace ChargebackForDotNet
                 var responseBytes = (List<byte>) responseTuple[1];
                 if ("image/tiff".Equals(contentType))
                 {
-                    var downloadDiectory = config.getConfig("downloadDirectory");
+                    var downloadDiectory = config.Get("downloadDirectory");
                     string filePath = Path.Combine(downloadDiectory, documentId);
                     if (!Directory.Exists(downloadDiectory))
                     {
@@ -159,7 +159,7 @@ namespace ChargebackForDotNet
             if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
             {
                 string xmlResponse = ChargebackUtils.BytesToString(responseBytes);
-                if (Boolean.Parse(config.getConfig("printXml")))
+                if (Boolean.Parse(config.Get("printXml")))
                 {
                     Console.WriteLine(xmlResponse);
                 }
@@ -176,11 +176,11 @@ namespace ChargebackForDotNet
         
         private void configureCommunication()
         {
-            communication.SetHost(config.getConfig("host"));
+            communication.SetHost(config.Get("host"));
             string encoded = ChargebackUtils.Encode64(
-                config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
+                config.Get("username") + ":" + config.Get("password"), "utf-8");
             communication.AddToHeader("Authorization", "Basic " + encoded);
-            communication.SetProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
+            communication.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
             communication.SetContentType(null);
         }
         

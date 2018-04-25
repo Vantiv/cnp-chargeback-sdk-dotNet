@@ -142,7 +142,7 @@ namespace ChargebackForDotNet
         private chargebackUpdateResponse sendUpdateRequest()
         {
             string xml = this.serialize();
-            if (Boolean.Parse(config.getConfig("printXml")))
+            if (Boolean.Parse(config.Get("printXml")))
             {
                 Console.WriteLine("Request is:");
                 Console.WriteLine(xml);
@@ -154,7 +154,7 @@ namespace ChargebackForDotNet
                 var responseTuple = communication.Put(SERVICE_ROUTE + "/" + caseId, ChargebackUtils.StringToBytes(xml));
                 var receivedBytes = (List<byte>) responseTuple[1];
                 string xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
-                if (Boolean.Parse(config.getConfig("printXml")))
+                if (Boolean.Parse(config.Get("printXml")))
                 {
                     Console.WriteLine(xmlResponse);
                 }
@@ -171,12 +171,12 @@ namespace ChargebackForDotNet
 
         private void configureCommunication()
         {
-            communication.SetHost(config.getConfig("host"));
-            string encoded = ChargebackUtils.Encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
+            communication.SetHost(config.Get("host"));
+            string encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"), "utf-8");
             communication.AddToHeader("Authorization", "Basic " + encoded);
             communication.SetContentType("application/com.vantivcnp.services-v2+xml");
             communication.SetAccept("application/com.vantivcnp.services-v2+xml");
-            communication.SetProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
+            communication.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
         }
     }
      

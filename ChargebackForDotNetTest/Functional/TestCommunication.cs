@@ -35,19 +35,19 @@ namespace ChargebackForDotNetTest.Functional
             }
 
             comm = new Communication();
-            comm.SetHost(config.getConfig("host"));
+            comm.SetHost(config.Get("host"));
         }
 
         [Test]
         public void TestGet()
         {
             string date = "?date=2013-01-01";
-            string encoded = ChargebackUtils.Encode64(config.getConfig("username") + ":" + config.getConfig("password"),
+            string encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"),
                 "utf-8");
             comm.AddToHeader("Authorization", "Basic " + encoded);
             comm.SetContentType("application/com.vantivcnp.services-v2+xml");
             comm.SetAccept("application/com.vantivcnp.services-v2+xml");
-            comm.SetProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
+            comm.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
             var responseTuple = comm.Get("/services/chargebacks/" + date);
             var contentType = (string) responseTuple[0];
             var receivedBytes = (List<byte>) responseTuple[1];
@@ -73,12 +73,12 @@ namespace ChargebackForDotNetTest.Functional
                                 "</chargebackUpdateRequest>";
             sendingBytes = ChargebackUtils.StringToBytes(xmlRequest);
             long caseId = 1000;
-            string encoded = ChargebackUtils.Encode64(config.getConfig("username") + ":" + config.getConfig("password"),
+            string encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"),
                 "utf-8");
             comm.AddToHeader("Authorization", "Basic " + encoded);
             comm.SetContentType("application/com.vantivcnp.services-v2+xml");
             comm.SetAccept("application/com.vantivcnp.services-v2+xml");
-            comm.SetProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
+            comm.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
             var responseTuple = comm.Put("/services/chargebacks/" + caseId, sendingBytes);
             var contentType = (string) responseTuple[0];
             var receivedBytes = (List<byte>) responseTuple[1];
@@ -97,15 +97,15 @@ namespace ChargebackForDotNetTest.Functional
             long caseId = 1000;
             var sendingBytes = new List<byte>();
             const string tiffFilename = "uploadTest.tiff";
-            var tiffFilePath = Path.Combine(config.getConfig("downloadDirectory"), tiffFilename);
+            var tiffFilePath = Path.Combine(config.Get("downloadDirectory"), tiffFilename);
             var writer = new StreamWriter(File.Create(tiffFilePath));
             writer.WriteLine("Prototype a file.");
             writer.Close();
             sendingBytes = File.ReadAllBytes(tiffFilePath).ToList();
 
-            string encoded = ChargebackUtils.Encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
+            string encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"), "utf-8");
             comm.AddToHeader("Authorization", "Basic " + encoded);
-            comm.SetProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
+            comm.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
             comm.SetContentType("image/tiff");
             try
             {
@@ -138,9 +138,9 @@ namespace ChargebackForDotNetTest.Functional
         {
             long caseId = 1000;
             const string tiffFilename = "uploadTest.tiff";
-            string encoded = ChargebackUtils.Encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
+            string encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"), "utf-8");
             comm.AddToHeader("Authorization", "Basic " + encoded);
-            comm.SetProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
+            comm.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
             var responseTuple = comm.Delete(string.Format("/services/chargebacks/remove/{0}/{1}", caseId, tiffFilename));
             var contentType = (string) responseTuple[0];
             var receivedBytes = (List<byte>) responseTuple[1];
@@ -159,7 +159,7 @@ namespace ChargebackForDotNetTest.Functional
         [TearDown]
         public void TearDown()
         {
-            Directory.Delete(config.getConfig("downloadDirectory"));
+            Directory.Delete(config.Get("downloadDirectory"));
         }
     }
 }

@@ -35,14 +35,14 @@ namespace ChargebackForDotNetTest.Unit
             
             Configuration config = new Configuration(filename);
             
-            Assert.AreEqual("username", config.getConfig("username"));
-            Assert.AreEqual("password", config.getConfig("password"));
-            Assert.AreEqual("merchantId", config.getConfig("merchantId"));
-            Assert.AreEqual("host", config.getConfig("host"));
-            Assert.AreEqual("downloadDirectory", config.getConfig("downloadDirectory"));
-            Assert.AreEqual("false", config.getConfig("printXml"));
-            Assert.AreEqual("proxyHost", config.getConfig("proxyHost"));
-            Assert.AreEqual("proxyPort", config.getConfig("proxyPort"));
+            Assert.AreEqual("username", config.Get("username"));
+            Assert.AreEqual("password", config.Get("password"));
+            Assert.AreEqual("merchantId", config.Get("merchantId"));
+            Assert.AreEqual("host", config.Get("host"));
+            Assert.AreEqual("downloadDirectory", config.Get("downloadDirectory"));
+            Assert.AreEqual("false", config.Get("printXml"));
+            Assert.AreEqual("proxyHost", config.Get("proxyHost"));
+            Assert.AreEqual("proxyPort", config.Get("proxyPort"));
             
             File.Delete(filename);
         }
@@ -62,14 +62,14 @@ namespace ChargebackForDotNetTest.Unit
             
             Configuration config = new Configuration(configDict);
             
-            Assert.AreEqual("username", config.getConfig("username"));
-            Assert.AreEqual("password", config.getConfig("password"));
-            Assert.AreEqual("merchantId", config.getConfig("merchantId"));
-            Assert.AreEqual("host", config.getConfig("host"));
-            Assert.AreEqual("downloadDirectory", config.getConfig("downloadDirectory"));
-            Assert.AreEqual("false", config.getConfig("printXml"));
-            Assert.AreEqual("proxyHost", config.getConfig("proxyHost"));
-            Assert.AreEqual("proxyPort", config.getConfig("proxyPort"));
+            Assert.AreEqual("username", config.Get("username"));
+            Assert.AreEqual("password", config.Get("password"));
+            Assert.AreEqual("merchantId", config.Get("merchantId"));
+            Assert.AreEqual("host", config.Get("host"));
+            Assert.AreEqual("downloadDirectory", config.Get("downloadDirectory"));
+            Assert.AreEqual("false", config.Get("printXml"));
+            Assert.AreEqual("proxyHost", config.Get("proxyHost"));
+            Assert.AreEqual("proxyPort", config.Get("proxyPort"));
         }
 
         [Test]
@@ -94,14 +94,14 @@ namespace ChargebackForDotNetTest.Unit
             {
                 Configuration config = new Configuration();
 
-                Assert.AreEqual("username", config.getConfig("username"));
-                Assert.AreEqual("password", config.getConfig("password"));
-                Assert.AreEqual("merchantId", config.getConfig("merchantId"));
-                Assert.AreEqual("host", config.getConfig("host"));
-                Assert.AreEqual("downloadDirectory", config.getConfig("downloadDirectory"));
-                Assert.AreEqual("false", config.getConfig("printXml"));
-                Assert.AreEqual("proxyHost", config.getConfig("proxyHost"));
-                Assert.AreEqual("proxyPort", config.getConfig("proxyPort"));
+                Assert.AreEqual("username", config.Get("username"));
+                Assert.AreEqual("password", config.Get("password"));
+                Assert.AreEqual("merchantId", config.Get("merchantId"));
+                Assert.AreEqual("host", config.Get("host"));
+                Assert.AreEqual("downloadDirectory", config.Get("downloadDirectory"));
+                Assert.AreEqual("false", config.Get("printXml"));
+                Assert.AreEqual("proxyHost", config.Get("proxyHost"));
+                Assert.AreEqual("proxyPort", config.Get("proxyPort"));
 
             }
             catch (ChargebackException ce)
@@ -147,7 +147,7 @@ namespace ChargebackForDotNetTest.Unit
             configDict["proxyPort"] = "proxyPort";
             configDict["extraKey"] = "extraValue";
             Configuration config = new Configuration(configDict);
-            string extraKey = config.getConfig("extraKey");
+            string extraKey = config.Get("extraKey");
         }
 
         [Test]
@@ -168,7 +168,7 @@ namespace ChargebackForDotNetTest.Unit
             
             Configuration config = new Configuration(filename);
             
-            Assert.AreEqual("pass=word", config.getConfig("password"));
+            Assert.AreEqual("pass=word", config.Get("password"));
             
             File.Delete(filename);
         }

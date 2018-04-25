@@ -21,8 +21,6 @@ namespace ChargebackForDotNet
         private string contentType;
         private string accept;
         private string host;
-        private bool contentLengthSet;
-        private long contentLength;
 
         public Communication()
         {
@@ -120,11 +118,6 @@ namespace ChargebackForDotNet
             if (accept != null)
             {
                 httpRequest.Accept = accept;
-            }
-
-            if (contentLengthSet)
-            {
-                httpRequest.ContentLength = contentLength;
             }
         }
 

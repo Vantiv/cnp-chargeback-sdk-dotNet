@@ -38,8 +38,8 @@ namespace ChargebackForDotNetTest.Certification
 //            docRequest.config.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
             string test1Directory = Path.Combine(Directory.GetCurrentDirectory(), "TestCase1");
             Directory.CreateDirectory(test1Directory);
-            docRequest.config.setConfigValue("downloadDirectory", test1Directory);
-            long caseId = Int32.Parse(docRequest.config.getConfig("merchantId") + "000");
+            docRequest.config.Set("downloadDirectory", test1Directory);
+            long caseId = Int32.Parse(docRequest.config.Get("merchantId") + "000");
             chargebackDocumentUploadResponse tiffResponse
                 = docRequest.UploadDocument(caseId, tiffFilename);
             chargebackDocumentUploadResponse pdfResponse
@@ -122,7 +122,7 @@ namespace ChargebackForDotNetTest.Certification
             
             ChargebackDocumentationRequest docRequest
                 = new ChargebackDocumentationRequest();
-            long caseId = Int32.Parse(docRequest.config.getConfig("merchantId") + "002");
+            long caseId = Int32.Parse(docRequest.config.Get("merchantId") + "002");
             chargebackDocumentUploadResponse tiffResponse
                 = docRequest.UploadDocument(caseId, tiffFilename);
             
@@ -144,7 +144,7 @@ namespace ChargebackForDotNetTest.Certification
             
             ChargebackDocumentationRequest docRequest
                 = new ChargebackDocumentationRequest();
-            long caseId = Int32.Parse(docRequest.config.getConfig("merchantId") + "003");
+            long caseId = Int32.Parse(docRequest.config.Get("merchantId") + "003");
             chargebackDocumentUploadResponse tiffResponse
                 = docRequest.UploadDocument(caseId, tiffFilename);
             
@@ -169,7 +169,7 @@ namespace ChargebackForDotNetTest.Certification
             byte[] fileBytes = new byte[tifSize];
             fileCreator.Write(fileBytes, 0, fileBytes.Length);
             fileCreator.Close();
-            long caseId = Int32.Parse(docRequest.config.getConfig("merchantId") + "004");
+            long caseId = Int32.Parse(docRequest.config.Get("merchantId") + "004");
             chargebackDocumentUploadResponse maxSizeResponse
                 = docRequest.UploadDocument(caseId, tifFilename);
             File.Delete(tifFilename);

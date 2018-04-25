@@ -113,7 +113,7 @@ namespace ChargebackForDotNet
                 var responseTuple = communication.Get(urlRoute);
                 var receivedBytes = (List<byte>) responseTuple[1];
                 String xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
-                if (Boolean.Parse(config.getConfig("printXml")))
+                if (Boolean.Parse(config.Get("printXml")))
                 {
                     Console.WriteLine(xmlResponse);
                 }
@@ -131,12 +131,12 @@ namespace ChargebackForDotNet
         private void configureCommunication()
         {
             Console.WriteLine("Called");
-            communication.SetHost(config.getConfig("host"));
-            string encoded = ChargebackUtils.Encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
+            communication.SetHost(config.Get("host"));
+            string encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"), "utf-8");
             communication.AddToHeader("Authorization", "Basic " + encoded);
             communication.SetContentType("application/com.vantivcnp.services-v2+xml");
             communication.SetAccept("application/com.vantivcnp.services-v2+xml");
-            communication.SetProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
+            communication.SetProxy(config.Get("proxyHost"), Int32.Parse(config.Get("proxyPort")));
         }
     }
     

@@ -53,7 +53,7 @@ namespace ChargebackForDotNetTest.Functional
         public void TestAcceptLiability()
         {
             long caseId = 1000;
-            var updateResponse = updateRequest.AcceptLiability(1234, "Accepting Liability");
+            var updateResponse = updateRequest.AcceptLiability(caseId, "Accepting Liability");
             Assert.NotNull(updateResponse);
             Assert.IsInstanceOf<chargebackUpdateResponse>(updateResponse);
             Assert.NotNull(updateResponse.transactionId);

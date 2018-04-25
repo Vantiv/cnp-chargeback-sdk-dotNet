@@ -8,7 +8,6 @@ namespace ChargebackForDotNet.Properties
 {
     public class Configuration
     {
-
         private Dictionary<string, string> configDictionary;
 
         public Configuration()
@@ -43,6 +42,17 @@ namespace ChargebackForDotNet.Properties
 
             validateConfigDictionary();
         }
+
+        public string Get(string key)
+        {
+            return configDictionary[key];
+        }
+
+        public void Set(string key, string value)
+        {
+            string oldValue = configDictionary[key];
+            configDictionary[key] = value;
+        }
         
         private void initializeConfig()
         {
@@ -56,7 +66,6 @@ namespace ChargebackForDotNet.Properties
             configDictionary["proxyHost"] = null;
             configDictionary["proxyPort"] = null;
         }
-
 
         private void readAllSettings(string filePath)
         {
@@ -99,17 +108,6 @@ namespace ChargebackForDotNet.Properties
                     throw new ChargebackException(string.Format("Missing value for {0} in config", key));
                 }
             }
-        }
-
-        public string getConfig(string key)
-        {
-            return configDictionary[key];
-        }
-
-        public void setConfigValue(string key, string value)
-        {
-            string oldValue = configDictionary[key];
-            configDictionary[key] = value;
         }
 
     }

@@ -79,7 +79,7 @@ namespace ChargebackForDotNetTest.Unit
             commMock.Setup(c => c.Get(string.Format("/services/chargebacks/retrieve/{0}/{1}", caseId, documentId)))
                 .Returns(expectedResponseTuple);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
-            docRequest.config.setConfigValue("downloadDirectory", Directory.GetCurrentDirectory());
+            docRequest.config.Set("downloadDirectory", Directory.GetCurrentDirectory());
             var docResponse = docRequest.RetrieveDocument(caseId, documentId);
             
             Assert.True(docResponse is chargebackDocumentReceivedResponse);
