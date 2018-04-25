@@ -26,14 +26,15 @@ namespace ChargebackForDotNetTest.Functional
             configDict["proxyPort"] = "8080";
             Configuration config = new Configuration(configDict);
             
-            retrievalRequest = new ChargebackRetrievalRequest(config);
+            retrievalRequest = new ChargebackRetrievalRequest();
+            retrievalRequest.config = config;
         }
 
         [Test]
         public void TestChargebackRetrievalDate()
         {
             chargebackRetrievalResponse retrievalResponse = 
-                retrievalRequest.retrieveByActivityDate(new DateTime(2013, 1, 1));
+                retrievalRequest.RetrieveByActivityDate(new DateTime(2013, 1, 1));
             Assert.NotNull(retrievalResponse);
             Assert.NotNull(retrievalResponse.transactionId);
             Assert.NotNull(retrievalResponse.chargebackCase);
@@ -43,7 +44,7 @@ namespace ChargebackForDotNetTest.Functional
         public void TestRetrieveByActivityDateWithFinancialImpact()
         {
             chargebackRetrievalResponse retrievalResponse = 
-                retrievalRequest.retrieveByActivityDateWithImpact(new DateTime(2013, 1, 1), true);
+                retrievalRequest.RetrieveByActivityDateWithImpact(new DateTime(2013, 1, 1), true);
             Assert.NotNull(retrievalResponse);
             Assert.NotNull(retrievalResponse.transactionId);
             Assert.NotNull(retrievalResponse.chargebackCase);
@@ -52,7 +53,7 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestRetrieveActionable()
         {
-            chargebackRetrievalResponse retrievalResponse = retrievalRequest.retrieveByActionable(true);
+            chargebackRetrievalResponse retrievalResponse = retrievalRequest.RetrieveByActionable(true);
             Assert.NotNull(retrievalResponse);
             Assert.NotNull(retrievalResponse.transactionId);
             Assert.NotNull(retrievalResponse.chargebackCase);
@@ -61,7 +62,7 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestRetrieveByCaseId()
         {
-            chargebackRetrievalResponse retrievalResponse = retrievalRequest.retrieveByCaseId(1288791001);
+            chargebackRetrievalResponse retrievalResponse = retrievalRequest.RetrieveByCaseId(1288791001);
             Assert.NotNull(retrievalResponse);
             Assert.NotNull(retrievalResponse.transactionId);
             Assert.NotNull(retrievalResponse.chargebackCase);
@@ -71,7 +72,7 @@ namespace ChargebackForDotNetTest.Functional
         public void TestRetrieveByCardNumber()
         {
             chargebackRetrievalResponse retrievalResponse = 
-                retrievalRequest.retrieveByCardNumber(0001.ToString(), 2, 1998);
+                retrievalRequest.RetrieveByCardNumber(0001.ToString(), 2, 1998);
             Assert.NotNull(retrievalResponse);
             Assert.NotNull(retrievalResponse.transactionId);
             Assert.NotNull(retrievalResponse.chargebackCase);
@@ -80,7 +81,7 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestRetrieveByArn()
         {
-            chargebackRetrievalResponse retrievalResponse = retrievalRequest.retrieveByArn(5555555551.ToString());
+            chargebackRetrievalResponse retrievalResponse = retrievalRequest.RetrieveByArn(5555555551.ToString());
             Assert.NotNull(retrievalResponse);
             Assert.NotNull(retrievalResponse.transactionId);
             Assert.NotNull(retrievalResponse.chargebackCase);

@@ -2,24 +2,25 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Xml.Serialization;
 
 namespace ChargebackForDotNet
 {
-    public class Utils
+    public class ChargebackUtils
     {
-        public static string bytesToString(List<byte> bytes)
+        public static string BytesToString(List<byte> bytes)
         {
             return System.Text.Encoding.UTF8.GetString(bytes.ToArray());
         }
 
-        public static List<byte> stringToBytes(string s)
+        public static List<byte> StringToBytes(string s)
         {
             return Encoding.ASCII.GetBytes(s).ToList();
         }
 
-        public static string bytesToFile(List<byte> bytes, string filePath)
+        public static string BytesToFile(List<byte> bytes, string filePath)
         {
             if (File.Exists(filePath))
             {
@@ -38,13 +39,13 @@ namespace ChargebackForDotNet
             return filePath;
         }
 
-        public static string encode64(string s, string encode)
+        public static string Encode64(string s, string encode)
         {
             return Convert.ToBase64String(System.Text.Encoding.GetEncoding(encode)
                 .GetBytes(s));
         }
 
-        public static DateTime parseDate(string date)
+        public static DateTime ParseDate(string date)
         {
             string[] splits = date.Split('-');
             if (splits.Length != 3) return new DateTime(0,0,0);
@@ -56,7 +57,23 @@ namespace ChargebackForDotNet
 
         public static T DeserializeResponse<T>(string xmlResponse)
         {
+            Console.WriteLine("XmlResponse:\n"+xmlResponse+"\nEndXmlResponse.");
             return (T) (new XmlSerializer(typeof(T))).Deserialize(new StringReader(xmlResponse));
+        }
+
+        public static string ListErrors(HttpWebResponse errorResponse)
+        {
+            StreamReader reader = new StreamReader(errorResponse.GetResponseStream());
+            string xmlResponse = reader.ReadToEnd().Trim();
+            reader.Close();
+            var errResponse = DeserializeResponse<errorResponse>(xmlResponse);
+            string errString = "";
+            foreach (var err in errResponse.errors)
+            {
+                errString += "\n" + err;
+            }
+
+            return errString;
         }
     }
 }

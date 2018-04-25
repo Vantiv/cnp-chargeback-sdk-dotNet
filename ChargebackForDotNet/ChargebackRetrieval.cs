@@ -22,10 +22,6 @@ namespace ChargebackForDotNet
     {
         private Configuration configurationField;
 
-        private Communication communication;
-
-        private const string SERVICE_ROUTE = "/chargebacks";
-
         public Configuration config
         {
             get
@@ -33,21 +29,19 @@ namespace ChargebackForDotNet
                 if (configurationField == null)
                 {
                     // Load from Settings.
-                     configurationField = new Configuration();
+                    configurationField = new Configuration();
                 }
                 return configurationField;
             }
             set { configurationField = value; }
         }
 
+        private Communication communication;
+
+        private const string SERVICE_ROUTE = "/chargebacks";
+
         public ChargebackRetrievalRequest()
         {
-            communication = new Communication();
-        }
-
-        public ChargebackRetrievalRequest(Configuration config)
-        {
-            this.configurationField = config;
             communication = new Communication();
         }
         
@@ -55,16 +49,70 @@ namespace ChargebackForDotNet
         {
             communication = comm;
         }
+        
+        public chargebackRetrievalResponse RetrieveByActivityDate(DateTime date)
+        {
+            string queryDate = date.ToString("yyyy-MM-dd");
+            string xmlResponse = sendRetrievalRequest(SERVICE_ROUTE + "/?date=" + queryDate);
+            return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
+        }
+        
+        public chargebackRetrievalResponse RetrieveByActivityDateWithImpact(DateTime date, bool financialImpact)
+        {
+            string queryDate = date.ToString("yyyy-MM-dd");
+            string queryFinancialImpact = financialImpact.ToString();
+            string xmlResponse = sendRetrievalRequest(string.Format(SERVICE_ROUTE+"/?date={0}&financialOnly={1}",
+                queryDate, queryFinancialImpact));
+            return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
+        }
+        
+        public chargebackRetrievalResponse RetrieveByActionable(bool actionable)
+        {
+            string xmlResponse = sendRetrievalRequest(
+                string.Format(SERVICE_ROUTE+"/?actionable={0}", actionable));
+            return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
+        }
+        
+        public chargebackRetrievalResponse RetrieveByCaseId(long caseId)
+        {
+            string xmlResponse = sendRetrievalRequest(
+                string.Format(SERVICE_ROUTE+"/{0}", caseId));
+            return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
+        }
+        
+        public chargebackRetrievalResponse RetrieveByToken(string token)
+        {
+            string xmlResponse = sendRetrievalRequest(
+                string.Format(SERVICE_ROUTE+"/?token={0}", token));
+            return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
+        }
+        
+        public chargebackRetrievalResponse RetrieveByCardNumber(string cardNumber, int month, int year)
+        {
+            var expirationDate = new DateTime(year, month, 1);
+            string queryExpirationDate = expirationDate.ToString("MMyy");
+            string xmlResponse = sendRetrievalRequest(
+                string.Format(SERVICE_ROUTE+"/?cardNumber={0}&expirationDate={1}",
+                cardNumber, queryExpirationDate));
+            return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
+        }
+        
+        public chargebackRetrievalResponse RetrieveByArn(string arn)
+        {
+            string xmlResponse = sendRetrievalRequest(string.Format(SERVICE_ROUTE+"/?arn={0}",
+                arn));
+            return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
+        }
 
-        private string sendRequest(string urlRoute)
+        private string sendRetrievalRequest(string urlRoute)
         {
             // Handle exception.
             try
             {
-                SetUpCommunication();
-                var responseTuple = communication.get(urlRoute);
+                configureCommunication();
+                var responseTuple = communication.Get(urlRoute);
                 var receivedBytes = (List<byte>) responseTuple[1];
-                String xmlResponse = Utils.bytesToString(receivedBytes);
+                String xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
                 if (Boolean.Parse(config.getConfig("printXml")))
                 {
                     Console.WriteLine(xmlResponse);
@@ -74,73 +122,21 @@ namespace ChargebackForDotNet
             catch (WebException we)
             {
                 HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
+                string errString = ChargebackUtils.ListErrors(errorResponse);
                 throw new ChargebackException(
-                    String.Format("Retrieval Failed - HTTP {0} Error", (int)errorResponse.StatusCode), errorResponse);
+                    String.Format("Retrieval Failed - HTTP {0} Error", (int)errorResponse.StatusCode)+errString);
             }
         }
         
-        private void SetUpCommunication()
+        private void configureCommunication()
         {
-            communication.setHost(config.getConfig("host"));
-            string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
-            communication.addToHeader("Authorization", "Basic " + encoded);
-            communication.setContentType("application/com.vantivcnp.services-v2+xml");
-            communication.setAccept("application/com.vantivcnp.services-v2+xml");
-            communication.setProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
-        }
-        
-        public chargebackRetrievalResponse retrieveByActivityDate(DateTime date)
-        {
-            string queryDate = date.ToString("yyyy-MM-dd");
-            string xmlResponse = sendRequest(SERVICE_ROUTE + "/?date=" + queryDate);
-            return Utils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
-        }
-        
-        public chargebackRetrievalResponse retrieveByActivityDateWithImpact(DateTime date, bool financialImpact)
-        {
-            string queryDate = date.ToString("yyyy-MM-dd");
-            string queryFinancialImpact = financialImpact.ToString();
-            string xmlResponse = sendRequest(string.Format(SERVICE_ROUTE+"/?date={0}&financialOnly={1}",
-                queryDate, queryFinancialImpact));
-            return Utils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
-        }
-        
-        public chargebackRetrievalResponse retrieveByActionable(bool actionable)
-        {
-            string xmlResponse = sendRequest(
-                string.Format(SERVICE_ROUTE+"/?actionable={0}", actionable));
-            return Utils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
-        }
-        
-        public chargebackRetrievalResponse retrieveByCaseId(long caseId)
-        {
-            string xmlResponse = sendRequest(
-                string.Format(SERVICE_ROUTE+"/{0}", caseId));
-            return Utils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
-        }
-        
-        public chargebackRetrievalResponse retrieveByToken(string token)
-        {
-            string xmlResponse = sendRequest(
-                string.Format(SERVICE_ROUTE+"/?token={0}", token));
-            return Utils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
-        }
-        
-        public chargebackRetrievalResponse retrieveByCardNumber(string cardNumber, int month, int year)
-        {
-            var expirationDate = new DateTime(year, month, 1);
-            string queryExpirationDate = expirationDate.ToString("MMyy");
-            string xmlResponse = sendRequest(
-                string.Format(SERVICE_ROUTE+"/?cardNumber={0}&expirationDate={1}",
-                cardNumber, queryExpirationDate));
-            return Utils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
-        }
-        
-        public chargebackRetrievalResponse retrieveByArn(string arn)
-        {
-            string xmlResponse = sendRequest(string.Format(SERVICE_ROUTE+"/?arn={0}",
-                arn));
-            return Utils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
+            Console.WriteLine("Called");
+            communication.SetHost(config.getConfig("host"));
+            string encoded = ChargebackUtils.Encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
+            communication.AddToHeader("Authorization", "Basic " + encoded);
+            communication.SetContentType("application/com.vantivcnp.services-v2+xml");
+            communication.SetAccept("application/com.vantivcnp.services-v2+xml");
+            communication.SetProxy(config.getConfig("proxyHost"), Int32.Parse(config.getConfig("proxyPort")));
         }
     }
     

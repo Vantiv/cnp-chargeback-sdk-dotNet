@@ -87,8 +87,8 @@ namespace ChargebackForDotNetTest.Unit
             writer.WriteLine("proxyPort=proxyPort");
             writer.WriteLine("Call Vantiv!!!");
             writer.Close();
-            string originalConfigPath = Environment.GetEnvironmentVariable("configPath");
-            Environment.SetEnvironmentVariable("configPath", Path.Combine(Directory.GetCurrentDirectory(), filename));
+            string originalConfigPath = Environment.GetEnvironmentVariable("chargebackConfigPath");
+            Environment.SetEnvironmentVariable("chargebackConfigPath", Path.Combine(Directory.GetCurrentDirectory(), filename));
 
             try
             {
@@ -111,7 +111,7 @@ namespace ChargebackForDotNetTest.Unit
             finally
             {
                 Console.WriteLine("Restoring env var and deleting file...");
-                Environment.SetEnvironmentVariable("configPath", originalConfigPath);
+                Environment.SetEnvironmentVariable("chargebackConfigPath", originalConfigPath);
                 File.Delete(filename);
             }
         }

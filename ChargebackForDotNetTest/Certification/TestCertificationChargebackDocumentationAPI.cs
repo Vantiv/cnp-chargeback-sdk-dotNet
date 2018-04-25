@@ -41,33 +41,33 @@ namespace ChargebackForDotNetTest.Certification
             docRequest.config.setConfigValue("downloadDirectory", test1Directory);
             long caseId = Int32.Parse(docRequest.config.getConfig("merchantId") + "000");
             chargebackDocumentUploadResponse tiffResponse
-                = docRequest.uploadDocument(caseId, tiffFilename);
+                = docRequest.UploadDocument(caseId, tiffFilename);
             chargebackDocumentUploadResponse pdfResponse
-                = docRequest.uploadDocument(caseId, pdfFilename);
+                = docRequest.UploadDocument(caseId, pdfFilename);
             chargebackDocumentUploadResponse gifResponse
-                = docRequest.uploadDocument(caseId, gifFilename);
+                = docRequest.UploadDocument(caseId, gifFilename);
             chargebackDocumentUploadResponse jpgResponse
-                = docRequest.uploadDocument(caseId, jpgFilename);
+                = docRequest.UploadDocument(caseId, jpgFilename);
             Assert.AreEqual("000", tiffResponse.responseCode);
             Assert.AreEqual("000", pdfResponse.responseCode);
             Assert.AreEqual("000", gifResponse.responseCode);
             Assert.AreEqual("000", jpgResponse.responseCode);
             
             // Step 2. List documents to check success of the uploaded documents.
-            var listDocResponse = docRequest.listDocuments(caseId);
+            var listDocResponse = docRequest.ListDocuments(caseId);
             listDocResponse.documentId.Contains(tiffFilename);
             listDocResponse.documentId.Contains(pdfFilename);
             listDocResponse.documentId.Contains(gifFilename);
             listDocResponse.documentId.Contains(jpgFilename);
             
             // Step 3. Verify your code can retrieve documents.
-            var retrieveDocResponse = docRequest.retrieveDocument(caseId, tiffFilename);
+            var retrieveDocResponse = docRequest.RetrieveDocument(caseId, tiffFilename);
             Assert.True(retrieveDocResponse is chargebackDocumentReceivedResponse);
-            retrieveDocResponse = docRequest.retrieveDocument(caseId, pdfFilename);
+            retrieveDocResponse = docRequest.RetrieveDocument(caseId, pdfFilename);
             Assert.True(retrieveDocResponse is chargebackDocumentReceivedResponse);
-            retrieveDocResponse = docRequest.retrieveDocument(caseId, gifFilename);
+            retrieveDocResponse = docRequest.RetrieveDocument(caseId, gifFilename);
             Assert.True(retrieveDocResponse is chargebackDocumentReceivedResponse);
-            retrieveDocResponse = docRequest.retrieveDocument(caseId, jpgFilename);
+            retrieveDocResponse = docRequest.RetrieveDocument(caseId, jpgFilename);
             Assert.True(retrieveDocResponse is chargebackDocumentReceivedResponse);
             
             // Step 4. Verify your code can replace a document.
@@ -75,19 +75,19 @@ namespace ChargebackForDotNetTest.Certification
             writer = new StreamWriter(File.Create(jpgReplacingFilename));
             writer.WriteLine("Prototype a file.");
             writer.Close();
-            var chargebackDocumentUploadResponse = docRequest.replaceDocument(caseId, "TestCase1.jpg", jpgReplacingFilename);
+            var chargebackDocumentUploadResponse = docRequest.ReplaceDocument(caseId, "TestCase1.jpg", jpgReplacingFilename);
             Assert.AreEqual("000", chargebackDocumentUploadResponse.responseCode);
 
             // Step 5. Try to retrieve the replaced file.
-            retrieveDocResponse = docRequest.retrieveDocument(caseId, jpgReplacingFilename);
+            retrieveDocResponse = docRequest.RetrieveDocument(caseId, jpgReplacingFilename);
             Assert.True(retrieveDocResponse is chargebackDocumentReceivedResponse);
             
             // Step 6. Verify that your code can delete documents.
-            chargebackDocumentUploadResponse = docRequest.deleteDocument(caseId, tiffFilename);
+            chargebackDocumentUploadResponse = docRequest.DeleteDocument(caseId, tiffFilename);
             Assert.AreEqual("000", chargebackDocumentUploadResponse.responseCode);
             
             // Step 7. Verify the successful deletion by listing documents.
-            chargebackDocumentUploadResponse = docRequest.listDocuments(caseId);
+            chargebackDocumentUploadResponse = docRequest.ListDocuments(caseId);
             Assert.False(chargebackDocumentUploadResponse.documentId.Contains(tiffFilename));
             
             /*Remove all files created and uploaded for tests.*/
@@ -103,11 +103,11 @@ namespace ChargebackForDotNetTest.Certification
             }
             Directory.Delete(test1Directory, true);
             // Remote files.
-            chargebackDocumentUploadResponse = docRequest.deleteDocument(caseId, pdfFilename);
+            chargebackDocumentUploadResponse = docRequest.DeleteDocument(caseId, pdfFilename);
             Assert.AreEqual("000", chargebackDocumentUploadResponse.responseCode);
-            chargebackDocumentUploadResponse = docRequest.deleteDocument(caseId, gifFilename);
+            chargebackDocumentUploadResponse = docRequest.DeleteDocument(caseId, gifFilename);
             Assert.AreEqual("000", chargebackDocumentUploadResponse.responseCode);
-            chargebackDocumentUploadResponse = docRequest.deleteDocument(caseId, jpgFilename);
+            chargebackDocumentUploadResponse = docRequest.DeleteDocument(caseId, jpgFilename);
             Assert.AreEqual("000", chargebackDocumentUploadResponse.responseCode);
         }
         
@@ -124,7 +124,7 @@ namespace ChargebackForDotNetTest.Certification
                 = new ChargebackDocumentationRequest();
             long caseId = Int32.Parse(docRequest.config.getConfig("merchantId") + "002");
             chargebackDocumentUploadResponse tiffResponse
-                = docRequest.uploadDocument(caseId, tiffFilename);
+                = docRequest.UploadDocument(caseId, tiffFilename);
             
             // Step 2. Verify that you receive the response code 010.
             Assert.AreEqual("010", tiffResponse.responseCode);
@@ -146,7 +146,7 @@ namespace ChargebackForDotNetTest.Certification
                 = new ChargebackDocumentationRequest();
             long caseId = Int32.Parse(docRequest.config.getConfig("merchantId") + "003");
             chargebackDocumentUploadResponse tiffResponse
-                = docRequest.uploadDocument(caseId, tiffFilename);
+                = docRequest.UploadDocument(caseId, tiffFilename);
             
             // Step 2. Verify that you receive the response code 004.
             Assert.AreEqual("004", tiffResponse.responseCode);
@@ -171,7 +171,7 @@ namespace ChargebackForDotNetTest.Certification
             fileCreator.Close();
             long caseId = Int32.Parse(docRequest.config.getConfig("merchantId") + "004");
             chargebackDocumentUploadResponse maxSizeResponse
-                = docRequest.uploadDocument(caseId, tifFilename);
+                = docRequest.UploadDocument(caseId, tifFilename);
             File.Delete(tifFilename);
             
             // Step 2. Verify that you receive the response code 005.
@@ -187,7 +187,7 @@ namespace ChargebackForDotNetTest.Certification
             fileCreator.Close();
             Console.WriteLine("Finish writing the file " + hugeFilename);
             chargebackDocumentUploadResponse hugeSizeResponse
-                = docRequest.uploadDocument(caseId, hugeFilename);
+                = docRequest.UploadDocument(caseId, hugeFilename);
             File.Delete(hugeFilename);
             
             // Step 4. Verify that you receive the response code 012.
@@ -202,7 +202,7 @@ namespace ChargebackForDotNetTest.Certification
             fileCreator.Write(fileBytes, 0, fileBytes.Length);
             fileCreator.Close();
             chargebackDocumentUploadResponse mediumSizeResponse
-                = docRequest.uploadDocument(caseId, mediumFilename);
+                = docRequest.UploadDocument(caseId, mediumFilename);
             File.Delete(mediumFilename);
             // Step 6. Verify that you receive the response code 008.
             Assert.AreEqual("008", mediumSizeResponse.responseCode);

@@ -29,32 +29,77 @@ namespace ChargebackForDotNet
             headers = new WebHeaderCollection();
         }
 
-        public void setHost(string host)
+        public void AddToHeader(string key, string value)
+        {
+            if (headers.AllKeys.Contains(key))
+            {
+                headers[key] = value;
+            }
+            else
+            {
+                headers.Add(key, value);
+            }
+        }
+
+        public void SetHost(string host)
         {
             this.host = host;
         }
 
-        public void addToHeader(string key, string value)
-        {
-            headers.Add(key, value);
-        }
-
-        public void setProxy(string host, int port)
+        public void SetProxy(string host, int port)
         {
             webProxy = new WebProxy(host, port);
         }
 
-        public void setContentType(string contentType)
+        public void SetContentType(string contentType)
         {
             this.contentType = contentType;
         }
 
-        public void setAccept(string accept)
+        public void SetAccept(string accept)
         {
             this.accept = accept;
         }
 
-        private void createHttpRequest(string urlRoute)
+        public virtual ArrayList Get(string urlRoute)
+        {
+            createNewHttpRequest(urlRoute);
+            httpRequest.Method = "GET";
+            return receiveResponse();
+        }
+
+        public virtual ArrayList Delete(string urlRoute)
+        {
+            createNewHttpRequest(urlRoute);
+            httpRequest.Method = "DELETE";
+            return receiveResponse();
+        }
+
+        public virtual ArrayList Post(string urlRoute, List<byte> sendingBytes)
+        {
+            createNewHttpRequest(urlRoute);
+            httpRequest.Method = "POST";
+            writeBytesToRequestStream(sendingBytes);
+            return receiveResponse();
+        }
+
+        public virtual ArrayList Put(string urlRoute, List<byte> sendingBytes)
+        {
+            createNewHttpRequest(urlRoute);
+            httpRequest.Method = "PUT";
+            writeBytesToRequestStream(sendingBytes);
+            return receiveResponse();
+        }
+
+        private void writeBytesToRequestStream(List<byte> sendingBytes)
+        {
+            httpRequest.ContentLength = sendingBytes.Count;
+            Stream inStream = httpRequest.GetRequestStream();
+            inStream.Write(sendingBytes.ToArray(), 0, sendingBytes.Count);
+            inStream.Close();
+        }
+
+        private void createNewHttpRequest(string urlRoute)
         {
             string url = host + urlRoute;
             Console.WriteLine("Making a request to " + url);
@@ -83,7 +128,7 @@ namespace ChargebackForDotNet
             }
         }
 
-        public ArrayList receiveResponse()
+        private ArrayList receiveResponse()
         {
             HttpWebResponse httpResponse = (HttpWebResponse) httpRequest.GetResponse();
             var receivingbytes = new List<byte>();
@@ -103,44 +148,6 @@ namespace ChargebackForDotNet
             tuple.Add(contentType);
             tuple.Add(receivingbytes);
             return tuple;
-        }
-
-
-        public virtual ArrayList get(string urlRoute)
-        {
-            createHttpRequest(urlRoute);
-            httpRequest.Method = "GET";
-            return receiveResponse();
-        }
-
-        public virtual ArrayList delete(string urlRoute)
-        {
-            createHttpRequest(urlRoute);
-            httpRequest.Method = "DELETE";
-            return receiveResponse();
-        }
-
-        public virtual ArrayList put(string urlRoute, List<byte> sendingBytes)
-        {
-            createHttpRequest(urlRoute);
-            httpRequest.Method = "PUT";
-            httpRequest.ContentLength = sendingBytes.Count;
-            Stream inStream = httpRequest.GetRequestStream();
-            inStream.Write(sendingBytes.ToArray(), 0, sendingBytes.Count);
-            inStream.Close();
-            return receiveResponse();
-        }
-
-        public virtual ArrayList post(string urlRoute, List<byte> sendingBytes)
-        {
-            createHttpRequest(urlRoute);
-            httpRequest.Method = "POST";
-            httpRequest.ContentLength = sendingBytes.Count;
-            Stream inStream = httpRequest.GetRequestStream();
-            inStream.Write(sendingBytes.ToArray(), 0, sendingBytes.Count);
-            inStream.Close();
-            Console.WriteLine("Finish writing bytes to Request Stream.");
-            return receiveResponse();
         }
     }
 }

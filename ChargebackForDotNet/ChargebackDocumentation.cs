@@ -15,7 +15,6 @@ namespace ChargebackForDotNet
     {
         private Configuration configurationField;
         private Communication communication;
-
         private const string SERVICE_ROUTE = "/services/chargebacks";
 
         public Configuration config
@@ -34,58 +33,54 @@ namespace ChargebackForDotNet
             communication = comm;
         }
 
-        public ChargebackDocumentationRequest(Configuration config)
-        {
-            this.configurationField = config;
-            communication = new Communication();
-        }
-
-        public chargebackDocumentUploadResponse uploadDocument(long caseId, string filePath)
+        public chargebackDocumentUploadResponse UploadDocument(long caseId, string filePath)
         {
             List<byte> fileBytes = File.ReadAllBytes(filePath).ToList();
             string documentId = Path.GetFileName(filePath);
             try
             {
-                SetUpCommunicationForUpload();
-                var responseTuple = communication.post(
+                configureCommunicationForUpload();
+                var responseTuple = communication.Post(
                     SERVICE_ROUTE + "/upload/" + caseId + "/" + documentId, fileBytes);
-                return HandleResponse(responseTuple);
+                return handleResponse(responseTuple);
             }
             catch (WebException we)
             {
                 HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
+                string errString = ChargebackUtils.ListErrors(errorResponse);
                 throw new ChargebackException(
-                    string.Format("Upload Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) , errorResponse);
+                    string.Format("Upload Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) + errString);
             }
         }
 
-        public chargebackDocumentUploadResponse replaceDocument(long caseId, string documentId, string filePath)
+        public chargebackDocumentUploadResponse ReplaceDocument(long caseId, string documentId, string filePath)
         {
             List<byte> fileBytes = File.ReadAllBytes(filePath).ToList();
             try
             {
-                SetUpCommunicationForUpload();
+                configureCommunicationForUpload();
                 
-                var responseTuple = communication.put(
+                var responseTuple = communication.Put(
                     SERVICE_ROUTE + "/replace/" + caseId + "/" + documentId, fileBytes);
-                return HandleResponse(responseTuple);
+                return handleResponse(responseTuple);
             }
             catch (WebException we)
             {
                 HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
+                string errString = ChargebackUtils.ListErrors(errorResponse);
                 throw new ChargebackException(
-                    string.Format("Replace Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) , errorResponse);
+                    string.Format("Replace Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) + errString);
             }
         }
 
-        public IDocumentResponse retrieveDocument(long caseId, string documentId)
+        public IDocumentResponse RetrieveDocument(long caseId, string documentId)
         {
             IDocumentResponse docResponse = null;
             try
             {
-                SetUpCommunication();
+                configureCommunication();
                 
-                var responseTuple = communication.get(
+                var responseTuple = communication.Get(
                     string.Format(SERVICE_ROUTE+"/retrieve/{0}/{1}", caseId, documentId));
                 var contentType = (string) responseTuple[0];
                 var responseBytes = (List<byte>) responseTuple[1];
@@ -97,101 +92,102 @@ namespace ChargebackForDotNet
                     {
                         Directory.CreateDirectory(downloadDiectory);
                     }
-                    string retrievedFilePath = Utils.bytesToFile(responseBytes, filePath);
+                    string retrievedFilePath = ChargebackUtils.BytesToFile(responseBytes, filePath);
                     chargebackDocumentReceivedResponse fileReceivedResponse = new chargebackDocumentReceivedResponse();
                     fileReceivedResponse.retrievedFilePath = retrievedFilePath;
                     docResponse = fileReceivedResponse;
                 }
                 else
                 {
-                    return HandleResponse(responseTuple);
+                    return handleResponse(responseTuple);
                 }
             }
             catch (WebException we)
             {
                 HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
+                string errString = ChargebackUtils.ListErrors(errorResponse);
                 throw new ChargebackException(
-                    string.Format("Retrieve Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) , errorResponse);
+                    string.Format("Retrieve Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) + errString);
             }
             return docResponse;
         }
 
-        public chargebackDocumentUploadResponse deleteDocument(long caseId, string documentId)
+        public chargebackDocumentUploadResponse DeleteDocument(long caseId, string documentId)
         {
             try
             {
-                SetUpCommunication();
+                configureCommunication();
                 
-                var responseTuple = communication.delete(
+                var responseTuple = communication.Delete(
                     string.Format(SERVICE_ROUTE+"/remove/{0}/{1}", caseId, documentId));
-                return HandleResponse(responseTuple);
+                return handleResponse(responseTuple);
                               
             }
             catch (WebException we)
             {
                 HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
+                string errString = ChargebackUtils.ListErrors(errorResponse);
                 throw new ChargebackException(
-                    string.Format("Delete Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) , errorResponse);
+                    string.Format("Delete Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) + errString);
             }
         }
 
-        public chargebackDocumentUploadResponse listDocuments(long caseId)
+        public chargebackDocumentUploadResponse ListDocuments(long caseId)
         {
             try
             {
-                SetUpCommunication();
+                configureCommunication();
                 
-                var responseTuple = communication.get(
+                var responseTuple = communication.Get(
                     SERVICE_ROUTE + "/list/" + caseId);
-                return HandleResponse(responseTuple);
+                return handleResponse(responseTuple);
 
             }
             catch (WebException we)
             {
                 HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
+                string errString = ChargebackUtils.ListErrors(errorResponse);
                 throw new ChargebackException(
-                    string.Format("List documents Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) , errorResponse);
+                    string.Format("List documents Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) + errString);
             }
         }
-
         
-        private chargebackDocumentUploadResponse HandleResponse(ArrayList responseTuple)
+        private chargebackDocumentUploadResponse handleResponse(ArrayList responseTuple)
         {
             var contentType = (string) responseTuple[0];
             var responseBytes = (List<byte>) responseTuple[1];
             if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
             {
-                string xmlResponse = Utils.bytesToString(responseBytes);
+                string xmlResponse = ChargebackUtils.BytesToString(responseBytes);
                 if (Boolean.Parse(config.getConfig("printXml")))
                 {
                     Console.WriteLine(xmlResponse);
                 }
                 chargebackDocumentUploadResponse docResponse
-                    = Utils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
+                    = ChargebackUtils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
                 return docResponse;
             }
-            string stringResponse = Utils.bytesToString(responseBytes);
+            string stringResponse = ChargebackUtils.BytesToString(responseBytes);
             throw new ChargebackException(
                 string.Format("Unexpected returned Content-Type: {0}. Call Vantiv immediately!" +
                               "\nTrying to read the response as raw text:" +
                               "\n{1}", contentType, stringResponse));
         }
-
         
-        private void SetUpCommunication()
+        private void configureCommunication()
         {
-            communication.setHost(config.getConfig("host"));
-            string encoded = Utils.encode64(
+            communication.SetHost(config.getConfig("host"));
+            string encoded = ChargebackUtils.Encode64(
                 config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
-            communication.addToHeader("Authorization", "Basic " + encoded);
-            communication.setProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
-            communication.setContentType(null);
+            communication.AddToHeader("Authorization", "Basic " + encoded);
+            communication.SetProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
+            communication.SetContentType(null);
         }
         
-        private void SetUpCommunicationForUpload()
+        private void configureCommunicationForUpload()
         {           
-            SetUpCommunication();
-            communication.setContentType("image/tiff");
+            configureCommunication();
+            communication.SetContentType("image/tiff");
         }
         
     }

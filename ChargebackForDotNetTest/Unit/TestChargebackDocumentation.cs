@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -70,16 +71,17 @@ namespace ChargebackForDotNetTest.Unit
         public void TestRetrieveDocument(long caseId, string documentId)
         {
             string expectedFileContent = "To test document retrieval";
-            var expectedRetrievedFileContent = Utils.stringToBytes(expectedFileContent);
+            var expectedRetrievedFileContent = ChargebackUtils.StringToBytes(expectedFileContent);
             var expectedResponseTuple = new ArrayList();
             expectedResponseTuple.Add("image/tiff");
             expectedResponseTuple.Add(expectedRetrievedFileContent);
             Mock<Communication> commMock = new Mock<Communication>();
-            commMock.Setup(c => c.get(string.Format("/services/chargebacks/retrieve/{0}/{1}", caseId, documentId)))
+            commMock.Setup(c => c.Get(string.Format("/services/chargebacks/retrieve/{0}/{1}", caseId, documentId)))
                 .Returns(expectedResponseTuple);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
             docRequest.config.setConfigValue("downloadDirectory", Directory.GetCurrentDirectory());
-            var docResponse = docRequest.retrieveDocument(caseId, documentId);
+            var docResponse = docRequest.RetrieveDocument(caseId, documentId);
+            
             Assert.True(docResponse is chargebackDocumentReceivedResponse);
             var docReceivedResponse = (chargebackDocumentReceivedResponse) docResponse;
             Assert.NotNull(docReceivedResponse.retrievedFilePath);
@@ -102,12 +104,12 @@ namespace ChargebackForDotNetTest.Unit
                 expectedResponseCode, expectedResponseMessage);
             var expectedResponseTuple = new ArrayList();
             expectedResponseTuple.Add("application/com.vantivcnp.services-v2+xml");
-            expectedResponseTuple.Add(Utils.stringToBytes(expectedXmlResponse));
+            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
-            commMock.Setup(c => c.get(string.Format("/services/chargebacks/retrieve/{0}/{1}", caseId, documentId)))
+            commMock.Setup(c => c.Get(string.Format("/services/chargebacks/retrieve/{0}/{1}", caseId, documentId)))
                 .Returns(expectedResponseTuple);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
-            var docResponse = docRequest.retrieveDocument(caseId, documentId);
+            var docResponse = docRequest.RetrieveDocument(caseId, documentId);
             Assert.True(docResponse is chargebackDocumentUploadResponse);
             var docUploadResponse = (chargebackDocumentUploadResponse) docResponse;
             Assert.AreEqual(caseId, docUploadResponse.caseId);
@@ -126,19 +128,19 @@ namespace ChargebackForDotNetTest.Unit
                 expectedResponseCode, expectedResponseMessage);
             var expectedResponseTuple = new ArrayList();
             expectedResponseTuple.Add("application/com.vantivcnp.services-v2+xml");
-            expectedResponseTuple.Add(Utils.stringToBytes(expectedXmlResponse));
+            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
-            commMock.Setup(c => c.get(string.Format("/services/chargebacks/list/{0}", caseId)))
+            commMock.Setup(c => c.Get(string.Format("/services/chargebacks/list/{0}", caseId)))
                 .Returns(expectedResponseTuple);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
-            var docUploadResponse = docRequest.listDocuments(caseId);            
+            var docUploadResponse = docRequest.ListDocuments(caseId);            
             Assert.AreEqual(caseId, docUploadResponse.caseId);
             Assert.AreEqual(expectedDocumentIds, docUploadResponse.documentId);
             Assert.AreEqual(expectedResponseCode, docUploadResponse.responseCode);
             Assert.AreEqual(expectedResponseMessage, docUploadResponse.responseMessage);
         }
         
-        [TestCase(1009, "test1.tif", new string[] {"test1.tif"}, "000", "Success")]
+        [TestCase(1000, "test1.tif", new string[] {"test1.tif"}, "000", "Success")]
         [TestCase(1009, "test2.tif", new string[] {"test2.tif"}, "009", "Document Not Found")]
         [TestCase(1003, "test3.tif", new string[] {"test3.tif"}, "003", "Case Not Found")]
         public void TestDeleteDocument(long caseId, string documentId, string[] expectedDocumentIds, 
@@ -148,16 +150,83 @@ namespace ChargebackForDotNetTest.Unit
                 expectedResponseCode, expectedResponseMessage);
             var expectedResponseTuple = new ArrayList();
             expectedResponseTuple.Add("application/com.vantivcnp.services-v2+xml");
-            expectedResponseTuple.Add(Utils.stringToBytes(expectedXmlResponse));
+            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
-            commMock.Setup(c => c.delete(string.Format("/services/chargebacks/remove/{0}/{1}", caseId, documentId)))
+            commMock.Setup(c => c.Delete(string.Format("/services/chargebacks/remove/{0}/{1}", caseId, documentId)))
                 .Returns(expectedResponseTuple);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
-            var docUploadResponse = docRequest.deleteDocument(caseId, documentId);            
+            var docUploadResponse = docRequest.DeleteDocument(caseId, documentId);            
             Assert.AreEqual(caseId, docUploadResponse.caseId);
             Assert.AreEqual(expectedDocumentIds, docUploadResponse.documentId);
             Assert.AreEqual(expectedResponseCode, docUploadResponse.responseCode);
             Assert.AreEqual(expectedResponseMessage, docUploadResponse.responseMessage);
+        }
+        
+        [TestCase(1000, "test1.tif", new string[] {"test1.tif"}, "000", "Success")]
+        [TestCase(1003, "test3.tif", new string[] {"test3.tif"}, "003", "Case Not Found")]
+        public void TestUploadDocument(long caseId, string documentId, string[] expectedDocumentIds, 
+            string expectedResponseCode, string expectedResponseMessage)
+        {
+            var tiffFilePath = Path.Combine(Directory.GetCurrentDirectory(), documentId);
+            var writer = new StreamWriter(File.Create(tiffFilePath));
+            writer.WriteLine("Prototype an upload test file.");
+            writer.Close();
+            var sendingBytes = File.ReadAllBytes(tiffFilePath).ToList();
+            var expectedXmlResponse = generateXmlResponse(caseId, expectedDocumentIds,
+                expectedResponseCode, expectedResponseMessage);
+            var expectedResponseTuple = new ArrayList();
+            expectedResponseTuple.Add("application/com.vantivcnp.services-v2+xml");
+            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
+            Mock<Communication> commMock = new Mock<Communication>();
+            commMock.Setup(c => c.Post(string.Format("/services/chargebacks/upload/{0}/{1}", caseId, documentId), 
+                    sendingBytes)).Returns(expectedResponseTuple);
+            var docRequest = new ChargebackDocumentationRequest(commMock.Object);
+            var docUploadResponse = docRequest.UploadDocument(caseId, tiffFilePath);            
+            Assert.AreEqual(caseId, docUploadResponse.caseId);
+            Assert.AreEqual(expectedDocumentIds, docUploadResponse.documentId);
+            Assert.AreEqual(expectedResponseCode, docUploadResponse.responseCode);
+            Assert.AreEqual(expectedResponseMessage, docUploadResponse.responseMessage);
+        }
+        
+        
+        [TestCase(1000, "test1.tif", new string[] {"test1.tif"}, "000", "Success")]
+        [TestCase(1009, "test2.tif", new string[] {"test2.tif"}, "009", "Document Not Found")]
+        [TestCase(1003, "test3.tif", new string[] {"test3.tif"}, "003", "Case Not Found")]
+        public void TestReplaceDocument(long caseId, string documentId, string[] expectedDocumentIds, 
+            string expectedResponseCode, string expectedResponseMessage)
+        {
+            var tiffFilePath = Path.Combine(Directory.GetCurrentDirectory(), documentId);
+            var writer = new StreamWriter(File.Create(tiffFilePath));
+            writer.WriteLine("Prototype an upload test file.");
+            writer.Close();
+            var sendingBytes = File.ReadAllBytes(tiffFilePath).ToList();
+            var expectedXmlResponse = generateXmlResponse(caseId, expectedDocumentIds,
+                expectedResponseCode, expectedResponseMessage);
+            var expectedResponseTuple = new ArrayList();
+            expectedResponseTuple.Add("application/com.vantivcnp.services-v2+xml");
+            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
+            Mock<Communication> commMock = new Mock<Communication>();
+            commMock.Setup(c => c.Put(string.Format("/services/chargebacks/replace/{0}/{1}", caseId, documentId), 
+                sendingBytes)).Returns(expectedResponseTuple);
+            var docRequest = new ChargebackDocumentationRequest(commMock.Object);
+            var docUploadResponse = docRequest.ReplaceDocument(caseId, documentId, tiffFilePath);            
+            Assert.AreEqual(caseId, docUploadResponse.caseId);
+            Assert.AreEqual(expectedDocumentIds, docUploadResponse.documentId);
+            Assert.AreEqual(expectedResponseCode, docUploadResponse.responseCode);
+            Assert.AreEqual(expectedResponseMessage, docUploadResponse.responseMessage);
+        }
+
+        [TearDown]
+        public void removeTestFiles()
+        {
+            string[] fileNames = Directory.GetFiles(Directory.GetCurrentDirectory());
+            foreach (var fileName in fileNames)
+            {
+                if (fileName.Contains(".tif"))
+                {
+                    File.Delete(fileName);
+                }
+            }
         }
     }
 }

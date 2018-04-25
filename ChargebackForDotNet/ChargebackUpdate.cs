@@ -21,24 +21,6 @@ namespace ChargebackForDotNet
         
         private Configuration configurationField;
 
-        private Communication communication;
-
-        public chargebackUpdateRequest()
-        {
-            communication = new Communication();
-        }
-
-        public chargebackUpdateRequest(Configuration config)
-        {
-            this.configurationField = config;
-            communication = new Communication();
-        }
-        
-        public chargebackUpdateRequest(Communication comm)
-        {
-            communication = comm;
-        }
-
         public Configuration config
         {
             get
@@ -53,76 +35,16 @@ namespace ChargebackForDotNet
             set { configurationField = value; }
         }
 
-        private string Serialize()
+        private Communication communication;
+
+        public chargebackUpdateRequest()
         {
-            string header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                            "\n<chargebackUpdateRequest xmlns=\"http://www.vantivcnp.com/chargebacks\">";
-            string footer = "\n</chargebackUpdateRequest>";
-            string body = "";
-            
-            body += string.Format("\n<activityType>{0}</activityType>", this.activityType);
-            if (this.assignedTo != null)
-            {
-                body += string.Format("\n<assignedTo>{0}</assignedTo>", this.assignedTo);
-            }
-
-            if (this.note != null)
-            {
-                body += string.Format("\n<note>{0}</note>", this.note);
-            }
-
-            if (this.representedAmountFieldSpecified)
-            {
-                body += string.Format("\n<representedAmount>{0}</representedAmount>",this.representedAmount);
-            }
-            return header+body+footer;
+            communication = new Communication();
         }
-
-        private void clearVariables()
+        
+        public chargebackUpdateRequest(Communication comm)
         {
-            assignedTo = null;
-            note = null;
-            representedAmount = 0;
-            representedAmountFieldSpecified = false;
-        }
-
-        private chargebackUpdateResponse sendUpdateRequest()    
-        {
-            string xml = this.Serialize();
-            if (Boolean.Parse(config.getConfig("printXml")))
-            {
-                Console.WriteLine("Request is:");
-                Console.WriteLine(xml);
-            }
-            clearVariables();
-            try
-            {
-                SetUpCommunication();
-                var responseTuple = communication.put(SERVICE_ROUTE + "/" + caseId, Utils.stringToBytes(xml));
-                var receivedBytes = (List<byte>) responseTuple[1];
-                string xmlResponse = Utils.bytesToString(receivedBytes);
-                if (Boolean.Parse(config.getConfig("printXml")))
-                {
-                    Console.WriteLine(xmlResponse);
-                }
-                return Utils.DeserializeResponse<chargebackUpdateResponse>(xmlResponse);
-            }
-            catch (WebException we)
-            {
-                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
-                throw new ChargebackException(
-                    string.Format("Update Failed - HTTP {0} Error", (int) errorResponse.StatusCode), errorResponse);
-            }
-        }
-
-        private void SetUpCommunication()
-        {
-            communication.setHost(config.getConfig("host"));
-            string encoded = Utils.encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
-            communication.addToHeader("Authorization", "Basic " + encoded);
-            communication.setContentType("application/com.vantivcnp.services-v2+xml");
-            communication.setAccept("application/com.vantivcnp.services-v2+xml");
-            communication.setProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
+            communication = comm;
         }
         
         public chargebackUpdateResponse AssignToUser(long caseId, string assignedTo = null, string note = null)
@@ -182,6 +104,79 @@ namespace ChargebackForDotNet
             this.activityType = activityType.MERCHANT_REQUESTS_ARBITRATION;
             this.note = note;
             return sendUpdateRequest();
+        }
+
+        private string serialize()
+        {
+            string header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                            "\n<chargebackUpdateRequest xmlns=\"http://www.vantivcnp.com/chargebacks\">";
+            string footer = "\n</chargebackUpdateRequest>";
+            string body = "";
+            
+            body += string.Format("\n<activityType>{0}</activityType>", this.activityType);
+            if (this.assignedTo != null)
+            {
+                body += string.Format("\n<assignedTo>{0}</assignedTo>", this.assignedTo);
+            }
+
+            if (this.note != null)
+            {
+                body += string.Format("\n<note>{0}</note>", this.note);
+            }
+
+            if (this.representedAmountFieldSpecified)
+            {
+                body += string.Format("\n<representedAmount>{0}</representedAmount>",this.representedAmount);
+            }
+            return header+body+footer;
+        }
+
+        private void unsetFields()
+        {
+            assignedTo = null;
+            note = null;
+            representedAmount = 0;
+            representedAmountFieldSpecified = false;
+        }
+
+        private chargebackUpdateResponse sendUpdateRequest()
+        {
+            string xml = this.serialize();
+            if (Boolean.Parse(config.getConfig("printXml")))
+            {
+                Console.WriteLine("Request is:");
+                Console.WriteLine(xml);
+            }
+            unsetFields();
+            try
+            {
+                configureCommunication();
+                var responseTuple = communication.Put(SERVICE_ROUTE + "/" + caseId, ChargebackUtils.StringToBytes(xml));
+                var receivedBytes = (List<byte>) responseTuple[1];
+                string xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
+                if (Boolean.Parse(config.getConfig("printXml")))
+                {
+                    Console.WriteLine(xmlResponse);
+                }
+                return ChargebackUtils.DeserializeResponse<chargebackUpdateResponse>(xmlResponse);
+            }
+            catch (WebException we)
+            {
+                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
+                string errString = ChargebackUtils.ListErrors(errorResponse);
+                throw new ChargebackException(
+                    string.Format("Update Failed - HTTP {0} Error", (int) errorResponse.StatusCode) + errString);
+            }
+        }
+
+        private void configureCommunication()
+        {
+            communication.SetHost(config.getConfig("host"));
+            string encoded = ChargebackUtils.Encode64(config.getConfig("username") + ":" + config.getConfig("password"), "utf-8");
+            communication.AddToHeader("Authorization", "Basic " + encoded);
+            communication.SetContentType("application/com.vantivcnp.services-v2+xml");
+            communication.SetAccept("application/com.vantivcnp.services-v2+xml");
+            communication.SetProxy(config.getConfig("proxyHost"), int.Parse(config.getConfig("proxyPort")));
         }
     }
      

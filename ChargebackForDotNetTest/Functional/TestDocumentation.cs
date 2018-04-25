@@ -33,14 +33,15 @@ namespace ChargebackForDotNetTest.Functional
                 Directory.CreateDirectory(configDict["downloadDirectory"]);
             }
             
-            docRequest = new ChargebackDocumentationRequest(config);
+            docRequest = new ChargebackDocumentationRequest();
+            docRequest.config = config;
         }
         
         [Test]
         public void TestRetrieveDocument()
         {
             chargebackDocumentReceivedResponse docResponse = 
-                (chargebackDocumentReceivedResponse)docRequest.retrieveDocument(1000, "doc.tiff");
+                (chargebackDocumentReceivedResponse)docRequest.RetrieveDocument(1000, "doc.tiff");
             Assert.NotNull(docResponse);
             Assert.AreEqual(docRequest.config.getConfig("downloadDirectory") + "\\doc.tiff", docResponse.retrievedFilePath);
             Assert.True(File.Exists(docResponse.retrievedFilePath));
@@ -51,7 +52,7 @@ namespace ChargebackForDotNetTest.Functional
         public void TestRetrieveDocument_DocumentNotFound_009()
         {
             chargebackDocumentUploadResponse docResponse
-                = (chargebackDocumentUploadResponse)docRequest.retrieveDocument(10009, "testDoc.tiff");
+                = (chargebackDocumentUploadResponse)docRequest.RetrieveDocument(10009, "testDoc.tiff");
             Assert.NotNull(docResponse);
             Assert.AreEqual("009", docResponse.responseCode);
             Assert.AreEqual("Document Not Found".ToLower(), docResponse.responseMessage.ToLower());
@@ -60,7 +61,7 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestListDocument()
         {
-            chargebackDocumentUploadResponse docResponse = docRequest.listDocuments(1000);
+            chargebackDocumentUploadResponse docResponse = docRequest.ListDocuments(1000);
             Assert.NotNull(docResponse);
             Assert.AreEqual("000", docResponse.responseCode);
             Assert.AreEqual("Success".ToLower(), docResponse.responseMessage.ToLower());
@@ -69,7 +70,7 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestDeleteDocument()
         {
-            chargebackDocumentUploadResponse docResponse = docRequest.deleteDocument(1000, "logo.tiff");
+            chargebackDocumentUploadResponse docResponse = docRequest.DeleteDocument(1000, "logo.tiff");
             Assert.NotNull(docResponse);
             Assert.AreEqual("000", docResponse.responseCode);
             Assert.AreEqual("Success".ToLower(), docResponse.responseMessage.ToLower());
@@ -86,7 +87,7 @@ namespace ChargebackForDotNetTest.Functional
 
             try
             {
-                var docResponse = docRequest.uploadDocument(1000, tiffFilePath);
+                var docResponse = docRequest.UploadDocument(1000, tiffFilePath);
                 Assert.NotNull(docResponse);
                 Assert.AreEqual("000", docResponse.responseCode);
                 Assert.AreEqual("Success".ToLower(), docResponse.responseMessage.ToLower());
@@ -113,7 +114,7 @@ namespace ChargebackForDotNetTest.Functional
 
             try
             {
-                var docResponse = docRequest.replaceDocument(1000, tiffFilename, tiffFilePath);
+                var docResponse = docRequest.ReplaceDocument(1000, tiffFilename, tiffFilePath);
                 Assert.NotNull(docResponse);
                 Assert.AreEqual("000", docResponse.responseCode);
                 Assert.AreEqual("Success".ToLower(), docResponse.responseMessage.ToLower());

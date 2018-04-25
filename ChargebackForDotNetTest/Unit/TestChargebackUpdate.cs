@@ -79,12 +79,12 @@ namespace ChargebackForDotNetTest.Unit
         {
             string expectedXmlResponse = generateXmlResponse(expectedTxnId);
             string expectedXmlRequest = generateXmlRequest(activityType.ASSIGN_TO_USER, assignedTo, note);
-            var expectedSendingBytes = Utils.stringToBytes(expectedXmlRequest);
+            var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseTuple = new ArrayList();
             expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(Utils.stringToBytes(expectedXmlResponse));
+            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
-            commMock.Setup(c => c.put("/chargebacks/" + caseId, expectedSendingBytes))
+            commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseTuple);
             var request
                 = new chargebackUpdateRequest(commMock.Object);
@@ -100,12 +100,12 @@ namespace ChargebackForDotNetTest.Unit
         {
             string expectedXmlResponse = generateXmlResponse(expectedTxnId);
             string expectedXmlRequest = generateXmlRequest(activityType.ADD_NOTE, null, note);
-            var expectedSendingBytes = Utils.stringToBytes(expectedXmlRequest);
+            var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseTuple = new ArrayList();
             expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(Utils.stringToBytes(expectedXmlResponse));
+            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
-            commMock.Setup(c => c.put("/chargebacks/" + caseId, expectedSendingBytes))
+            commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseTuple);
             var request
                 = new chargebackUpdateRequest(commMock.Object);
@@ -121,12 +121,12 @@ namespace ChargebackForDotNetTest.Unit
         {
             string expectedXmlResponse = generateXmlResponse(expectedTxnId);
             string expectedXmlRequest = generateXmlRequest(activityType.MERCHANT_ACCEPTS_LIABILITY, null, note);
-            var expectedSendingBytes = Utils.stringToBytes(expectedXmlRequest);
+            var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseTuple = new ArrayList();
             expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(Utils.stringToBytes(expectedXmlResponse));
+            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
-            commMock.Setup(c => c.put("/chargebacks/" + caseId, expectedSendingBytes))
+            commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseTuple);
             var request
                 = new chargebackUpdateRequest(commMock.Object);
@@ -143,12 +143,12 @@ namespace ChargebackForDotNetTest.Unit
             string expectedXmlResponse = generateXmlResponse(expectedTxnId);
             string expectedXmlRequest 
                 = generateXmlRequest(activityType.MERCHANT_REPRESENT, null, note, true, representedAmount);
-            var expectedSendingBytes = Utils.stringToBytes(expectedXmlRequest);
+            var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseTuple = new ArrayList();
             expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(Utils.stringToBytes(expectedXmlResponse));
+            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
-            commMock.Setup(c => c.put("/chargebacks/" + caseId, expectedSendingBytes))
+            commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseTuple);
             var request
                 = new chargebackUpdateRequest(commMock.Object);
@@ -165,12 +165,12 @@ namespace ChargebackForDotNetTest.Unit
             string expectedXmlResponse = generateXmlResponse(expectedTxnId);
             string expectedXmlRequest 
                 = generateXmlRequest(activityType.MERCHANT_REPRESENT, null, note);
-            var expectedSendingBytes = Utils.stringToBytes(expectedXmlRequest);
+            var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseTuple = new ArrayList();
             expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(Utils.stringToBytes(expectedXmlResponse));
+            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
-            commMock.Setup(c => c.put("/chargebacks/" + caseId, expectedSendingBytes))
+            commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseTuple);
             var request
                 = new chargebackUpdateRequest(commMock.Object);
@@ -187,12 +187,12 @@ namespace ChargebackForDotNetTest.Unit
             string expectedXmlResponse = generateXmlResponse(expectedTxnId);
             string expectedXmlRequest 
                 = generateXmlRequest(activityType.MERCHANT_RESPOND, null, note);
-            var expectedSendingBytes = Utils.stringToBytes(expectedXmlRequest);
+            var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseTuple = new ArrayList();
             expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(Utils.stringToBytes(expectedXmlResponse));
+            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
-            commMock.Setup(c => c.put("/chargebacks/" + caseId, expectedSendingBytes))
+            commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseTuple);
             var request
                 = new chargebackUpdateRequest(commMock.Object);
@@ -209,12 +209,12 @@ namespace ChargebackForDotNetTest.Unit
             string expectedXmlResponse = generateXmlResponse(expectedTxnId);
             string expectedXmlRequest 
                 = generateXmlRequest(activityType.MERCHANT_REQUESTS_ARBITRATION, null, note);
-            var expectedSendingBytes = Utils.stringToBytes(expectedXmlRequest);
+            var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseTuple = new ArrayList();
             expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(Utils.stringToBytes(expectedXmlResponse));
+            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
-            commMock.Setup(c => c.put("/chargebacks/" + caseId, expectedSendingBytes))
+            commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseTuple);
             var request
                 = new chargebackUpdateRequest(commMock.Object);

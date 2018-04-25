@@ -23,7 +23,7 @@ namespace ChargebackForDotNetTest.Unit
         public void TestBytesToString(string testString)
         {
             List<byte> bytes = Encoding.ASCII.GetBytes(testString).ToList();
-            string result = Utils.bytesToString(bytes);
+            string result = ChargebackUtils.BytesToString(bytes);
             Assert.AreEqual(testString, result);
         }
         
@@ -32,7 +32,7 @@ namespace ChargebackForDotNetTest.Unit
         {
             string helloWorld = "@Hello World!";
             List<byte> bytes = Encoding.ASCII.GetBytes(helloWorld).ToList();
-            List<byte> resultBytes = Utils.stringToBytes(helloWorld);
+            List<byte> resultBytes = ChargebackUtils.StringToBytes(helloWorld);
             for(var i = 0; i < bytes.Count; i++)
             {
                 Assert.AreEqual(bytes[i], resultBytes[i]);
@@ -58,7 +58,7 @@ namespace ChargebackForDotNetTest.Unit
         public void TestEncode64(string password)
         {
             string expectedEncodedPassword = Convert.ToBase64String(Encoding.GetEncoding("utf-8").GetBytes(password));
-            Assert.AreEqual(expectedEncodedPassword, Utils.encode64(password, "utf-8"));
+            Assert.AreEqual(expectedEncodedPassword, ChargebackUtils.Encode64(password, "utf-8"));
         }
         
         [Test]

@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using ChargebackForDotNet;
+using NUnit.Framework;
 
 namespace ChargebackForDotNetTest.Unit
 {
@@ -9,6 +10,11 @@ namespace ChargebackForDotNetTest.Unit
         public void SetUp()
         {
             
+        }
+        [Test]
+        public void TestSetHost()
+        {
+            Communication com = new Communication();
         }
         [Test]
         public void TestAddToHeader()
