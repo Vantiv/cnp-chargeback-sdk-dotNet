@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Xml.Serialization;
+using ChargebackForDotNet.Properties;
 
 namespace ChargebackForDotNet
 {
@@ -37,8 +38,8 @@ namespace ChargebackForDotNet
             StreamReader reader = new StreamReader(errResponse.GetResponseStream());
             string xmlResponse = reader.ReadToEnd().Trim();
             errors = Utils.DeserializeResponse<errorResponse>(xmlResponse).errors;
-            Console.WriteLine("Length of errors:" + errors.Length);
-            Console.WriteLine(xmlResponse);
+            /*Console.WriteLine("Length of errors:" + errors.Length);
+            Console.WriteLine(xmlResponse);*/
         }
 
         private void readErrorMessages()

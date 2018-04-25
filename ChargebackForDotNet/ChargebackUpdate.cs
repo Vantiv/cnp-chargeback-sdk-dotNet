@@ -89,8 +89,11 @@ namespace ChargebackForDotNet
         private chargebackUpdateResponse sendUpdateRequest()    
         {
             string xml = this.Serialize();
-            Console.WriteLine("Request is:");
-            Console.WriteLine(xml);
+            if (Boolean.Parse(config.getConfig("printXml")))
+            {
+                Console.WriteLine("Request is:");
+                Console.WriteLine(xml);
+            }
             clearVariables();
             try
             {
@@ -98,7 +101,10 @@ namespace ChargebackForDotNet
                 var responseTuple = communication.put(SERVICE_ROUTE + "/" + caseId, Utils.stringToBytes(xml));
                 var receivedBytes = (List<byte>) responseTuple[1];
                 string xmlResponse = Utils.bytesToString(receivedBytes);
-                Console.WriteLine(xmlResponse);
+                if (Boolean.Parse(config.getConfig("printXml")))
+                {
+                    Console.WriteLine(xmlResponse);
+                }
                 return Utils.DeserializeResponse<chargebackUpdateResponse>(xmlResponse);
             }
             catch (WebException we)

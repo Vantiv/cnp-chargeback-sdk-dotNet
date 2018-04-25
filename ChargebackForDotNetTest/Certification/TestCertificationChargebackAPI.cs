@@ -14,7 +14,7 @@ namespace ChargebackForDotNetTest.Certification
         public void Test2_1_1RetrieveByAParticularDate()
         {
             ChargebackRetrievalRequest request = new ChargebackRetrievalRequest();
-            chargebackRetrievalResponse response = request.retrieveByActivityDate(Utils.parseDate("2013-10-1"));
+            chargebackRetrievalResponse response = request.retrieveByActivityDate(Utils.parseDate("2013-1-1"));
             Assert.NotNull(response);
             Assert.AreEqual(11, response.chargebackCase.Length);
             chargebackApiCase[] cases = response.chargebackCase;

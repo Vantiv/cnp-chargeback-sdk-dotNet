@@ -1,0 +1,8 @@
+username = VantivMerchant
+password = abc123def456
+merchantId = 7777777
+host = hostUrl
+downloadDirectory = C:\\Vantiv\\Downloads
+printXml = true
+proxyHost = yourProxyHost
+proxyPort = yourProxyPort

@@ -65,7 +65,10 @@ namespace ChargebackForDotNet
                 var responseTuple = communication.get(urlRoute);
                 var receivedBytes = (List<byte>) responseTuple[1];
                 String xmlResponse = Utils.bytesToString(receivedBytes);
-                Console.WriteLine(xmlResponse);
+                if (Boolean.Parse(config.getConfig("printXml")))
+                {
+                    Console.WriteLine(xmlResponse);
+                }
                 return xmlResponse;
             }
             catch (WebException we)

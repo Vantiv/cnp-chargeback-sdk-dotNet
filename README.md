@@ -13,7 +13,7 @@ About this Chargeback SDK
 --------------
 The Vantiv eCommerce .NET Chargeback SDK is a C# implementation of the [Vantiv eCommerce](https://developer.vantiv.com/docs/DOC-1196) Chargeback API. This Chargeback SDK was created to make it as easy as possible to process your chargebacks and upload documents supporting your cases with Vantiv eCommerce. This Chargeback SDK utilizes the HTTPS protocol to securely connect to Vantiv eCommerce. Using the Chargeback SDK requires coordination with the Vantiv eCommerce team in order to be provided with credentials for accessing our systems.
 
-Each .NET Chargeback SDK release supports all of the functionality present in the associated Vantiv eCommerce Chargeback API version (e.g., Chargeback SDK v2.1 supports Vantiv eCommerce Chargeback API v2.1). Please see the online copy of our Chargeback XSD for Vantiv eCommerce XML to get more details on what the Vantiv eCommerce payments engine supports.
+Each .NET Chargeback SDK release supports all of the functionality present in the associated Vantiv eCommerce Chargeback API version (e.g., Chargeback SDK v2.1 supports Vantiv eCommerce Chargeback API v2.1). Please see the online copy of our Chargeback XSD for Vantiv eCommerce XML to get more details on what the Vantiv eCommerce Chargeback API supports.
 
 This Chargeback SDK is implemented to support the .NET plaform, including C#, VB.NET and Managed C++ and was created by Vantiv eCommerce. Its intended use is for online transactions processing utilizing your account on the Vantiv eComerce payments engine.
 
@@ -37,7 +37,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Cnp.Sdk;
 
     class Example
     {
@@ -56,4 +55,4 @@ using Cnp.Sdk;
 
 More examples can be found in [Functional and Unit Tests] (https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/tree/2.x/ChargebackForDotNetTest)
 
-Please contact Vantiv eCommerce with any further questions.   You can reach us at sdksupport@Vantiv.com.
+Please contact Vantiv eCommerce with any further questions. You can reach us at sdksupport@Vantiv.com.

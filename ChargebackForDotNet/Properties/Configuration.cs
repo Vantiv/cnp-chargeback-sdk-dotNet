@@ -13,10 +13,11 @@ namespace ChargebackForDotNet.Properties
 
         public Configuration()
         {
-            string configPath = Environment.GetEnvironmentVariable("configPath");
+            string configPath = Environment.GetEnvironmentVariable("chargebackConfigPath");
             if (configPath == null)
             {
-                throw new ChargebackException("No configuration file. Please set the environment variable 'configPath'" +
+                throw new ChargebackException("No configuration file." +
+                                              " Please set the environment variable 'chargebackConfigPath'" +
                                               " to the location of config file.");
             }
 

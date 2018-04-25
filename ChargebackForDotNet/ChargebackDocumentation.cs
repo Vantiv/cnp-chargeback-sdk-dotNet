@@ -162,7 +162,10 @@ namespace ChargebackForDotNet
             if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
             {
                 string xmlResponse = Utils.bytesToString(responseBytes);
-                Console.WriteLine(xmlResponse);
+                if (Boolean.Parse(config.getConfig("printXml")))
+                {
+                    Console.WriteLine(xmlResponse);
+                }
                 chargebackDocumentUploadResponse docResponse
                     = Utils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
                 return docResponse;
