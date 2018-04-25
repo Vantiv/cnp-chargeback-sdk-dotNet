@@ -57,7 +57,6 @@ namespace ChargebackForDotNet
 
         public static T DeserializeResponse<T>(string xmlResponse)
         {
-            Console.WriteLine("XmlResponse:\n"+xmlResponse+"\nEndXmlResponse.");
             return (T) (new XmlSerializer(typeof(T))).Deserialize(new StringReader(xmlResponse));
         }
 

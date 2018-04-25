@@ -130,7 +130,6 @@ namespace ChargebackForDotNet
         
         private void configureCommunication()
         {
-            Console.WriteLine("Called");
             communication.SetHost(config.Get("host"));
             string encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"), "utf-8");
             communication.AddToHeader("Authorization", "Basic " + encoded);
