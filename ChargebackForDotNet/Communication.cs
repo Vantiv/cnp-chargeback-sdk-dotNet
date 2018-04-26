@@ -15,120 +15,120 @@ namespace ChargebackForDotNet
 {
     public class Communication
     {
-        private HttpWebRequest httpRequest;
-        private WebHeaderCollection headers;
-        private WebProxy webProxy;
-        private string contentType;
-        private string accept;
-        private string host;
+        private HttpWebRequest _httpRequest;
+        private WebHeaderCollection _headers;
+        private WebProxy _webProxy;
+        private string _contentType;
+        private string _accept;
+        private string _host;
 
         public Communication()
         {
-            headers = new WebHeaderCollection();
+            _headers = new WebHeaderCollection();
         }
 
         public void AddToHeader(string key, string value)
         {
-            if (headers.AllKeys.Contains(key))
+            if (_headers.AllKeys.Contains(key))
             {
-                headers[key] = value;
+                _headers[key] = value;
             }
             else
             {
-                headers.Add(key, value);
+                _headers.Add(key, value);
             }
         }
 
         public void SetHost(string host)
         {
-            this.host = host;
+            _host = host;
         }
 
         public void SetProxy(string host, int port)
         {
-            webProxy = new WebProxy(host, port);
+            _webProxy = new WebProxy(host, port);
         }
 
         public void SetContentType(string contentType)
         {
-            this.contentType = contentType;
+            _contentType = contentType;
         }
 
         public void SetAccept(string accept)
         {
-            this.accept = accept;
+            _accept = accept;
         }
 
-        public virtual ArrayList Get(string urlRoute)
+        public virtual ResponseContent Get(string urlRoute)
         {
-            createNewHttpRequest(urlRoute);
-            httpRequest.Method = "GET";
-            return receiveResponse();
+            CreateNewHttpRequest(urlRoute);
+            _httpRequest.Method = "GET";
+            return ReceiveResponse();
         }
 
-        public virtual ArrayList Delete(string urlRoute)
+        public virtual ResponseContent Delete(string urlRoute)
         {
-            createNewHttpRequest(urlRoute);
-            httpRequest.Method = "DELETE";
-            return receiveResponse();
+            CreateNewHttpRequest(urlRoute);
+            _httpRequest.Method = "DELETE";
+            return ReceiveResponse();
         }
 
-        public virtual ArrayList Post(string urlRoute, List<byte> sendingBytes)
+        public virtual ResponseContent Post(string urlRoute, List<byte> sendingBytes)
         {
-            createNewHttpRequest(urlRoute);
-            httpRequest.Method = "POST";
-            writeBytesToRequestStream(sendingBytes);
-            return receiveResponse();
+            CreateNewHttpRequest(urlRoute);
+            _httpRequest.Method = "POST";
+            WriteBytesToRequestStream(sendingBytes);
+            return ReceiveResponse();
         }
 
-        public virtual ArrayList Put(string urlRoute, List<byte> sendingBytes)
+        public virtual ResponseContent Put(string urlRoute, List<byte> sendingBytes)
         {
-            createNewHttpRequest(urlRoute);
-            httpRequest.Method = "PUT";
-            writeBytesToRequestStream(sendingBytes);
-            return receiveResponse();
+            CreateNewHttpRequest(urlRoute);
+            _httpRequest.Method = "PUT";
+            WriteBytesToRequestStream(sendingBytes);
+            return ReceiveResponse();
         }
 
-        private void writeBytesToRequestStream(List<byte> sendingBytes)
+        private void WriteBytesToRequestStream(List<byte> sendingBytes)
         {
-            httpRequest.ContentLength = sendingBytes.Count;
-            Stream inStream = httpRequest.GetRequestStream();
+            _httpRequest.ContentLength = sendingBytes.Count;
+            Stream inStream = _httpRequest.GetRequestStream();
             inStream.Write(sendingBytes.ToArray(), 0, sendingBytes.Count);
             inStream.Close();
         }
 
-        private void createNewHttpRequest(string urlRoute)
+        private void CreateNewHttpRequest(string urlRoute)
         {
-            string url = host + urlRoute;
+            string url = _host + urlRoute;
             Console.WriteLine("Making a request to " + url);
             // For TLS1.2.
             ServicePointManager.SecurityProtocol = (SecurityProtocolType) 3072;
-            httpRequest = (HttpWebRequest) WebRequest.Create(url);
-            httpRequest.Headers.Add(headers);
-            if (webProxy != null)
+            _httpRequest = (HttpWebRequest) WebRequest.Create(url);
+            _httpRequest.Headers.Add(_headers);
+            if (_webProxy != null)
             {
-                httpRequest.Proxy = webProxy;
+                _httpRequest.Proxy = _webProxy;
             }
 
-            if (contentType != null)
+            if (_contentType != null)
             {
-                httpRequest.ContentType = contentType;
+                _httpRequest.ContentType = _contentType;
             }
 
-            if (accept != null)
+            if (_accept != null)
             {
-                httpRequest.Accept = accept;
+                _httpRequest.Accept = _accept;
             }
         }
 
-        private ArrayList receiveResponse()
+        private ResponseContent ReceiveResponse()
         {
-            HttpWebResponse httpResponse = (HttpWebResponse) httpRequest.GetResponse();
+            var httpResponse = (HttpWebResponse) _httpRequest.GetResponse();
             var receivingbytes = new List<byte>();
-            string contentType = httpResponse.ContentType;
+            var contentType = httpResponse.ContentType;
 
-            Stream responseStream = httpResponse.GetResponseStream();
-            int b = responseStream.ReadByte();
+            var responseStream = httpResponse.GetResponseStream();
+            var b = responseStream.ReadByte();
             while (b != -1)
             {
                 receivingbytes.Add((byte) b);
@@ -137,10 +137,7 @@ namespace ChargebackForDotNet
 
             responseStream.Close();
             httpResponse.Close();
-            var tuple = new ArrayList();
-            tuple.Add(contentType);
-            tuple.Add(receivingbytes);
-            return tuple;
+            return new ResponseContent(contentType, receivingbytes);
         }
     }
 }

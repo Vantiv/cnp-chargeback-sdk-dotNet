@@ -20,100 +20,99 @@ namespace ChargebackForDotNet
     
     public class ChargebackRetrievalRequest
     {
-        private Configuration configurationField;
+        private Configuration _configurationField;
 
-        public Configuration config
+        public Configuration Config
         {
             get
             {
-                if (configurationField == null)
+                if (_configurationField == null)
                 {
                     // Load from Settings.
-                    configurationField = new Configuration();
+                    _configurationField = new Configuration();
                 }
-                return configurationField;
+                return _configurationField;
             }
-            set { configurationField = value; }
+            set { _configurationField = value; }
         }
 
-        private Communication communication;
+        private readonly Communication _communication;
 
-        private const string SERVICE_ROUTE = "/chargebacks";
+        private const string ServiceRoute = "/chargebacks";
 
         public ChargebackRetrievalRequest()
         {
-            communication = new Communication();
+            _communication = new Communication();
         }
         
         public ChargebackRetrievalRequest(Communication comm)
         {
-            communication = comm;
+            _communication = comm;
         }
         
         public chargebackRetrievalResponse RetrieveByActivityDate(DateTime date)
         {
-            string queryDate = date.ToString("yyyy-MM-dd");
-            string xmlResponse = sendRetrievalRequest(SERVICE_ROUTE + "/?date=" + queryDate);
+            var queryDate = date.ToString("yyyy-MM-dd");
+            var xmlResponse = SendRetrievalRequest(ServiceRoute + "/?date=" + queryDate);
             return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
         }
         
         public chargebackRetrievalResponse RetrieveByActivityDateWithImpact(DateTime date, bool financialImpact)
         {
-            string queryDate = date.ToString("yyyy-MM-dd");
-            string queryFinancialImpact = financialImpact.ToString();
-            string xmlResponse = sendRetrievalRequest(string.Format(SERVICE_ROUTE+"/?date={0}&financialOnly={1}",
+            var queryDate = date.ToString("yyyy-MM-dd");
+            var queryFinancialImpact = financialImpact.ToString();
+            var xmlResponse = SendRetrievalRequest(string.Format(ServiceRoute+"/?date={0}&financialOnly={1}",
                 queryDate, queryFinancialImpact));
             return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
         }
         
         public chargebackRetrievalResponse RetrieveByActionable(bool actionable)
         {
-            string xmlResponse = sendRetrievalRequest(
-                string.Format(SERVICE_ROUTE+"/?actionable={0}", actionable));
+            var xmlResponse = SendRetrievalRequest(
+                string.Format(ServiceRoute+"/?actionable={0}", actionable));
             return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
         }
         
         public chargebackRetrievalResponse RetrieveByCaseId(long caseId)
         {
-            string xmlResponse = sendRetrievalRequest(
-                string.Format(SERVICE_ROUTE+"/{0}", caseId));
+            var xmlResponse = SendRetrievalRequest(
+                string.Format(ServiceRoute+"/{0}", caseId));
             return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
         }
         
         public chargebackRetrievalResponse RetrieveByToken(string token)
         {
-            string xmlResponse = sendRetrievalRequest(
-                string.Format(SERVICE_ROUTE+"/?token={0}", token));
+            var xmlResponse = SendRetrievalRequest(
+                string.Format(ServiceRoute+"/?token={0}", token));
             return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
         }
         
         public chargebackRetrievalResponse RetrieveByCardNumber(string cardNumber, int month, int year)
         {
             var expirationDate = new DateTime(year, month, 1);
-            string queryExpirationDate = expirationDate.ToString("MMyy");
-            string xmlResponse = sendRetrievalRequest(
-                string.Format(SERVICE_ROUTE+"/?cardNumber={0}&expirationDate={1}",
+            var queryExpirationDate = expirationDate.ToString("MMyy");
+            var xmlResponse = SendRetrievalRequest(
+                string.Format(ServiceRoute+"/?cardNumber={0}&expirationDate={1}",
                 cardNumber, queryExpirationDate));
             return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
         }
         
         public chargebackRetrievalResponse RetrieveByArn(string arn)
         {
-            string xmlResponse = sendRetrievalRequest(string.Format(SERVICE_ROUTE+"/?arn={0}",
+            var xmlResponse = SendRetrievalRequest(string.Format(ServiceRoute+"/?arn={0}",
                 arn));
             return ChargebackUtils.DeserializeResponse<chargebackRetrievalResponse>(xmlResponse);
         }
 
-        private string sendRetrievalRequest(string urlRoute)
+        private string SendRetrievalRequest(string urlRoute)
         {
-            // Handle exception.
             try
             {
-                configureCommunication();
-                var responseTuple = communication.Get(urlRoute);
-                var receivedBytes = (List<byte>) responseTuple[1];
-                String xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
-                if (Boolean.Parse(config.Get("printXml")))
+                ConfigureCommunication();
+                var responseContent = _communication.Get(urlRoute);
+                var receivedBytes = responseContent.GetByteData();
+                var xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
+                if (bool.Parse(Config.Get("printXml")))
                 {
                     Console.WriteLine(xmlResponse);
                 }
@@ -121,21 +120,24 @@ namespace ChargebackForDotNet
             }
             catch (WebException we)
             {
-                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
-                string errString = ChargebackUtils.ListErrors(errorResponse);
-                throw new ChargebackException(
-                    String.Format("Retrieval Failed - HTTP {0} Error", (int)errorResponse.StatusCode)+errString);
+                var errorResponse = (HttpWebResponse) we.Response;
+                var httpStatusCode = errorResponse.StatusCode;
+                var errResponseXml = ChargebackUtils.GetResponseXml(errorResponse);
+                var errString = ChargebackUtils.ExtractErrorMessages(errResponseXml);
+                throw new ChargebackWebException(
+                    string.Format("Retrieval Failed - HTTP {0} Error", httpStatusCode)+errString,
+                    errResponseXml);
             }
         }
         
-        private void configureCommunication()
+        private void ConfigureCommunication()
         {
-            communication.SetHost(config.Get("host"));
-            string encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"), "utf-8");
-            communication.AddToHeader("Authorization", "Basic " + encoded);
-            communication.SetContentType("application/com.vantivcnp.services-v2+xml");
-            communication.SetAccept("application/com.vantivcnp.services-v2+xml");
-            communication.SetProxy(config.Get("proxyHost"), Int32.Parse(config.Get("proxyPort")));
+            _communication.SetHost(Config.Get("host"));
+            var encoded = ChargebackUtils.Encode64(Config.Get("username") + ":" + Config.Get("password"), "utf-8");
+            _communication.AddToHeader("Authorization", "Basic " + encoded);
+            _communication.SetContentType("application/com.vantivcnp.services-v2+xml");
+            _communication.SetAccept("application/com.vantivcnp.services-v2+xml");
+            _communication.SetProxy(Config.Get("proxyHost"), int.Parse(Config.Get("proxyPort")));
         }
     }
     

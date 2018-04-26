@@ -39,8 +39,8 @@ namespace ChargebackForDotNetTest.Certification
 //            docRequest.config.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
             string test1Directory = Path.Combine(Directory.GetCurrentDirectory(), "TestCase1");
             Directory.CreateDirectory(test1Directory);
-            docRequest.config.Set("downloadDirectory", test1Directory);
-            long caseId = Int32.Parse(docRequest.config.Get("merchantId") + "001");
+            docRequest.Config.Set("downloadDirectory", test1Directory);
+            long caseId = Int32.Parse(docRequest.Config.Get("merchantId") + "001");
             chargebackDocumentUploadResponse tiffResponse
                 = docRequest.UploadDocument(caseId, tiffFilename);
             chargebackDocumentUploadResponse pdfResponse
@@ -63,13 +63,13 @@ namespace ChargebackForDotNetTest.Certification
             
             // Step 3. Verify your code can retrieve documents.
             var retrieveDocResponse = docRequest.RetrieveDocument(caseId, tiffFilename);
-            Assert.True(retrieveDocResponse is chargebackDocumentReceivedResponse);
+            Assert.Less(0, retrieveDocResponse.Count);
             retrieveDocResponse = docRequest.RetrieveDocument(caseId, pdfFilename);
-            Assert.True(retrieveDocResponse is chargebackDocumentReceivedResponse);
+            Assert.Less(0, retrieveDocResponse.Count);
             retrieveDocResponse = docRequest.RetrieveDocument(caseId, gifFilename);
-            Assert.True(retrieveDocResponse is chargebackDocumentReceivedResponse);
+            Assert.Less(0, retrieveDocResponse.Count);
             retrieveDocResponse = docRequest.RetrieveDocument(caseId, jpgFilename);
-            Assert.True(retrieveDocResponse is chargebackDocumentReceivedResponse);
+            Assert.Less(0, retrieveDocResponse.Count);
             
             // Step 4. Verify your code can replace a document.
             string jpgReplacingFilename = "TestCase1Replace.jpg";
@@ -81,7 +81,7 @@ namespace ChargebackForDotNetTest.Certification
 
             // Step 5. Try to retrieve the replaced file.
             retrieveDocResponse = docRequest.RetrieveDocument(caseId, jpgReplacingFilename);
-            Assert.True(retrieveDocResponse is chargebackDocumentReceivedResponse);
+            Assert.Less(0, retrieveDocResponse.Count);
             
             // Step 6. Verify that your code can delete documents.
             chargebackDocumentUploadResponse = docRequest.DeleteDocument(caseId, tiffFilename);
@@ -124,7 +124,7 @@ namespace ChargebackForDotNetTest.Certification
             
             ChargebackDocumentationRequest docRequest
                 = new ChargebackDocumentationRequest();
-            long caseId = Int32.Parse(docRequest.config.Get("merchantId") + "002");
+            long caseId = Int32.Parse(docRequest.Config.Get("merchantId") + "002");
             chargebackDocumentUploadResponse tiffResponse
                 = docRequest.UploadDocument(caseId, tiffFilename);
             
@@ -146,7 +146,7 @@ namespace ChargebackForDotNetTest.Certification
             
             ChargebackDocumentationRequest docRequest
                 = new ChargebackDocumentationRequest();
-            long caseId = Int32.Parse(docRequest.config.Get("merchantId") + "003");
+            long caseId = Int32.Parse(docRequest.Config.Get("merchantId") + "003");
             chargebackDocumentUploadResponse tiffResponse
                 = docRequest.UploadDocument(caseId, tiffFilename);
             
@@ -172,7 +172,7 @@ namespace ChargebackForDotNetTest.Certification
             byte[] fileBytes = new byte[tifSize];
             fileCreator.Write(fileBytes, 0, fileBytes.Length);
             fileCreator.Close();
-            long caseId = Int32.Parse(docRequest.config.Get("merchantId") + "004");
+            long caseId = Int32.Parse(docRequest.Config.Get("merchantId") + "004");
             chargebackDocumentUploadResponse maxSizeResponse
                 = docRequest.UploadDocument(caseId, tifFilename);
             File.Delete(tifFilename);

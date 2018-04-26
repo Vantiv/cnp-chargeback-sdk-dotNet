@@ -13,24 +13,24 @@ namespace ChargebackForDotNet
 {
     public class ChargebackDocumentationRequest
     {
-        private Configuration configurationField;
-        private Communication communication;
-        private const string SERVICE_ROUTE = "/services/chargebacks";
+        private Configuration _configurationField;
+        private readonly Communication _communication;
+        private const string ServiceRoute = "/services/chargebacks";
 
-        public Configuration config
+        public Configuration Config
         {
-            get { return configurationField ?? (configurationField = new Configuration()); }
-            set { configurationField = value; }
+            get { return _configurationField ?? (_configurationField = new Configuration()); }
+            set { _configurationField = value; }
         }
 
         public ChargebackDocumentationRequest()
         {
-            communication = new Communication();
+            _communication = new Communication();
         }
 
         public ChargebackDocumentationRequest(Communication comm)
         {
-            communication = comm;
+            _communication = comm;
         }
 
         public chargebackDocumentUploadResponse UploadDocument(long caseId, string filePath)
@@ -39,96 +39,92 @@ namespace ChargebackForDotNet
             string documentId = Path.GetFileName(filePath);
             try
             {
-                configureCommunicationForUpload();
-                var responseTuple = communication.Post(
-                    SERVICE_ROUTE + "/upload/" + caseId + "/" + documentId, fileBytes);
-                return handleResponse(responseTuple);
+                ConfigureCommunicationForUpload();
+                var responseTuple = _communication.Post(
+                    ServiceRoute + "/upload/" + caseId + "/" + documentId, fileBytes);
+                return HandleResponse(responseTuple);
             }
             catch (WebException we)
             {
-                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
-                string errString = ChargebackUtils.ListErrors(errorResponse);
-                throw new ChargebackException(
-                    string.Format("Upload Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) + errString);
+                var httpResponse = (HttpWebResponse) we.Response;
+                var httpStatusCode = (int) httpResponse.StatusCode;
+                var errResponseXml = ChargebackUtils.GetResponseXml(httpResponse);
+                var errMessages = ChargebackUtils.ExtractErrorMessages(errResponseXml);
+                throw new ChargebackWebException(
+                    string.Format("Upload Failed - HTTP {0} Error" + we, httpStatusCode) + errMessages, errResponseXml);
             }
         }
 
         public chargebackDocumentUploadResponse ReplaceDocument(long caseId, string documentId, string filePath)
         {
-            List<byte> fileBytes = File.ReadAllBytes(filePath).ToList();
+            var fileBytes = File.ReadAllBytes(filePath).ToList();
             try
             {
-                configureCommunicationForUpload();
+                ConfigureCommunicationForUpload();
                 
-                var responseTuple = communication.Put(
-                    SERVICE_ROUTE + "/replace/" + caseId + "/" + documentId, fileBytes);
-                return handleResponse(responseTuple);
+                var responseTuple = _communication.Put(
+                    ServiceRoute + "/replace/" + caseId + "/" + documentId, fileBytes);
+                return HandleResponse(responseTuple);
             }
             catch (WebException we)
             {
-                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
-                string errString = ChargebackUtils.ListErrors(errorResponse);
-                throw new ChargebackException(
-                    string.Format("Replace Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) + errString);
+                var httpResponse = (HttpWebResponse) we.Response;
+                var httpStatusCode = (int) httpResponse.StatusCode;
+                var errResponseXml = ChargebackUtils.GetResponseXml(httpResponse);
+                var errMessages = ChargebackUtils.ExtractErrorMessages(errResponseXml);
+                throw new ChargebackWebException(
+                    string.Format("Replace Failed - HTTP {0} Error" + we, httpStatusCode) + errMessages, errResponseXml);
             }
         }
 
-        public IDocumentResponse RetrieveDocument(long caseId, string documentId)
+        public List<byte> RetrieveDocument(long caseId, string documentId)
         {
-            IDocumentResponse docResponse = null;
             try
             {
-                configureCommunication();
-                
-                var responseTuple = communication.Get(
-                    string.Format(SERVICE_ROUTE+"/retrieve/{0}/{1}", caseId, documentId));
-                var contentType = (string) responseTuple[0];
-                var responseBytes = (List<byte>) responseTuple[1];
+                ConfigureCommunication();
+                var responseContent = _communication.Get(
+                    string.Format(ServiceRoute+"/retrieve/{0}/{1}", caseId, documentId));
+                var contentType = responseContent.GetContentType();
+                var responseBytes = responseContent.GetByteData();
                 if ("image/tiff".Equals(contentType))
                 {
-                    var downloadDiectory = config.Get("downloadDirectory");
-                    string filePath = Path.Combine(downloadDiectory, documentId);
-                    if (!Directory.Exists(downloadDiectory))
-                    {
-                        Directory.CreateDirectory(downloadDiectory);
-                    }
-                    string retrievedFilePath = ChargebackUtils.BytesToFile(responseBytes, filePath);
-                    chargebackDocumentReceivedResponse fileReceivedResponse = new chargebackDocumentReceivedResponse();
-                    fileReceivedResponse.retrievedFilePath = retrievedFilePath;
-                    docResponse = fileReceivedResponse;
+                    return responseBytes;
                 }
-                else
-                {
-                    return handleResponse(responseTuple);
-                }
+
+                var responseString = ChargebackUtils.BytesToString(responseBytes);
+                var uploadErrorResponse
+                    = ChargebackUtils.DeserializeResponse<chargebackDocumentUploadResponse>(responseString);
+                throw new ChargebackDocumentException(uploadErrorResponse.responseMessage, responseString);
             }
             catch (WebException we)
             {
-                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
-                string errString = ChargebackUtils.ListErrors(errorResponse);
-                throw new ChargebackException(
-                    string.Format("Retrieve Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) + errString);
+                var httpResponse = (HttpWebResponse) we.Response;
+                var httpStatusCode = (int) httpResponse.StatusCode;
+                var errResponseXml = ChargebackUtils.GetResponseXml(httpResponse);
+                var errMessages = ChargebackUtils.ExtractErrorMessages(errResponseXml);
+                throw new ChargebackWebException(
+                    string.Format("Retrieve Failed - HTTP {0} Error" + we, httpStatusCode) + errMessages,
+                    errResponseXml);
             }
-            return docResponse;
         }
 
         public chargebackDocumentUploadResponse DeleteDocument(long caseId, string documentId)
         {
             try
             {
-                configureCommunication();
-                
-                var responseTuple = communication.Delete(
-                    string.Format(SERVICE_ROUTE+"/remove/{0}/{1}", caseId, documentId));
-                return handleResponse(responseTuple);
-                              
+                ConfigureCommunication();
+                var responseContent = _communication.Delete(
+                    string.Format(ServiceRoute+"/remove/{0}/{1}", caseId, documentId));
+                return HandleResponse(responseContent);
             }
             catch (WebException we)
             {
-                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
-                string errString = ChargebackUtils.ListErrors(errorResponse);
-                throw new ChargebackException(
-                    string.Format("Delete Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) + errString);
+                var httpResponse = (HttpWebResponse) we.Response;
+                var httpStatusCode = (int) httpResponse.StatusCode;
+                var errResponseXml = ChargebackUtils.GetResponseXml(httpResponse);
+                var errMessages = ChargebackUtils.ExtractErrorMessages(errResponseXml);
+                throw new ChargebackWebException(
+                    string.Format("Delete Failed - HTTP {0} Error" + we, httpStatusCode) + errMessages, errResponseXml);
             }
         }
 
@@ -136,75 +132,63 @@ namespace ChargebackForDotNet
         {
             try
             {
-                configureCommunication();
-                
-                var responseTuple = communication.Get(
-                    SERVICE_ROUTE + "/list/" + caseId);
-                return handleResponse(responseTuple);
-
+                ConfigureCommunication();
+                var responseContent = _communication.Get(
+                    ServiceRoute + "/list/" + caseId);
+                return HandleResponse(responseContent);
             }
             catch (WebException we)
             {
-                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
-                string errString = ChargebackUtils.ListErrors(errorResponse);
-                throw new ChargebackException(
-                    string.Format("List documents Failed - HTTP {0} Error" + we, (int) errorResponse.StatusCode) + errString);
+                var httpResponse = (HttpWebResponse) we.Response;
+                var httpStatusCode = (int) httpResponse.StatusCode;
+                var errResponseXml = ChargebackUtils.GetResponseXml(httpResponse);
+                var errMessages = ChargebackUtils.ExtractErrorMessages(errResponseXml);
+                throw new ChargebackWebException(
+                    string.Format("List documents Failed - HTTP {0} Error" + we, httpStatusCode) + errMessages, errResponseXml);
             }
         }
         
-        private chargebackDocumentUploadResponse handleResponse(ArrayList responseTuple)
+        private chargebackDocumentUploadResponse HandleResponse(ResponseContent responseContent)
         {
-            var contentType = (string) responseTuple[0];
-            var responseBytes = (List<byte>) responseTuple[1];
-            if (contentType.Contains("application/com.vantivcnp.services-v2+xml"))
+            var contentType = responseContent.GetContentType();
+            var responseBytes = responseContent.GetByteData();
+            if (!contentType.Contains("application/com.vantivcnp.services-v2+xml"))
             {
-                string xmlResponse = ChargebackUtils.BytesToString(responseBytes);
-                if (Boolean.Parse(config.Get("printXml")))
-                {
-                    Console.WriteLine(xmlResponse);
-                }
-                chargebackDocumentUploadResponse docResponse
-                    = ChargebackUtils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
-                return docResponse;
+                var stringResponse = ChargebackUtils.BytesToString(responseBytes);
+                throw new ChargebackException(
+                    string.Format("Unexpected returned Content-Type: {0}. Call Vantiv immediately!" +
+                                  "\nAttempting to read the response as raw text:" +
+                                  "\n{1}", contentType, stringResponse));
             }
-            string stringResponse = ChargebackUtils.BytesToString(responseBytes);
-            throw new ChargebackException(
-                string.Format("Unexpected returned Content-Type: {0}. Call Vantiv immediately!" +
-                              "\nTrying to read the response as raw text:" +
-                              "\n{1}", contentType, stringResponse));
+            var xmlResponse = ChargebackUtils.BytesToString(responseBytes);
+            if (bool.Parse(Config.Get("printXml")))
+            {
+                Console.WriteLine(xmlResponse);
+            }
+            var docResponse
+                = ChargebackUtils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
+            return docResponse;
         }
         
-        private void configureCommunication()
+        private void ConfigureCommunication()
         {
-            communication.SetHost(config.Get("host"));
+            _communication.SetHost(Config.Get("host"));
             string encoded = ChargebackUtils.Encode64(
-                config.Get("username") + ":" + config.Get("password"), "utf-8");
-            communication.AddToHeader("Authorization", "Basic " + encoded);
-            communication.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
-            communication.SetContentType(null);
+                Config.Get("username") + ":" + Config.Get("password"), "utf-8");
+            _communication.AddToHeader("Authorization", "Basic " + encoded);
+            _communication.SetProxy(Config.Get("proxyHost"), int.Parse(Config.Get("proxyPort")));
+            _communication.SetContentType(null);
         }
         
-        private void configureCommunicationForUpload()
+        private void ConfigureCommunicationForUpload()
         {           
-            configureCommunication();
-            communication.SetContentType("image/tiff");
+            ConfigureCommunication();
+            _communication.SetContentType("image/tiff");
         }
         
     }
     
-    public interface IDocumentResponse
-    {
-        // The response of retrieving documents can return
-        // either a file or an xml string for error. Thus, returning an
-        // interface works for both cases.
-    }
-
-    public class chargebackDocumentReceivedResponse : IDocumentResponse
-    {
-        public string retrievedFilePath { get; set; }
-    }
-    
-    public partial class chargebackDocumentUploadResponse : IDocumentResponse
+    public partial class chargebackDocumentUploadResponse
     {
         // Additional implementation for chargebackDocumentUploadResponse class
         // should be written here.

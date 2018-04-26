@@ -27,7 +27,7 @@ namespace ChargebackForDotNetTest.Functional
             Configuration config = new Configuration(configDict);
             
             retrievalRequest = new ChargebackRetrievalRequest();
-            retrievalRequest.config = config;
+            retrievalRequest.Config = config;
         }
 
         [Test]

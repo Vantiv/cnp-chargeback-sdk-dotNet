@@ -60,11 +60,8 @@ namespace ChargebackForDotNet
             return (T) (new XmlSerializer(typeof(T))).Deserialize(new StringReader(xmlResponse));
         }
 
-        public static string ListErrors(HttpWebResponse errorResponse)
+        public static string ExtractErrorMessages(string xmlResponse)
         {
-            StreamReader reader = new StreamReader(errorResponse.GetResponseStream());
-            string xmlResponse = reader.ReadToEnd().Trim();
-            reader.Close();
             var errResponse = DeserializeResponse<errorResponse>(xmlResponse);
             string errString = "";
             foreach (var err in errResponse.errors)
@@ -73,6 +70,14 @@ namespace ChargebackForDotNet
             }
 
             return errString;
+        }
+
+        public static string GetResponseXml(HttpWebResponse we)
+        {
+            StreamReader reader = new StreamReader(we.GetResponseStream());
+            string xmlResponse = reader.ReadToEnd().Trim();
+            reader.Close();
+            return xmlResponse;
         }
     }
 }

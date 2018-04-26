@@ -18,11 +18,11 @@ namespace ChargebackForDotNetTest.Unit
 
         private string generateXmlResponse(int transactionId, int nCases)
         {
-            string head = string.Format(
+            var head = string.Format(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                 "<chargebackRetrievalResponse xmlns=\"http://www.vantivcnp.com/chargebacks\">" +
                 "    <transactionId>{0}</transactionId>", transactionId);
-            string body =
+            var body =
                 "    <chargebackCase>" +
                 "        <caseId>12887910010</caseId>" +
                 "        <merchantId>1288791</merchantId>" +
@@ -52,10 +52,10 @@ namespace ChargebackForDotNetTest.Unit
                 "            <notes>Please work this case</notes>" +
                 "        </activity>" +
                 "    </chargebackCase>";
-            string foot =
+            var foot =
                 "</chargebackRetrievalResponse>";
             var xmlResponse = new StringBuilder(head);
-            for (int i = 0; i < nCases; i++)
+            for (var i = 0; i < nCases; i++)
             {
                 xmlResponse.Append(body);
             }
@@ -70,13 +70,12 @@ namespace ChargebackForDotNetTest.Unit
         [TestCase("2018-04-09", 2111123987, 0, true)]
         public void TestRetrieveByActivityDate(string date, int expectedId, int expectedNCases, bool expectedNull)
         {
-            string expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
-            ArrayList expectedResponseTuple = new ArrayList();
-            expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
+            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedResponseContent = new ResponseContent(
+                "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get("/chargebacks/?date=" + date))
-                .Returns(expectedResponseTuple);
+                .Returns(expectedResponseContent);
             ChargebackRetrievalRequest request
                 = new ChargebackRetrievalRequest(commMock.Object);
             chargebackRetrievalResponse response
@@ -94,13 +93,12 @@ namespace ChargebackForDotNetTest.Unit
         public void TestRetrieveByActivityDateWithImpact(string date, bool impact,
             int expectedId, int expectedNCases, bool expectedNull)
         {
-            string expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
-            ArrayList expectedResponseTuple = new ArrayList();
-            expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
+            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedResponseContent = new ResponseContent(
+                "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get(string.Format("/chargebacks/?date={0}&financialOnly={1}", date, impact)))
-                .Returns(expectedResponseTuple);
+                .Returns(expectedResponseContent);
             ChargebackRetrievalRequest request
                 = new ChargebackRetrievalRequest(commMock.Object);
             chargebackRetrievalResponse response
@@ -118,13 +116,12 @@ namespace ChargebackForDotNetTest.Unit
         public void TestRetrieveByActionable(bool actionable, int expectedId, int expectedNCases,
             bool expectedNull)
         {
-            string expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
-            ArrayList expectedResponseTuple = new ArrayList();
-            expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
+            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedResponseContent = new ResponseContent(
+                "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get(string.Format("/chargebacks/?actionable={0}", actionable)))
-                .Returns(expectedResponseTuple);
+                .Returns(expectedResponseContent);
             ChargebackRetrievalRequest request
                 = new ChargebackRetrievalRequest(commMock.Object);
             chargebackRetrievalResponse response
@@ -143,13 +140,12 @@ namespace ChargebackForDotNetTest.Unit
         public void TestRetrieveByCaseId(long caseId, int expectedId, int expectedNCases,
             bool expectedNull)
         {
-            string expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
-            ArrayList expectedResponseTuple = new ArrayList();
-            expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
+            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedResponseContent = new ResponseContent(
+                "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get(string.Format("/chargebacks/{0}", caseId)))
-                .Returns(expectedResponseTuple);
+                .Returns(expectedResponseContent);
             ChargebackRetrievalRequest request
                 = new ChargebackRetrievalRequest(commMock.Object);
             chargebackRetrievalResponse response
@@ -167,13 +163,12 @@ namespace ChargebackForDotNetTest.Unit
         public void TestRetrieveByToken(string token, int expectedId, int expectedNCases,
             bool expectedNull)
         {
-            string expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
-            ArrayList expectedResponseTuple = new ArrayList();
-            expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
+            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedResponseContent = new ResponseContent(
+                "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get(string.Format("/chargebacks/?token={0}", token)))
-                .Returns(expectedResponseTuple);
+                .Returns(expectedResponseContent);
             ChargebackRetrievalRequest request
                 = new ChargebackRetrievalRequest(commMock.Object);
             chargebackRetrievalResponse response
@@ -191,17 +186,16 @@ namespace ChargebackForDotNetTest.Unit
         public void TestRetrieveByCardNumber(string cardNumber, string expirationDate,
             int expectedId, int expectedNCases, bool expectedNull)
         {
-            string expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
-            ArrayList expectedResponseTuple = new ArrayList();
-            expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
+            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedResponseContent = new ResponseContent(
+                "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
             var cardExpirationdate = ChargebackUtils.ParseDate(expirationDate);
             var stringCardExpirationdate = cardExpirationdate.ToString("MMyy");
             string expectedQuery =
                 string.Format("/chargebacks/?cardNumber={0}&expirationDate={1}", cardNumber, stringCardExpirationdate);
             commMock.Setup(c => c.Get(expectedQuery))
-                .Returns(expectedResponseTuple);
+                .Returns(expectedResponseContent);
             ChargebackRetrievalRequest request
                 = new ChargebackRetrievalRequest(commMock.Object);
             chargebackRetrievalResponse response
@@ -218,13 +212,12 @@ namespace ChargebackForDotNetTest.Unit
         [TestCase("333333333", 1234567, 0, true)]
         public void TestRetrieveByArn(string arn, int expectedId, int expectedNCases, bool expectedNull)
         {
-            string expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
-            ArrayList expectedResponseTuple = new ArrayList();
-            expectedResponseTuple.Add("text/xml");
-            expectedResponseTuple.Add(ChargebackUtils.StringToBytes(expectedXmlResponse));
+            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedResponseContent = new ResponseContent(
+                "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
             Mock<Communication> commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get(string.Format("/chargebacks/?arn={0}", arn)))
-                .Returns(expectedResponseTuple);
+                .Returns(expectedResponseContent);
             ChargebackRetrievalRequest request
                 = new ChargebackRetrievalRequest(commMock.Object);
             chargebackRetrievalResponse response

@@ -34,28 +34,23 @@ namespace ChargebackForDotNetTest.Functional
             }
             
             docRequest = new ChargebackDocumentationRequest();
-            docRequest.config = config;
+            docRequest.Config = config;
         }
         
         [Test]
         public void TestRetrieveDocument()
         {
-            chargebackDocumentReceivedResponse docResponse = 
-                (chargebackDocumentReceivedResponse)docRequest.RetrieveDocument(1000, "doc.tiff");
+            var docResponse = docRequest.RetrieveDocument(1000, "doc.tiff");
             Assert.NotNull(docResponse);
-            Assert.AreEqual(docRequest.config.Get("downloadDirectory") + "\\doc.tiff", docResponse.retrievedFilePath);
-            Assert.True(File.Exists(docResponse.retrievedFilePath));
-            File.Delete(docResponse.retrievedFilePath);
+            Assert.Less(0, docResponse.Count);
         }
         
         [Test]
+        [ExpectedException(typeof(ChargebackDocumentException))]
         public void TestRetrieveDocument_DocumentNotFound_009()
         {
-            chargebackDocumentUploadResponse docResponse
-                = (chargebackDocumentUploadResponse)docRequest.RetrieveDocument(10009, "testDoc.tiff");
-            Assert.NotNull(docResponse);
-            Assert.AreEqual("009", docResponse.responseCode);
-            Assert.AreEqual("Document Not Found".ToLower(), docResponse.responseMessage.ToLower());
+            var docResponse
+                = docRequest.RetrieveDocument(10009, "testDoc.tiff");
         }
         
         [Test]
@@ -80,7 +75,7 @@ namespace ChargebackForDotNetTest.Functional
         public void TestUploadDocument()
         {
             const string tiffFilename = "uploadTest.tiff";
-            var tiffFilePath = Path.Combine(docRequest.config.Get("downloadDirectory"), tiffFilename);
+            var tiffFilePath = Path.Combine(docRequest.Config.Get("downloadDirectory"), tiffFilename);
             var writer = new StreamWriter(File.Create(tiffFilePath));
             writer.WriteLine("Prototype a file.");
             writer.Close();
@@ -107,7 +102,7 @@ namespace ChargebackForDotNetTest.Functional
         public void TestReplaceDocument()
         {
             const string tiffFilename = "uploadTest.tiff";
-            var tiffFilePath = Path.Combine(docRequest.config.Get("downloadDirectory"), tiffFilename);
+            var tiffFilePath = Path.Combine(docRequest.Config.Get("downloadDirectory"), tiffFilename);
             var writer = new StreamWriter(File.Create(tiffFilePath));
             writer.WriteLine("Prototype a file.");
             writer.Close();
@@ -133,7 +128,7 @@ namespace ChargebackForDotNetTest.Functional
         [TearDown]
         public void TearDown()
         {
-            Directory.Delete(docRequest.config.Get("downloadDirectory"));
+            Directory.Delete(docRequest.Config.Get("downloadDirectory"));
         }
     }
 }

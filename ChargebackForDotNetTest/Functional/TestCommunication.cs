@@ -48,9 +48,9 @@ namespace ChargebackForDotNetTest.Functional
             comm.SetContentType("application/com.vantivcnp.services-v2+xml");
             comm.SetAccept("application/com.vantivcnp.services-v2+xml");
             comm.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
-            var responseTuple = comm.Get("/services/chargebacks/" + date);
-            var contentType = (string) responseTuple[0];
-            var receivedBytes = (List<byte>) responseTuple[1];
+            var responseContent = comm.Get("/services/chargebacks/" + date);
+            var contentType = responseContent.GetContentType();
+            var receivedBytes = responseContent.GetByteData();
             Assert.True(receivedBytes.Any());
             Console.WriteLine("Content type returned from the server::" + contentType);
             string xmlResponse = Regex.Replace(ChargebackUtils.BytesToString(receivedBytes), @"\t|\n|\r", "");
@@ -79,9 +79,9 @@ namespace ChargebackForDotNetTest.Functional
             comm.SetContentType("application/com.vantivcnp.services-v2+xml");
             comm.SetAccept("application/com.vantivcnp.services-v2+xml");
             comm.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
-            var responseTuple = comm.Put("/services/chargebacks/" + caseId, sendingBytes);
-            var contentType = (string) responseTuple[0];
-            var receivedBytes = (List<byte>) responseTuple[1];
+            var responseContent = comm.Put("/services/chargebacks/" + caseId, sendingBytes);
+            var contentType = responseContent.GetContentType();
+            var receivedBytes = responseContent.GetByteData();
             Assert.True(receivedBytes.Any());
             string xmlResponse = Regex.Replace(ChargebackUtils.BytesToString(receivedBytes), @"\t|\n|\r", "");
             string pattern = @"<?xml version=.* encoding=.* standalone=.*?>.*" +
@@ -109,9 +109,9 @@ namespace ChargebackForDotNetTest.Functional
             comm.SetContentType("image/tiff");
             try
             {
-                var responseTuple = comm.Post("/services/chargebacks/upload/" + caseId + "/" + tiffFilename, sendingBytes);
-                var contentType = (string) responseTuple[0];
-                var receivedBytes = (List<byte>) responseTuple[1];
+                var responseContent = comm.Post("/services/chargebacks/upload/" + caseId + "/" + tiffFilename, sendingBytes);
+                var contentType = responseContent.GetContentType();
+                var receivedBytes = responseContent.GetByteData();
                 Assert.True(receivedBytes.Any());
                 string xmlResponse = Regex.Replace(ChargebackUtils.BytesToString(receivedBytes), @"\t|\n|\r", "");
                 string pattern = @"<?xml version=.* encoding=.* standalone=.*?>.*" +
@@ -141,9 +141,9 @@ namespace ChargebackForDotNetTest.Functional
             string encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"), "utf-8");
             comm.AddToHeader("Authorization", "Basic " + encoded);
             comm.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
-            var responseTuple = comm.Delete(string.Format("/services/chargebacks/remove/{0}/{1}", caseId, tiffFilename));
-            var contentType = (string) responseTuple[0];
-            var receivedBytes = (List<byte>) responseTuple[1];
+            var responseContent = comm.Delete(string.Format("/services/chargebacks/remove/{0}/{1}", caseId, tiffFilename));
+            var contentType = responseContent.GetContentType();
+            var receivedBytes = responseContent.GetByteData();
             Assert.True(receivedBytes.Any());
             string xmlResponse = Regex.Replace(ChargebackUtils.BytesToString(receivedBytes), @"\t|\n|\r", "");
             string pattern = @"<?xml version=.* encoding=.* standalone=.*?>.*" +

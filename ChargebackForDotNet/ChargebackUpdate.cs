@@ -160,8 +160,8 @@ namespace ChargebackForDotNet
             try
             {
                 configureCommunication();
-                var responseTuple = communication.Put(SERVICE_ROUTE + "/" + caseId, ChargebackUtils.StringToBytes(xmlRequest));
-                var receivedBytes = (List<byte>) responseTuple[1];
+                var responseContent = communication.Put(SERVICE_ROUTE + "/" + caseId, ChargebackUtils.StringToBytes(xmlRequest));
+                var receivedBytes = responseContent.GetByteData();
                 string xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
                 if (Boolean.Parse(config.Get("printXml")))
                 {
@@ -171,10 +171,12 @@ namespace ChargebackForDotNet
             }
             catch (WebException we)
             {
-                HttpWebResponse errorResponse = (HttpWebResponse) we.Response;
-                string errString = ChargebackUtils.ListErrors(errorResponse);
-                throw new ChargebackException(
-                    string.Format("Update Failed - HTTP {0} Error", (int) errorResponse.StatusCode) + errString);
+                var errorResponse = (HttpWebResponse) we.Response;
+                var httpStatusCode = errorResponse.StatusCode;
+                var errResponseXml = ChargebackUtils.GetResponseXml(errorResponse);
+                var errString = ChargebackUtils.ExtractErrorMessages(errResponseXml);
+                throw new ChargebackWebException(
+                    string.Format("Update Failed - HTTP {0} Error", httpStatusCode) + errString, errResponseXml);
             }
         }
 
