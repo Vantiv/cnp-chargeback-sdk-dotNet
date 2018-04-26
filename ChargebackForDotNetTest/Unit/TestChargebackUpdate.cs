@@ -74,7 +74,6 @@ namespace ChargebackForDotNetTest.Unit
 
         [TestCase(1000, "test1@assign.com.com", "Assign to test1", 1234567)]
         [TestCase(1000, "test2@assign.com.com", null, 4568778)]
-        [TestCase(1000, null, null, 9874561)]
         public void TestAssignToUser(long caseId, string assignedTo, string note, int expectedTxnId)
         {
             string expectedXmlResponse = generateXmlResponse(expectedTxnId);
@@ -95,7 +94,6 @@ namespace ChargebackForDotNetTest.Unit
         
         
         [TestCase(1000, "Note test1", 1234567)]
-        [TestCase(1000, null, 4568778)]
         public void TestAddNote(long caseId, string note, int expectedTxnId)
         {
             string expectedXmlResponse = generateXmlResponse(expectedTxnId);

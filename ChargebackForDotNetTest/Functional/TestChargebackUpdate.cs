@@ -127,6 +127,7 @@ namespace ChargebackForDotNetTest.Functional
             }
             catch (ChargebackException ce)
             {
+                Console.BackgroundColor = ConsoleColor.DarkGreen;
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 400 Error"));
                 string pattern = @".*Poorly formatted xml or cannot perform activity.*";
                 Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mime;
 using System.Xml.Serialization;
 using ChargebackForDotNet.Properties;
 
@@ -10,13 +11,6 @@ namespace ChargebackForDotNet
 {
     public partial class chargebackUpdateRequest
     {
-    
-        private activityType activityType;
-        private string assignedTo;
-        private string note;
-        private long representedAmount;
-        private bool representedAmountFieldSpecified;
-        private long caseId;
         private const string SERVICE_ROUTE = "/chargebacks";
         
         private Configuration configurationField;
@@ -47,111 +41,126 @@ namespace ChargebackForDotNet
             communication = comm;
         }
         
-        public chargebackUpdateResponse AssignToUser(long caseId, string assignedTo = null, string note = null)
+        public chargebackUpdateResponse AssignToUser(long caseId, string assignedTo , string note = null)
         {
-            this.caseId = caseId;
-            this.activityType = activityType.ASSIGN_TO_USER;
-            this.assignedTo = assignedTo;
-            this.note = note;
-            return sendUpdateRequest();
+            // what if user is null here
+            string xmlBody = "";
+            xmlBody += serializeActivityType(activityType.ASSIGN_TO_USER);
+            xmlBody += serializeAssignedTo(assignedTo);
+            if (note != null)
+            {
+                xmlBody += serializeNote(note);
+            }            
+            return sendUpdateRequest(caseId, xmlBody);
         }
+
         
-        public chargebackUpdateResponse AddNote(long caseId, string note = null)
+        public chargebackUpdateResponse AddNote(long caseId, string note)
         {
-            this.caseId = caseId;
-            this.activityType = activityType.ADD_NOTE;
-            this.note = note;
-            return sendUpdateRequest();
+            string xmlBody = "";
+            xmlBody += serializeActivityType(activityType.ADD_NOTE);
+            xmlBody += serializeNote(note);
+            return sendUpdateRequest(caseId, xmlBody);
         }
         
         public chargebackUpdateResponse AcceptLiability(long caseId, string note = null)
         {
-            this.caseId = caseId;
-            this.activityType = activityType.MERCHANT_ACCEPTS_LIABILITY;
-            this.note = note;
-            return sendUpdateRequest();
+            string xmlBody = "";
+            xmlBody += serializeActivityType(activityType.MERCHANT_ACCEPTS_LIABILITY);
+            if (note != null)
+            {
+                xmlBody += serializeNote(note);
+            }
+            return sendUpdateRequest(caseId, xmlBody);
         }
         
         public chargebackUpdateResponse Represent(long caseId, long representedAmount, string note = null)
         {
-            this.caseId = caseId;
-            this.activityType = activityType.MERCHANT_REPRESENT;
-            this.note = note;
-            this.representedAmount = representedAmount;
-            this.representedAmountFieldSpecified = true;
-            return sendUpdateRequest();
+            string xmlBody = "";
+            xmlBody += serializeActivityType(activityType.MERCHANT_REPRESENT);
+            if (note != null)
+            {
+                xmlBody += serializeNote(note);
+            }
+            xmlBody += serializeRepresentedAmount(representedAmount);
+            return sendUpdateRequest(caseId, xmlBody);
         }
+
         
         public chargebackUpdateResponse Represent(long caseId, string note = null)
         {
-            this.caseId = caseId;
-            this.activityType = activityType.MERCHANT_REPRESENT;
-            this.note = note;
-            return sendUpdateRequest();
+            string xmlBody = "";
+            xmlBody += serializeActivityType(activityType.MERCHANT_REPRESENT);
+            if (note != null)
+            {
+                xmlBody += serializeNote(note);
+            }
+            return sendUpdateRequest(caseId, xmlBody);
         }
         
         public chargebackUpdateResponse Respond(long caseId, string note = null)
         {
-            this.caseId = caseId;
-            this.activityType = activityType.MERCHANT_RESPOND;
-            this.note = note;
-            return sendUpdateRequest();
+            string xmlBody = "";
+            xmlBody += serializeActivityType(activityType.MERCHANT_RESPOND);
+            if (note != null)
+            {
+                xmlBody += serializeNote(note);
+            }
+            return sendUpdateRequest(caseId, xmlBody);
         }
         
         public chargebackUpdateResponse RequestArbitration(long caseId, string note = null)
         {
-            this.caseId = caseId;
-            this.activityType = activityType.MERCHANT_REQUESTS_ARBITRATION;
-            this.note = note;
-            return sendUpdateRequest();
+            string xmlBody = "";
+            xmlBody += serializeActivityType(activityType.MERCHANT_REQUESTS_ARBITRATION);
+            if (note != null)
+            {
+                xmlBody += serializeNote(note);
+            }
+            return sendUpdateRequest(caseId, xmlBody);
         }
 
-        private string serialize()
+        private string serialize(string xmlBody)
         {
-            string header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+            string xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                             "\n<chargebackUpdateRequest xmlns=\"http://www.vantivcnp.com/chargebacks\">";
-            string footer = "\n</chargebackUpdateRequest>";
-            string body = "";
-            
-            body += string.Format("\n<activityType>{0}</activityType>", this.activityType);
-            if (this.assignedTo != null)
-            {
-                body += string.Format("\n<assignedTo>{0}</assignedTo>", this.assignedTo);
-            }
-
-            if (this.note != null)
-            {
-                body += string.Format("\n<note>{0}</note>", this.note);
-            }
-
-            if (this.representedAmountFieldSpecified)
-            {
-                body += string.Format("\n<representedAmount>{0}</representedAmount>",this.representedAmount);
-            }
-            return header+body+footer;
+            string xmlFooter = "\n</chargebackUpdateRequest>";
+            return xmlHeader + xmlBody + xmlFooter;
+        }
+        
+        private string serializeNote(string note)
+        {
+            return "\n<note>" + note + "</note>";
         }
 
-        private void unsetFields()
+        private string serializeActivityType(activityType activityType)
         {
-            assignedTo = null;
-            note = null;
-            representedAmount = 0;
-            representedAmountFieldSpecified = false;
+            return "\n<activityType>" + activityType + "</activityType>";
+        }
+        
+        private string serializeRepresentedAmount(long representedAmount)
+        {
+            return "\n<representedAmount>" + representedAmount + "</representedAmount>";
+        }
+        
+        private string serializeAssignedTo(string assignedTo)
+        {
+            return "\n<assignedTo>" + assignedTo + "</assignedTo>";
         }
 
-        private chargebackUpdateResponse sendUpdateRequest()
+        
+        private chargebackUpdateResponse sendUpdateRequest(long caseId, string xmlBody)
         {
-            string xml = this.serialize();
+            string xmlRequest = serialize(xmlBody);
             if (Boolean.Parse(config.Get("printXml")))
             {
                 Console.WriteLine("Request is:");
-                Console.WriteLine(xml);
+                Console.WriteLine(xmlRequest);
             }
-            unsetFields();
             try
             {
                 configureCommunication();
-                var responseTuple = communication.Put(SERVICE_ROUTE + "/" + caseId, ChargebackUtils.StringToBytes(xml));
+                var responseTuple = communication.Put(SERVICE_ROUTE + "/" + caseId, ChargebackUtils.StringToBytes(xmlRequest));
                 var receivedBytes = (List<byte>) responseTuple[1];
                 string xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
                 if (Boolean.Parse(config.Get("printXml")))
