@@ -133,8 +133,8 @@ namespace ChargebackForDotNetTest.Certification
             {
                 Console.WriteLine("Exception message:" + ce.Message);
                 Console.WriteLine("End exception message.");
-                Assert.True(ce.Message.Contains("Cannot perform activity <Merchant Accepts Liability> " +
-                                "for case <"+caseId+"> in queue <Merchant Assumed>"));
+                Assert.AreEqual("Cannot perform activity <Merchant Accepts Liability> " +
+                                "for case <"+caseId+"> in queue <Merchant Assumed>", ce.errorMessages[0]);
             }
             
             // Step 4. Attempt to retrieve a case using a random value for caseId.
@@ -148,7 +148,7 @@ namespace ChargebackForDotNetTest.Certification
             }
             catch(ChargebackWebException ce)
             {
-                Assert.True(ce.Message.Contains("Could not find requested object."));
+                Assert.AreEqual("Could not find requested object.", ce.errorMessages[0]);
             }
         }
 

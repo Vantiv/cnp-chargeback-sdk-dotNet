@@ -46,12 +46,7 @@ namespace ChargebackForDotNet
             }
             catch (WebException we)
             {
-                var httpResponse = (HttpWebResponse) we.Response;
-                var httpStatusCode = (int) httpResponse.StatusCode;
-                var errResponseXml = ChargebackUtils.GetResponseXml(httpResponse);
-                var errMessages = ChargebackUtils.ExtractErrorMessages(errResponseXml);
-                throw new ChargebackWebException(
-                    string.Format("Upload Failed - HTTP {0} Error" + we, httpStatusCode) + errMessages, errResponseXml);
+                throw ChargebackDocumentWebException(we, "Upload");
             }
         }
 
@@ -68,12 +63,7 @@ namespace ChargebackForDotNet
             }
             catch (WebException we)
             {
-                var httpResponse = (HttpWebResponse) we.Response;
-                var httpStatusCode = (int) httpResponse.StatusCode;
-                var errResponseXml = ChargebackUtils.GetResponseXml(httpResponse);
-                var errMessages = ChargebackUtils.ExtractErrorMessages(errResponseXml);
-                throw new ChargebackWebException(
-                    string.Format("Replace Failed - HTTP {0} Error" + we, httpStatusCode) + errMessages, errResponseXml);
+                throw ChargebackDocumentWebException(we, "Replace");
             }
         }
 
@@ -86,25 +76,19 @@ namespace ChargebackForDotNet
                     string.Format(ServiceRoute+"/retrieve/{0}/{1}", caseId, documentId));
                 var contentType = responseContent.GetContentType();
                 var responseBytes = responseContent.GetByteData();
-                if ("image/tiff".Equals(contentType))
+                if (!"image/tiff".Equals(contentType))
                 {
-                    return responseBytes;
+                    var responseString = ChargebackUtils.BytesToString(responseBytes);
+                    var docErrorResponse
+                        = ChargebackUtils.DeserializeResponse<chargebackDocumentUploadResponse>(responseString);
+                    throw new ChargebackDocumentException(docErrorResponse.responseMessage, docErrorResponse.responseCode, responseString);                    
                 }
 
-                var responseString = ChargebackUtils.BytesToString(responseBytes);
-                var uploadErrorResponse
-                    = ChargebackUtils.DeserializeResponse<chargebackDocumentUploadResponse>(responseString);
-                throw new ChargebackDocumentException(uploadErrorResponse.responseMessage, responseString);
+                return responseBytes;
             }
             catch (WebException we)
             {
-                var httpResponse = (HttpWebResponse) we.Response;
-                var httpStatusCode = (int) httpResponse.StatusCode;
-                var errResponseXml = ChargebackUtils.GetResponseXml(httpResponse);
-                var errMessages = ChargebackUtils.ExtractErrorMessages(errResponseXml);
-                throw new ChargebackWebException(
-                    string.Format("Retrieve Failed - HTTP {0} Error" + we, httpStatusCode) + errMessages,
-                    errResponseXml);
+                throw ChargebackDocumentWebException(we, "Retrieve");
             }
         }
 
@@ -119,12 +103,7 @@ namespace ChargebackForDotNet
             }
             catch (WebException we)
             {
-                var httpResponse = (HttpWebResponse) we.Response;
-                var httpStatusCode = (int) httpResponse.StatusCode;
-                var errResponseXml = ChargebackUtils.GetResponseXml(httpResponse);
-                var errMessages = ChargebackUtils.ExtractErrorMessages(errResponseXml);
-                throw new ChargebackWebException(
-                    string.Format("Delete Failed - HTTP {0} Error" + we, httpStatusCode) + errMessages, errResponseXml);
+                throw ChargebackDocumentWebException(we, "Delete");
             }
         }
 
@@ -139,12 +118,7 @@ namespace ChargebackForDotNet
             }
             catch (WebException we)
             {
-                var httpResponse = (HttpWebResponse) we.Response;
-                var httpStatusCode = (int) httpResponse.StatusCode;
-                var errResponseXml = ChargebackUtils.GetResponseXml(httpResponse);
-                var errMessages = ChargebackUtils.ExtractErrorMessages(errResponseXml);
-                throw new ChargebackWebException(
-                    string.Format("List documents Failed - HTTP {0} Error" + we, httpStatusCode) + errMessages, errResponseXml);
+                throw ChargebackDocumentWebException(we, "List");
             }
         }
         
@@ -184,6 +158,26 @@ namespace ChargebackForDotNet
         {           
             ConfigureCommunication();
             _communication.SetContentType("image/tiff");
+        }
+        
+        private ChargebackWebException ChargebackDocumentWebException(WebException we, string action)
+        {
+            var webErrorResponse = (HttpWebResponse) we.Response;
+            var httpStatusCode = (int) webErrorResponse.StatusCode;
+            var rawResponse = ChargebackUtils.GetResponseXml(webErrorResponse);
+            if (!webErrorResponse.ContentType.Contains("application/com.vantivcnp.services-v2+xml"))
+            {
+                return new ChargebackWebException(string.Format("Document {0} Failed - HTTP {1} Error", action, httpStatusCode), 
+                    httpStatusCode, rawResponse);
+            }
+            if (bool.Parse(Config.Get("printXml")))
+            {
+                Console.WriteLine(rawResponse);
+            }
+            var errorResponse = ChargebackUtils.DeserializeResponse<errorResponse>(rawResponse);
+            var errorMessages = errorResponse.errors;
+            return new ChargebackWebException(string.Format("{0} document Failed - HTTP {1} Error", action, httpStatusCode), 
+                httpStatusCode, rawResponse, errorMessages);
         }
         
     }

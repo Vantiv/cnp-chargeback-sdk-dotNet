@@ -12,7 +12,7 @@ namespace ChargebackForDotNet
     {
         public static string BytesToString(List<byte> bytes)
         {
-            return System.Text.Encoding.UTF8.GetString(bytes.ToArray());
+            return Encoding.UTF8.GetString(bytes.ToArray());
         }
 
         public static List<byte> StringToBytes(string s)
@@ -60,17 +60,6 @@ namespace ChargebackForDotNet
             return (T) (new XmlSerializer(typeof(T))).Deserialize(new StringReader(xmlResponse));
         }
 
-        public static string ExtractErrorMessages(string xmlResponse)
-        {
-            var errResponse = DeserializeResponse<errorResponse>(xmlResponse);
-            string errString = "";
-            foreach (var err in errResponse.errors)
-            {
-                errString += "\n" + err;
-            }
-
-            return errString;
-        }
 
         public static string GetResponseXml(HttpWebResponse we)
         {

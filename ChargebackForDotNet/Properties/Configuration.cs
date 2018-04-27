@@ -8,7 +8,7 @@ namespace ChargebackForDotNet.Properties
 {
     public class Configuration
     {
-        private Dictionary<string, string> configDictionary;
+        private Dictionary<string, string> _configDictionary;
 
         public Configuration()
         {
@@ -20,54 +20,54 @@ namespace ChargebackForDotNet.Properties
                                               " to the location of config file.");
             }
 
-            initializeConfig();
-            readAllSettings(configPath);
-            validateConfigDictionary();
+            InitializeConfig();
+            ReadAllSettings(configPath);
+            ValidateConfigDictionary();
         }
 
         public Configuration(string configPath)
         {
-            initializeConfig();
-            readAllSettings(configPath);
-            validateConfigDictionary();
+            InitializeConfig();
+            ReadAllSettings(configPath);
+            ValidateConfigDictionary();
         }
 
         public Configuration(Dictionary<string, string> config)
         {
-            initializeConfig();
+            InitializeConfig();
             foreach (var key in config.Keys)
             {
-                addSettingToConfigDictionary(key, config[key]); 
+                AddSettingToConfigDictionary(key, config[key]); 
             }
 
-            validateConfigDictionary();
+            ValidateConfigDictionary();
         }
 
         public string Get(string key)
         {
-            return configDictionary[key];
+            return _configDictionary[key];
         }
 
         public void Set(string key, string value)
         {
-            string oldValue = configDictionary[key];
-            configDictionary[key] = value;
+            string oldValue = _configDictionary[key];
+            _configDictionary[key] = value;
         }
         
-        private void initializeConfig()
+        private void InitializeConfig()
         {
-            configDictionary = new Dictionary<string, string>();
-            configDictionary["username"] = null;
-            configDictionary["password"] = null;
-            configDictionary["merchantId"] = null;
-            configDictionary["host"] = null;
-            configDictionary["downloadDirectory"] = null;
-            configDictionary["printXml"] = null;
-            configDictionary["proxyHost"] = null;
-            configDictionary["proxyPort"] = null;
+            _configDictionary = new Dictionary<string, string>();
+            _configDictionary["username"] = null;
+            _configDictionary["password"] = null;
+            _configDictionary["merchantId"] = null;
+            _configDictionary["host"] = null;
+            _configDictionary["downloadDirectory"] = null;
+            _configDictionary["printXml"] = null;
+            _configDictionary["proxyHost"] = null;
+            _configDictionary["proxyPort"] = null;
         }
 
-        private void readAllSettings(string filePath)
+        private void ReadAllSettings(string filePath)
         {
             if (!File.Exists(filePath))
             {
@@ -85,25 +85,25 @@ namespace ChargebackForDotNet.Properties
                     continue;
                 }           
                 
-                addSettingToConfigDictionary(keyValPair[0].Trim(), keyValPair[1].Trim());   
+                AddSettingToConfigDictionary(keyValPair[0].Trim(), keyValPair[1].Trim());   
             }
         }
 
-        private void addSettingToConfigDictionary(string key, string value)
+        private void AddSettingToConfigDictionary(string key, string value)
         {
-            if (!configDictionary.ContainsKey(key))
+            if (!_configDictionary.ContainsKey(key))
             {
                 Console.WriteLine("Warning: '{0}' is not a valid key[skipped]", key);
                 return;
             }
-            configDictionary[key] = value;
+            _configDictionary[key] = value;
         }
 
-        private void validateConfigDictionary()
+        private void ValidateConfigDictionary()
         {
-            foreach (var key in configDictionary.Keys)
+            foreach (var key in _configDictionary.Keys)
             {
-                if (configDictionary[key] == null)
+                if (_configDictionary[key] == null)
                 {
                     throw new ChargebackException(string.Format("Missing value for {0} in config", key));
                 }

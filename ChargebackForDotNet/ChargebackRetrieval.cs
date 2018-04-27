@@ -120,13 +120,7 @@ namespace ChargebackForDotNet
             }
             catch (WebException we)
             {
-                var errorResponse = (HttpWebResponse) we.Response;
-                var httpStatusCode = errorResponse.StatusCode;
-                var errResponseXml = ChargebackUtils.GetResponseXml(errorResponse);
-                var errString = ChargebackUtils.ExtractErrorMessages(errResponseXml);
-                throw new ChargebackWebException(
-                    string.Format("Retrieval Failed - HTTP {0} Error", httpStatusCode)+errString,
-                    errResponseXml);
+                throw ChargebackRetrievalWebException(we);
             }
         }
         
@@ -138,6 +132,24 @@ namespace ChargebackForDotNet
             _communication.SetContentType("application/com.vantivcnp.services-v2+xml");
             _communication.SetAccept("application/com.vantivcnp.services-v2+xml");
             _communication.SetProxy(Config.Get("proxyHost"), int.Parse(Config.Get("proxyPort")));
+        }       
+        
+        private ChargebackWebException ChargebackRetrievalWebException(WebException we)
+        {
+            var webErrorResponse = (HttpWebResponse) we.Response;
+            var httpStatusCode = (int) webErrorResponse.StatusCode;
+            var rawResponse = ChargebackUtils.GetResponseXml(webErrorResponse);
+            if (!webErrorResponse.ContentType.Contains("application/com.vantivcnp.services-v2+xml"))
+            {
+                return new ChargebackWebException(string.Format("Retrieval Failed - HTTP {0} Error", httpStatusCode), httpStatusCode, rawResponse);
+            }
+            if (bool.Parse(Config.Get("printXml")))
+            {
+                Console.WriteLine(rawResponse);
+            }
+            var errorResponse = ChargebackUtils.DeserializeResponse<errorResponse>(rawResponse);
+            var errorMessages = errorResponse.errors;
+            return new ChargebackWebException(string.Format("Retrieval Failed - HTTP {0} Error", httpStatusCode), httpStatusCode, rawResponse, errorMessages);
         }
     }
     

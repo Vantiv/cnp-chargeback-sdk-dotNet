@@ -15,7 +15,7 @@ namespace ChargebackForDotNet
         
         private Configuration configurationField;
 
-        public Configuration config
+        public Configuration Config
         {
             get
             {
@@ -152,7 +152,7 @@ namespace ChargebackForDotNet
         private chargebackUpdateResponse sendUpdateRequest(long caseId, string xmlBody)
         {
             string xmlRequest = serialize(xmlBody);
-            if (Boolean.Parse(config.Get("printXml")))
+            if (Boolean.Parse(Config.Get("printXml")))
             {
                 Console.WriteLine("Request is:");
                 Console.WriteLine(xmlRequest);
@@ -163,7 +163,7 @@ namespace ChargebackForDotNet
                 var responseContent = communication.Put(SERVICE_ROUTE + "/" + caseId, ChargebackUtils.StringToBytes(xmlRequest));
                 var receivedBytes = responseContent.GetByteData();
                 string xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
-                if (Boolean.Parse(config.Get("printXml")))
+                if (Boolean.Parse(Config.Get("printXml")))
                 {
                     Console.WriteLine(xmlResponse);
                 }
@@ -171,23 +171,38 @@ namespace ChargebackForDotNet
             }
             catch (WebException we)
             {
-                var errorResponse = (HttpWebResponse) we.Response;
-                var httpStatusCode = errorResponse.StatusCode;
-                var errResponseXml = ChargebackUtils.GetResponseXml(errorResponse);
-                var errString = ChargebackUtils.ExtractErrorMessages(errResponseXml);
-                throw new ChargebackWebException(
-                    string.Format("Update Failed - HTTP {0} Error", httpStatusCode) + errString, errResponseXml);
+                throw ChargebackUpdateWebException(we);
             }
         }
+        
 
         private void configureCommunication()
         {
-            communication.SetHost(config.Get("host"));
-            string encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"), "utf-8");
+            communication.SetHost(Config.Get("host"));
+            string encoded = ChargebackUtils.Encode64(Config.Get("username") + ":" + Config.Get("password"), "utf-8");
             communication.AddToHeader("Authorization", "Basic " + encoded);
             communication.SetContentType("application/com.vantivcnp.services-v2+xml");
             communication.SetAccept("application/com.vantivcnp.services-v2+xml");
-            communication.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
+            communication.SetProxy(Config.Get("proxyHost"), int.Parse(Config.Get("proxyPort")));
+        }
+
+
+        private ChargebackWebException ChargebackUpdateWebException(WebException we)
+        {
+            var webErrorResponse = (HttpWebResponse) we.Response;
+            var httpStatusCode = (int) webErrorResponse.StatusCode;
+            var rawResponse = ChargebackUtils.GetResponseXml(webErrorResponse);
+            if (!webErrorResponse.ContentType.Contains("application/com.vantivcnp.services-v2+xml"))
+            {
+                return new ChargebackWebException(string.Format("Update Failed - HTTP {0} Error", httpStatusCode), httpStatusCode, rawResponse);
+            }
+            if (bool.Parse(Config.Get("printXml")))
+            {
+                Console.WriteLine(rawResponse);
+            }
+            var errorResponse = ChargebackUtils.DeserializeResponse<errorResponse>(rawResponse);
+            var errorMessages = errorResponse.errors;
+            return new ChargebackWebException(string.Format("Update Failed - HTTP {0} Error", httpStatusCode), httpStatusCode, rawResponse, errorMessages);
         }
     }
      

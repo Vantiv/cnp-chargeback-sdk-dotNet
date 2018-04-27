@@ -27,7 +27,7 @@ namespace ChargebackForDotNetTest.Functional
             Configuration config = new Configuration(configDict);
             
             updateRequest = new chargebackUpdateRequest();
-            updateRequest.config = config;
+            updateRequest.Config = config;
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace ChargebackForDotNetTest.Functional
             catch (ChargebackWebException ce)
             {
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 404 Error"));
-                Assert.IsTrue(ce.Message.Contains("Could not find requested object."));
+                Assert.AreEqual("Could not find requested object.", ce.errorMessages[0]);
             }
         }
         
@@ -130,8 +130,9 @@ namespace ChargebackForDotNetTest.Functional
                 Console.BackgroundColor = ConsoleColor.DarkGreen;
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 400 Error"));
                 string pattern = @".*Poorly formatted xml or cannot perform activity.*";
-                Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
-                Assert.True(ce.Message.Contains("Poorly formatted xml or cannot perform activity."));
+                
+                Assert.AreEqual("Bad Request. Error in request. " +
+                                "Poorly formatted xml or cannot perform activity.", ce.errorMessages[0]);
             }
         }
         
@@ -147,7 +148,7 @@ namespace ChargebackForDotNetTest.Functional
             catch (ChargebackWebException ce)
             {
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 401 Error"));
-                Assert.True(ce.Message.Contains("You are not authorized to access this resource. Please check your credentials."));
+                Assert.AreEqual("You are not authorized to access this resource. Please check your credentials.", ce.errorMessages[0]);
             }
         }
         
@@ -163,7 +164,7 @@ namespace ChargebackForDotNetTest.Functional
             catch (ChargebackWebException ce)
             {
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 403 Error"));
-                Assert.True(ce.Message.Contains("You are not authorized to access this resource. Please check your credentials."));
+                Assert.AreEqual("You are not authorized to access this resource. Please check your credentials.", ce.errorMessages[0]);
             }
         }
         
@@ -179,8 +180,8 @@ namespace ChargebackForDotNetTest.Functional
             catch (ChargebackWebException ce)
             {
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 500 Error"));
-                Assert.IsTrue(ce.Message.Contains("Internal Error. This error has already been escalated to Vantiv for resolution. " +
-                                "Please contact support with questions."));                  
+                Assert.AreEqual("Internal Error. This error has already been escalated to Vantiv for resolution. " +
+                                "Please contact support with questions.", ce.errorMessages[0]);                  
             }
         }
     }
