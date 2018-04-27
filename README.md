@@ -57,6 +57,7 @@ namespace Merchant
 ```
 
 4) Compile and run this file.  You should see the following result:
+~~~
 	Case Id:1288791001
 	Case Id:1288791002
 	Case Id:1288791003
@@ -68,7 +69,7 @@ namespace Merchant
 	Case Id:1288791009
 	Case Id:12887910010
 	Case Id:12887910011
-
+~~~
 
 More examples can be found in [Functional and Unit Tests] (https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/tree/2.x/ChargebackForDotNetTest)
 
