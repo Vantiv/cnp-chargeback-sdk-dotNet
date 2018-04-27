@@ -127,8 +127,9 @@ namespace ChargebackForDotNetTest.Certification
             try
             {
                 updateRequest.AcceptLiability(caseId, "Test2_1_5ErrorMessage");
+                Assert.Fail();
             }
-            catch(ChargebackException ce)
+            catch(ChargebackWebException ce)
             {
                 Console.WriteLine("Exception message:" + ce.Message);
                 Console.WriteLine("End exception message.");
@@ -143,8 +144,9 @@ namespace ChargebackForDotNetTest.Certification
             try
             {
                 retrievalRequest.RetrieveByCaseId(caseId);
+                Assert.Fail();
             }
-            catch(ChargebackException ce)
+            catch(ChargebackWebException ce)
             {
                 Assert.True(ce.Message.Contains("Could not find requested object."));
             }

@@ -34,24 +34,41 @@ Setup
 
 ```c#
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using ChargebackForDotNet;
 
-    class Example
+namespace Merchant
+{
+    internal class Program
     {
-        [STAThread]
-        public static void Main(String[] args)
+        public static void Main(string[] args)
         {
-            // Sample code.
+            var request = new ChargebackRetrievalRequest();
+            request.Config.Set("host", "https://services.vantivprelive.com");
+            var dateTime = new DateTime(2013,1,1);
+            var response = request.RetrieveByActivityDate(dateTime);
+            var cases = response.chargebackCase;
+            foreach (var c in cases)
+            {
+                Console.WriteLine("Case Id:" + c.caseId);
+            }
         }
     }
-
+}
 ```
 
 4) Compile and run this file.  You should see the following result:
+	Case Id:1288791001
+	Case Id:1288791002
+	Case Id:1288791003
+	Case Id:1288791004
+	Case Id:1288791005
+	Case Id:1288791006
+	Case Id:1288791007
+	Case Id:1288791008
+	Case Id:1288791009
+	Case Id:12887910010
+	Case Id:12887910011
 
-    Result
 
 More examples can be found in [Functional and Unit Tests] (https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/tree/2.x/ChargebackForDotNetTest)
 

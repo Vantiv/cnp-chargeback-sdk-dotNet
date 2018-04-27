@@ -109,7 +109,7 @@ namespace ChargebackForDotNetTest.Functional
                 var response = updateRequest.AddNote(caseId, "Any note");
                 Assert.Fail("ChargebackException was expected with HTTP 404 Error. None thrown");
             }
-            catch (ChargebackException ce)
+            catch (ChargebackWebException ce)
             {
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 404 Error"));
                 Assert.IsTrue(ce.Message.Contains("Could not find requested object."));
@@ -125,7 +125,7 @@ namespace ChargebackForDotNetTest.Functional
                 var response = updateRequest.AddNote(caseId, "Any note");
                 Assert.Fail("ChargebackException was expected with HTTP 400 Error. None thrown");
             }
-            catch (ChargebackException ce)
+            catch (ChargebackWebException ce)
             {
                 Console.BackgroundColor = ConsoleColor.DarkGreen;
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 400 Error"));
@@ -144,7 +144,7 @@ namespace ChargebackForDotNetTest.Functional
                 var response = updateRequest.AddNote(caseId, "Any note");
                 Assert.Fail("ChargebackException was expected with HTTP 401 Error. None thrown");
             }
-            catch (ChargebackException ce)
+            catch (ChargebackWebException ce)
             {
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 401 Error"));
                 Assert.True(ce.Message.Contains("You are not authorized to access this resource. Please check your credentials."));
@@ -160,7 +160,7 @@ namespace ChargebackForDotNetTest.Functional
                 var response = updateRequest.AddNote(caseId, "Any note");
                 Assert.Fail("ChargebackException was expected with HTTP 403 Error. None thrown");
             }
-            catch (ChargebackException ce)
+            catch (ChargebackWebException ce)
             {
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 403 Error"));
                 Assert.True(ce.Message.Contains("You are not authorized to access this resource. Please check your credentials."));
@@ -176,7 +176,7 @@ namespace ChargebackForDotNetTest.Functional
                 var response = updateRequest.AddNote(caseId, "Any note");
                 Assert.Fail("ChargebackException was expected with HTTP 500 Error. None thrown");
             }
-            catch (ChargebackException ce)
+            catch (ChargebackWebException ce)
             {
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 500 Error"));
                 Assert.IsTrue(ce.Message.Contains("Internal Error. This error has already been escalated to Vantiv for resolution. " +
