@@ -26,7 +26,7 @@ Please contact [Vantiv eCommerce](http://developer.vantiv.com/community/ecommerc
 Setup
 -----
 
-1.) To install it, just copy ChargebackForDotNet.dll into your Visual Studio referernces. 
+1.) To install it, just copy ChargebackForDotNet.dll into your Visual Studio references.
 
 2.) You can configure it statically by setting the path to the configuration file, which contains [key=value], to the environment variable named 'chargebackConfigPath'. An example configuration file can be found at (https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/blob/2.x/sampleConfig.txt). If you are just trying it out, the username, password and merchant id don't matter, and you should choose the sandbox url at https://www.testvantivcnp.com/sandbox/new/services.
 
@@ -71,6 +71,6 @@ namespace Merchant
 	Case Id:12887910011
 ~~~
 
-More examples can be found in [Functional and Unit Tests] (https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/tree/2.x/ChargebackForDotNetTest)
+More examples can be found in [Functional and Unit Tests](https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/tree/2.x/ChargebackForDotNetTest)
 
 Please contact Vantiv eCommerce with any further questions. You can reach us at sdksupport@Vantiv.com.
