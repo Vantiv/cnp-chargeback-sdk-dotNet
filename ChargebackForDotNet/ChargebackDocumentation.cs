@@ -39,7 +39,7 @@ namespace ChargebackForDotNet
             string documentId = Path.GetFileName(filePath);
             try
             {
-                ConfigureCommunicationForUpload();
+                ConfigureCommunicationForUpload(filePath);
                 var responseTuple = _communication.Post(
                     ServiceRoute + "/upload/" + caseId + "/" + documentId, fileBytes);
                 return HandleResponse(responseTuple);
@@ -55,7 +55,7 @@ namespace ChargebackForDotNet
             var fileBytes = File.ReadAllBytes(filePath).ToList();
             try
             {
-                ConfigureCommunicationForUpload();
+                ConfigureCommunicationForUpload(filePath);
                 
                 var responseTuple = _communication.Put(
                     ServiceRoute + "/replace/" + caseId + "/" + documentId, fileBytes);
@@ -154,10 +154,10 @@ namespace ChargebackForDotNet
             _communication.SetContentType(null);
         }
         
-        private void ConfigureCommunicationForUpload()
+        private void ConfigureCommunicationForUpload(string filePath)
         {           
             ConfigureCommunication();
-            _communication.SetContentType("image/tiff");
+            _communication.SetContentType(ChargebackUtils.GetMimeMapping(Path.GetFileName(filePath)));
         }
         
         private ChargebackWebException ChargebackDocumentWebException(WebException we, string action)
@@ -167,7 +167,7 @@ namespace ChargebackForDotNet
             var rawResponse = ChargebackUtils.GetResponseXml(webErrorResponse);
             if (!webErrorResponse.ContentType.Contains("application/com.vantivcnp.services-v2+xml"))
             {
-                return new ChargebackWebException(string.Format("Document {0} Failed - HTTP {1} Error", action, httpStatusCode), 
+                return new ChargebackWebException(string.Format("Document {0} Failed - HTTP {1} Error.", action, httpStatusCode), 
                     httpStatusCode, rawResponse);
             }
             if (bool.Parse(Config.Get("printXml")))
@@ -176,7 +176,7 @@ namespace ChargebackForDotNet
             }
             var errorResponse = ChargebackUtils.DeserializeResponse<errorResponse>(rawResponse);
             var errorMessages = errorResponse.errors;
-            return new ChargebackWebException(string.Format("{0} document Failed - HTTP {1} Error", action, httpStatusCode), 
+            return new ChargebackWebException(string.Format("Document{0} Failed - HTTP {1} Error", action, httpStatusCode), 
                 httpStatusCode, rawResponse, errorMessages);
         }
         

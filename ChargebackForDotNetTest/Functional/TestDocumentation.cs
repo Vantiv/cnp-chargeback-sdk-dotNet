@@ -22,16 +22,10 @@ namespace ChargebackForDotNetTest.Functional
             configDict["password"] = "dotnet";
             configDict["merchantId"] = "101";
             configDict["host"] = "https://www.testvantivcnp.com/sandbox/new";
-            configDict["downloadDirectory"] = "C:\\Vantiv\\chargebacks";
             configDict["printXml"] = "true";
             configDict["proxyHost"] = "websenseproxy";
             configDict["proxyPort"] = "8080";
             Configuration config = new Configuration(configDict);
-            
-            if (!Directory.Exists(configDict["downloadDirectory"]))
-            {
-                Directory.CreateDirectory(configDict["downloadDirectory"]);
-            }
             
             docRequest = new ChargebackDocumentationRequest();
             docRequest.Config = config;
@@ -74,8 +68,8 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestUploadDocument()
         {
-            const string tiffFilename = "uploadTest.tiff";
-            var tiffFilePath = Path.Combine(docRequest.Config.Get("downloadDirectory"), tiffFilename);
+            const string documentId = "uploadTest.tiff";
+            var tiffFilePath = Path.Combine(Directory.GetCurrentDirectory(), documentId);
             var writer = new StreamWriter(File.Create(tiffFilePath));
             writer.WriteLine("Prototype a file.");
             writer.Close();
@@ -101,15 +95,15 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestReplaceDocument()
         {
-            const string tiffFilename = "uploadTest.tiff";
-            var tiffFilePath = Path.Combine(docRequest.Config.Get("downloadDirectory"), tiffFilename);
+            const string documentId = "uploadTest.tiff";
+            var tiffFilePath = Path.Combine(Directory.GetCurrentDirectory(), documentId);
             var writer = new StreamWriter(File.Create(tiffFilePath));
             writer.WriteLine("Prototype a file.");
             writer.Close();
 
             try
             {
-                var docResponse = docRequest.ReplaceDocument(1000, tiffFilename, tiffFilePath);
+                var docResponse = docRequest.ReplaceDocument(1000, documentId, tiffFilePath);
                 Assert.NotNull(docResponse);
                 Assert.AreEqual("000", docResponse.responseCode);
                 Assert.AreEqual("Success".ToLower(), docResponse.responseMessage.ToLower());
@@ -123,12 +117,6 @@ namespace ChargebackForDotNetTest.Functional
             {
                 File.Delete(tiffFilePath);
             }
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            Directory.Delete(docRequest.Config.Get("downloadDirectory"));
         }
     }
 }

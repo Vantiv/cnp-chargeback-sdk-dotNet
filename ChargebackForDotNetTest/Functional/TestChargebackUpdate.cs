@@ -112,7 +112,7 @@ namespace ChargebackForDotNetTest.Functional
             catch (ChargebackWebException ce)
             {
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 404 Error"));
-                Assert.AreEqual("Could not find requested object.", ce.errorMessages[0]);
+                Assert.AreEqual("Could not find requested object.", ce.ErrorMessages[0]);
             }
         }
         
@@ -132,7 +132,7 @@ namespace ChargebackForDotNetTest.Functional
                 string pattern = @".*Poorly formatted xml or cannot perform activity.*";
                 
                 Assert.AreEqual("Bad Request. Error in request. " +
-                                "Poorly formatted xml or cannot perform activity.", ce.errorMessages[0]);
+                                "Poorly formatted xml or cannot perform activity.", ce.ErrorMessages[0]);
             }
         }
         
@@ -148,7 +148,7 @@ namespace ChargebackForDotNetTest.Functional
             catch (ChargebackWebException ce)
             {
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 401 Error"));
-                Assert.AreEqual("You are not authorized to access this resource. Please check your credentials.", ce.errorMessages[0]);
+                Assert.AreEqual("You are not authorized to access this resource. Please check your credentials.", ce.ErrorMessages[0]);
             }
         }
         
@@ -164,7 +164,7 @@ namespace ChargebackForDotNetTest.Functional
             catch (ChargebackWebException ce)
             {
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 403 Error"));
-                Assert.AreEqual("You are not authorized to access this resource. Please check your credentials.", ce.errorMessages[0]);
+                Assert.AreEqual("You are not authorized to access this resource. Please check your credentials.", ce.ErrorMessages[0]);
             }
         }
         
@@ -181,7 +181,7 @@ namespace ChargebackForDotNetTest.Functional
             {
                 Assert.True(ce.Message.Contains("Update Failed - HTTP 500 Error"));
                 Assert.AreEqual("Internal Error. This error has already been escalated to Vantiv for resolution. " +
-                                "Please contact support with questions.", ce.errorMessages[0]);                  
+                                "Please contact support with questions.", ce.ErrorMessages[0]);                  
             }
         }
     }

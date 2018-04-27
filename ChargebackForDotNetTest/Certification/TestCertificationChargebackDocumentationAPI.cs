@@ -39,15 +39,15 @@ namespace ChargebackForDotNetTest.Certification
 //            docRequest.config.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
             string test1Directory = Path.Combine(Directory.GetCurrentDirectory(), "TestCase1");
             Directory.CreateDirectory(test1Directory);
-            docRequest.Config.Set("downloadDirectory", test1Directory);
-            long caseId = Int32.Parse(docRequest.Config.Get("merchantId") + "001");
-            chargebackDocumentUploadResponse tiffResponse
+            
+            long caseId = int.Parse(docRequest.Config.Get("merchantId") + "001");
+            var tiffResponse
                 = docRequest.UploadDocument(caseId, tiffFilename);
-            chargebackDocumentUploadResponse pdfResponse
+            var pdfResponse
                 = docRequest.UploadDocument(caseId, pdfFilename);
-            chargebackDocumentUploadResponse gifResponse
+            var gifResponse
                 = docRequest.UploadDocument(caseId, gifFilename);
-            chargebackDocumentUploadResponse jpgResponse
+            var jpgResponse
                 = docRequest.UploadDocument(caseId, jpgFilename);
             Assert.AreEqual("000", tiffResponse.responseCode);
             Assert.AreEqual("000", pdfResponse.responseCode);
@@ -56,10 +56,10 @@ namespace ChargebackForDotNetTest.Certification
             
             // Step 2. List documents to check success of the uploaded documents.
             var listDocResponse = docRequest.ListDocuments(caseId);
-            listDocResponse.documentId.Contains(tiffFilename);
-            listDocResponse.documentId.Contains(pdfFilename);
-            listDocResponse.documentId.Contains(gifFilename);
-            listDocResponse.documentId.Contains(jpgFilename);
+            Assert.True(listDocResponse.documentId.Contains(tiffFilename));
+            Assert.True(listDocResponse.documentId.Contains(pdfFilename));
+            Assert.True(listDocResponse.documentId.Contains(gifFilename));
+            Assert.True(listDocResponse.documentId.Contains(jpgFilename));
             
             // Step 3. Verify your code can retrieve documents.
             var retrieveDocResponse = docRequest.RetrieveDocument(caseId, tiffFilename);
@@ -117,15 +117,15 @@ namespace ChargebackForDotNetTest.Certification
         public void TestCase2()
         {
             // Step 1. Upload one file to the second test location.
-            string tiffFilename = "TestCase1.tiff";
-            StreamWriter writer = new StreamWriter(File.Create(tiffFilename));
+            var tiffFilename = "TestCase1.tiff";
+            var writer = new StreamWriter(File.Create(tiffFilename));
             writer.WriteLine("Prototype a file.");
             writer.Close();
             
-            ChargebackDocumentationRequest docRequest
+            var docRequest
                 = new ChargebackDocumentationRequest();
             long caseId = Int32.Parse(docRequest.Config.Get("merchantId") + "002");
-            chargebackDocumentUploadResponse tiffResponse
+            var tiffResponse
                 = docRequest.UploadDocument(caseId, tiffFilename);
             
             // Step 2. Verify that you receive the response code 010.
@@ -139,15 +139,15 @@ namespace ChargebackForDotNetTest.Certification
         public void TestCase3()
         {
             // Step 1. Upload one file to the second test location.
-            string tiffFilename = "TestCase1.tiff";
-            StreamWriter writer = new StreamWriter(File.Create(tiffFilename));
+            var tiffFilename = "TestCase1.tiff";
+            var writer = new StreamWriter(File.Create(tiffFilename));
             writer.WriteLine("Prototype a file.");
             writer.Close();
             
-            ChargebackDocumentationRequest docRequest
+            var docRequest
                 = new ChargebackDocumentationRequest();
             long caseId = Int32.Parse(docRequest.Config.Get("merchantId") + "003");
-            chargebackDocumentUploadResponse tiffResponse
+            var tiffResponse
                 = docRequest.UploadDocument(caseId, tiffFilename);
             
             // Step 2. Verify that you receive the response code 004.
@@ -161,19 +161,19 @@ namespace ChargebackForDotNetTest.Certification
         [Ignore("Cannot run multiple times on Prelive.")]
         public void TestCase4()
         {
-            ChargebackDocumentationRequest docRequest
+            var docRequest
                 = new ChargebackDocumentationRequest();
 //            docRequest.config.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
             
             // Step 1. Upload the file named maxsize.tif to the fourth test location.
-            int tifSize = 1024; // 1024 bytes = 1KB.
-            string tifFilename = "maxsize.tif";
-            FileStream fileCreator = File.OpenWrite(tifFilename);
-            byte[] fileBytes = new byte[tifSize];
+            var tifSize = 1024; // 1024 bytes = 1KB.
+            var tifFilename = "maxsize.mp3";
+            var fileCreator = File.OpenWrite(tifFilename);
+            var fileBytes = new byte[tifSize];
             fileCreator.Write(fileBytes, 0, fileBytes.Length);
             fileCreator.Close();
-            long caseId = Int32.Parse(docRequest.Config.Get("merchantId") + "004");
-            chargebackDocumentUploadResponse maxSizeResponse
+            var caseId = int.Parse(docRequest.Config.Get("merchantId") + "004");
+            var maxSizeResponse
                 = docRequest.UploadDocument(caseId, tifFilename);
             File.Delete(tifFilename);
             

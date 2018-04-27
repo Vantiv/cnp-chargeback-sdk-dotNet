@@ -22,35 +22,35 @@ namespace ChargebackForDotNet
     public class ChargebackWebException: Exception
     {
         public readonly string Message;
-        public readonly string rawReponse;
-        public readonly int httpStatusCode;
-        public readonly string[] errorMessages;
+        public readonly string RawReponse;
+        public readonly int HttpStatusCode;
+        public readonly string[] ErrorMessages;
 
         public ChargebackWebException(string message, string raw) : base(message)
         {
             Message = message;
-            rawReponse = raw;
+            RawReponse = raw;
         }
 
-        public ChargebackWebException(string message, int httpStatusCode, string rawReponse)
+        public ChargebackWebException(string message, int httpStatusCode, string rawReponse):base(message)
         {
             Message = message;
-            this.httpStatusCode = httpStatusCode;
-            this.rawReponse = rawReponse;  
+            HttpStatusCode = httpStatusCode;
+            RawReponse = rawReponse;  
         }
 
         public ChargebackWebException(string message, int httpStatusCode, string errResponseXml, string[] errorMessages) 
             : base(message + ExtractErrorMessages(errorMessages))
         {
             Message = message;
-            this.httpStatusCode = httpStatusCode;
-            this.errorMessages = errorMessages;
-            rawReponse = errResponseXml;
+            HttpStatusCode = httpStatusCode;
+            ErrorMessages = errorMessages;
+            RawReponse = errResponseXml;
         }
 
         private static string ExtractErrorMessages(string[] errorMessages)
         {
-            string errString = "";
+            var errString = "";
             foreach (var err in errorMessages)
             {
                 errString += "\n" + err;

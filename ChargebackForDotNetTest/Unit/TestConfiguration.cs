@@ -27,7 +27,6 @@ namespace ChargebackForDotNetTest.Unit
             writer.WriteLine("  password  =  password");
             writer.WriteLine("merchantId=merchantId  ");
             writer.WriteLine("host= host  ");
-            writer.WriteLine("  downloadDirectory=downloadDirectory  ");
             writer.WriteLine("printXml  =false");
             writer.WriteLine(" proxyHost= proxyHost");
             writer.WriteLine(" proxyPort  =proxyPort");
@@ -39,7 +38,6 @@ namespace ChargebackForDotNetTest.Unit
             Assert.AreEqual("password", config.Get("password"));
             Assert.AreEqual("merchantId", config.Get("merchantId"));
             Assert.AreEqual("host", config.Get("host"));
-            Assert.AreEqual("downloadDirectory", config.Get("downloadDirectory"));
             Assert.AreEqual("false", config.Get("printXml"));
             Assert.AreEqual("proxyHost", config.Get("proxyHost"));
             Assert.AreEqual("proxyPort", config.Get("proxyPort"));
@@ -55,7 +53,6 @@ namespace ChargebackForDotNetTest.Unit
             configDict["password"] = "password";
             configDict["merchantId"] = "merchantId";
             configDict["host"] = "host";
-            configDict["downloadDirectory"] = "downloadDirectory";
             configDict["printXml"] = "false";
             configDict["proxyHost"] = "proxyHost";
             configDict["proxyPort"] = "proxyPort";
@@ -66,7 +63,6 @@ namespace ChargebackForDotNetTest.Unit
             Assert.AreEqual("password", config.Get("password"));
             Assert.AreEqual("merchantId", config.Get("merchantId"));
             Assert.AreEqual("host", config.Get("host"));
-            Assert.AreEqual("downloadDirectory", config.Get("downloadDirectory"));
             Assert.AreEqual("false", config.Get("printXml"));
             Assert.AreEqual("proxyHost", config.Get("proxyHost"));
             Assert.AreEqual("proxyPort", config.Get("proxyPort"));
@@ -81,7 +77,6 @@ namespace ChargebackForDotNetTest.Unit
             writer.WriteLine("password=password");
             writer.WriteLine("merchantId=merchantId  ");
             writer.WriteLine("host=host");
-            writer.WriteLine("downloadDirectory=downloadDirectory");
             writer.WriteLine("printXml=false");
             writer.WriteLine("proxyHost=proxyHost");
             writer.WriteLine("proxyPort=proxyPort");
@@ -98,7 +93,6 @@ namespace ChargebackForDotNetTest.Unit
                 Assert.AreEqual("password", config.Get("password"));
                 Assert.AreEqual("merchantId", config.Get("merchantId"));
                 Assert.AreEqual("host", config.Get("host"));
-                Assert.AreEqual("downloadDirectory", config.Get("downloadDirectory"));
                 Assert.AreEqual("false", config.Get("printXml"));
                 Assert.AreEqual("proxyHost", config.Get("proxyHost"));
                 Assert.AreEqual("proxyPort", config.Get("proxyPort"));
@@ -124,7 +118,6 @@ namespace ChargebackForDotNetTest.Unit
             configDict["username"] = "username";
             configDict["password"] = "password";
             configDict["host"] = "host";
-            configDict["downloadDirectory"] = "downloadDirectory";
             configDict["printXml"] = "false";
             configDict["proxyHost"] = "proxyHost";
             configDict["proxyPort"] = "proxyPort";
@@ -141,7 +134,6 @@ namespace ChargebackForDotNetTest.Unit
             configDict["password"] = "password";
             configDict["merchantId"] = "merchantId";
             configDict["host"] = "host";
-            configDict["downloadDirectory"] = "downloadDirectory";
             configDict["printXml"] = "false";
             configDict["proxyHost"] = "proxyHost";
             configDict["proxyPort"] = "proxyPort";
@@ -160,7 +152,6 @@ namespace ChargebackForDotNetTest.Unit
             writer.WriteLine("password=pass=word");
             writer.WriteLine("merchantId=merchantId  ");
             writer.WriteLine("host=host");
-            writer.WriteLine("downloadDirectory=downloadDirectory");
             writer.WriteLine("printXml=false");
             writer.WriteLine("proxyHost=proxyHost");
             writer.WriteLine("proxyPort=proxyPort");

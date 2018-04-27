@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
+using System.Web;
 using System.Xml.Serialization;
 
 namespace ChargebackForDotNet
@@ -24,16 +26,16 @@ namespace ChargebackForDotNet
         {
             if (File.Exists(filePath))
             {
-                string fileName = Path.GetFileNameWithoutExtension(filePath);
-                string fileExt = Path.GetExtension(filePath);
-                string fileParentDir = Path.GetDirectoryName(filePath);
+                var fileName = Path.GetFileNameWithoutExtension(filePath);
+                var fileExt = Path.GetExtension(filePath);
+                var fileParentDir = Path.GetDirectoryName(filePath);
                 fileName += String.Format("[{0}]", DateTime.Now.ToString("yyyy-MM-dd[HH-mm-ss]"));
-                string newFilePath = Path.Combine(fileParentDir,fileName + fileExt);
+                var newFilePath = Path.Combine(fileParentDir,fileName + fileExt);
                 filePath = newFilePath;
             }
             Console.WriteLine("File will be stored at " + filePath);
-            FileStream fs = File.Create(filePath);
-            byte[] bytesArray = bytes.ToArray();
+            var fs = File.Create(filePath);
+            var bytesArray = bytes.ToArray();
             fs.Write(bytesArray, 0, bytesArray.Length);
             fs.Close();
             return filePath;
@@ -47,11 +49,11 @@ namespace ChargebackForDotNet
 
         public static DateTime ParseDate(string date)
         {
-            string[] splits = date.Split('-');
+            var splits = date.Split('-');
             if (splits.Length != 3) return new DateTime(0,0,0);
-            int year = Int16.Parse(splits[0]);
-            int month = Int16.Parse(splits[1]);
-            int day = Int16.Parse(splits[2]);
+            var year = int.Parse(splits[0]);
+            var month = int.Parse(splits[1]);
+            var day = int.Parse(splits[2]);
             return new DateTime(year, month, day);
         }
 
@@ -63,10 +65,20 @@ namespace ChargebackForDotNet
 
         public static string GetResponseXml(HttpWebResponse we)
         {
-            StreamReader reader = new StreamReader(we.GetResponseStream());
-            string xmlResponse = reader.ReadToEnd().Trim();
+            var reader = new StreamReader(we.GetResponseStream());
+            var xmlResponse = reader.ReadToEnd().Trim();
             reader.Close();
             return xmlResponse;
+        }
+
+        public static string GetMimeMapping(string fileName)
+        {
+            var assembly = Assembly.GetAssembly(typeof(HttpApplication));
+            var mimeMappingType = assembly.GetType("System.Web.MimeMapping");
+            var getMimeMappingMethod = mimeMappingType.GetMethod("GetMimeMapping", 
+                BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
+                BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+            return (string)getMimeMappingMethod.Invoke(null /*static method*/, new[] { fileName });
         }
     }
 }

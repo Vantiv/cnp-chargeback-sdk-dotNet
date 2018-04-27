@@ -78,18 +78,8 @@ namespace ChargebackForDotNetTest.Unit
             commMock.Setup(c => c.Get(string.Format("/services/chargebacks/retrieve/{0}/{1}", caseId, documentId)))
                 .Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
-            docRequest.Config.Set("downloadDirectory", Directory.GetCurrentDirectory());
             var docResponse = docRequest.RetrieveDocument(caseId, documentId);
-            
-//            Assert.True(docResponse is chargebackDocumentReceivedResponse);
-//            var docReceivedResponse = (chargebackDocumentReceivedResponse) docResponse;
-//            Assert.NotNull(docReceivedResponse.retrievedFilePath);
-//            var retrievedFilepath = docReceivedResponse.retrievedFilePath;
-//            Assert.AreEqual(documentId, Path.GetFileName(docReceivedResponse.retrievedFilePath));
-//            Assert.True(File.Exists(retrievedFilepath));
-//            var retrievedFilecontent = File.ReadAllBytes(retrievedFilepath).ToList();
-//            Assert.AreEqual(expectedRetrievedFileContent, retrievedFilecontent);
-//            File.Delete(retrievedFilepath);
+            Assert.Less(0, docResponse.Count);
         }
         
         
@@ -219,9 +209,9 @@ namespace ChargebackForDotNetTest.Unit
         }
 
         [TearDown]
-        public void removeTestFiles()
+        public void RemoveTestFiles()
         {
-            string[] fileNames = Directory.GetFiles(Directory.GetCurrentDirectory());
+            var fileNames = Directory.GetFiles(Directory.GetCurrentDirectory());
             foreach (var fileName in fileNames)
             {
                 if (fileName.Contains(".tif"))

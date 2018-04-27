@@ -43,115 +43,114 @@ namespace ChargebackForDotNet
         
         public chargebackUpdateResponse AssignToUser(long caseId, string assignedTo , string note = null)
         {
-            // what if user is null here
-            string xmlBody = "";
-            xmlBody += serializeActivityType(activityType.ASSIGN_TO_USER);
-            xmlBody += serializeAssignedTo(assignedTo);
+            var xmlBody = "";
+            xmlBody += SerializeActivityType(activityType.ASSIGN_TO_USER);
+            xmlBody += SerializeAssignedTo(assignedTo);
             if (note != null)
             {
-                xmlBody += serializeNote(note);
+                xmlBody += SerializeNote(note);
             }            
-            return sendUpdateRequest(caseId, xmlBody);
+            return SendUpdateRequest(caseId, xmlBody);
         }
 
         
         public chargebackUpdateResponse AddNote(long caseId, string note)
         {
             string xmlBody = "";
-            xmlBody += serializeActivityType(activityType.ADD_NOTE);
-            xmlBody += serializeNote(note);
-            return sendUpdateRequest(caseId, xmlBody);
+            xmlBody += SerializeActivityType(activityType.ADD_NOTE);
+            xmlBody += SerializeNote(note);
+            return SendUpdateRequest(caseId, xmlBody);
         }
         
         public chargebackUpdateResponse AcceptLiability(long caseId, string note = null)
         {
             string xmlBody = "";
-            xmlBody += serializeActivityType(activityType.MERCHANT_ACCEPTS_LIABILITY);
+            xmlBody += SerializeActivityType(activityType.MERCHANT_ACCEPTS_LIABILITY);
             if (note != null)
             {
-                xmlBody += serializeNote(note);
+                xmlBody += SerializeNote(note);
             }
-            return sendUpdateRequest(caseId, xmlBody);
+            return SendUpdateRequest(caseId, xmlBody);
         }
         
         public chargebackUpdateResponse Represent(long caseId, long representedAmount, string note = null)
         {
             string xmlBody = "";
-            xmlBody += serializeActivityType(activityType.MERCHANT_REPRESENT);
+            xmlBody += SerializeActivityType(activityType.MERCHANT_REPRESENT);
             if (note != null)
             {
-                xmlBody += serializeNote(note);
+                xmlBody += SerializeNote(note);
             }
-            xmlBody += serializeRepresentedAmount(representedAmount);
-            return sendUpdateRequest(caseId, xmlBody);
+            xmlBody += SerializeRepresentedAmount(representedAmount);
+            return SendUpdateRequest(caseId, xmlBody);
         }
 
         
         public chargebackUpdateResponse Represent(long caseId, string note = null)
         {
             string xmlBody = "";
-            xmlBody += serializeActivityType(activityType.MERCHANT_REPRESENT);
+            xmlBody += SerializeActivityType(activityType.MERCHANT_REPRESENT);
             if (note != null)
             {
-                xmlBody += serializeNote(note);
+                xmlBody += SerializeNote(note);
             }
-            return sendUpdateRequest(caseId, xmlBody);
+            return SendUpdateRequest(caseId, xmlBody);
         }
         
         public chargebackUpdateResponse Respond(long caseId, string note = null)
         {
             string xmlBody = "";
-            xmlBody += serializeActivityType(activityType.MERCHANT_RESPOND);
+            xmlBody += SerializeActivityType(activityType.MERCHANT_RESPOND);
             if (note != null)
             {
-                xmlBody += serializeNote(note);
+                xmlBody += SerializeNote(note);
             }
-            return sendUpdateRequest(caseId, xmlBody);
+            return SendUpdateRequest(caseId, xmlBody);
         }
         
         public chargebackUpdateResponse RequestArbitration(long caseId, string note = null)
         {
-            string xmlBody = "";
-            xmlBody += serializeActivityType(activityType.MERCHANT_REQUESTS_ARBITRATION);
+            var xmlBody = "";
+            xmlBody += SerializeActivityType(activityType.MERCHANT_REQUESTS_ARBITRATION);
             if (note != null)
             {
-                xmlBody += serializeNote(note);
+                xmlBody += SerializeNote(note);
             }
-            return sendUpdateRequest(caseId, xmlBody);
+            return SendUpdateRequest(caseId, xmlBody);
         }
 
-        private string serialize(string xmlBody)
+        private static string Serialize(string xmlBody)
         {
-            string xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                            "\n<chargebackUpdateRequest xmlns=\"http://www.vantivcnp.com/chargebacks\">";
-            string xmlFooter = "\n</chargebackUpdateRequest>";
+            const string xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                                     "\n<chargebackUpdateRequest xmlns=\"http://www.vantivcnp.com/chargebacks\">";
+            const string xmlFooter = "\n</chargebackUpdateRequest>";
             return xmlHeader + xmlBody + xmlFooter;
         }
         
-        private string serializeNote(string note)
+        private static string SerializeNote(string note)
         {
             return "\n<note>" + note + "</note>";
         }
 
-        private string serializeActivityType(activityType activityType)
+        private static string SerializeActivityType(activityType activityType)
         {
             return "\n<activityType>" + activityType + "</activityType>";
         }
         
-        private string serializeRepresentedAmount(long representedAmount)
+        private static string SerializeRepresentedAmount(long representedAmount)
         {
             return "\n<representedAmount>" + representedAmount + "</representedAmount>";
         }
         
-        private string serializeAssignedTo(string assignedTo)
+        private static string SerializeAssignedTo(string assignedTo)
         {
             return "\n<assignedTo>" + assignedTo + "</assignedTo>";
         }
 
         
-        private chargebackUpdateResponse sendUpdateRequest(long caseId, string xmlBody)
+        private chargebackUpdateResponse SendUpdateRequest(long caseId, string xmlBody)
         {
-            string xmlRequest = serialize(xmlBody);
+            string xmlRequest = Serialize(xmlBody);
             if (Boolean.Parse(Config.Get("printXml")))
             {
                 Console.WriteLine("Request is:");
@@ -159,11 +158,11 @@ namespace ChargebackForDotNet
             }
             try
             {
-                configureCommunication();
+                ConfigureCommunication();
                 var responseContent = communication.Put(SERVICE_ROUTE + "/" + caseId, ChargebackUtils.StringToBytes(xmlRequest));
                 var receivedBytes = responseContent.GetByteData();
-                string xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
-                if (Boolean.Parse(Config.Get("printXml")))
+                var xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
+                if (bool.Parse(Config.Get("printXml")))
                 {
                     Console.WriteLine(xmlResponse);
                 }
@@ -176,7 +175,7 @@ namespace ChargebackForDotNet
         }
         
 
-        private void configureCommunication()
+        private void ConfigureCommunication()
         {
             communication.SetHost(Config.Get("host"));
             string encoded = ChargebackUtils.Encode64(Config.Get("username") + ":" + Config.Get("password"), "utf-8");
