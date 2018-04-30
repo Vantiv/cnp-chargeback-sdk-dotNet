@@ -1,12 +1,12 @@
-Vantiv Now Worldpay eCommerce .NET Chargeback SDK
+Vantiv eCommerce .NET Chargeback SDK
 =====================
 
 #### WARNING:
-##### All major version changes require recertification to the new version. Once certified for the use of a new version, Vantiv Now Worldpay modifies your Merchant Profile, allowing you to submit transaction to the Production Environment using the new version. Updating your code without recertification and modification of your Merchant Profile will result in transaction declines. Please consult you Implementation Analyst for additional information about this process.
+##### All major version changes require recertification to the new version. Once certified for the use of a new version, Vantiv modifies your Merchant Profile, allowing you to submit transaction to the Production Environment using the new version. Updating your code without recertification and modification of your Merchant Profile will result in transaction declines. Please consult you Implementation Analyst for additional information about this process.
 
-About Vantiv Now Worldpay eCommerce
+About Vantiv eCommerce
 ------------
-[Vantiv Now Worldpay eCommerce](https://developer.vantiv.com/community/ecommerce) powers the payment processing engines for leading companies that sell directly to consumers through  internet retail, direct response marketing (TV, radio and telephone), and online services. Vantiv eCommerce is the leading authority in card-not-present (CNP) commerce, transaction processing and merchant services.
+[Vantiv eCommerce](https://developer.vantiv.com/community/ecommerce) powers the payment processing engines for leading companies that sell directly to consumers through  internet retail, direct response marketing (TV, radio and telephone), and online services. Vantiv eCommerce is the leading authority in card-not-present (CNP) commerce, transaction processing and merchant services.
 
 
 About this Chargeback SDK
@@ -31,12 +31,12 @@ Setup
 2.) You can configure it statically by adding the following section to your project's App.config
 ```
     <configSections>
-        <sectionGroup name="vantivWorldpay">
+        <sectionGroup name="vantivEcommerce">
             <section name="chargebackSettings"
                      type="System.Configuration.NameValueSectionHandler" />
         </sectionGroup>
     </configSections>
-    <vantivWorldpay>
+    <vantivEcommerce>
         <chargebackSettings>
             <add key="username" value="myUsername" />
             <add key="password" value="myPassword" />
@@ -47,7 +47,7 @@ Setup
             <add key="proxyPort" value="7777" />
             <add key="neuterXml" value="false" />
         </chargebackSettings>
-    </vantivWorldpay>
+    </vantivEcommerce>
 ```
 Also, you can use a different Configuration constructor to pass a file path to a simple configuration file that contains [key=value] settings; an example of this configuration file can be found at (https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/blob/2.x/sampleConfig.txt). 
 ```
