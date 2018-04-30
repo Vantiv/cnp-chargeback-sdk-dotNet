@@ -151,21 +151,14 @@ namespace ChargebackForDotNet
         private chargebackUpdateResponse SendUpdateRequest(long caseId, string xmlBody)
         {
             string xmlRequest = Serialize(xmlBody);
-            if (Boolean.Parse(Config.Get("printXml")))
-            {
-                Console.WriteLine("Request is:");
-                Console.WriteLine(xmlRequest);
-            }
+            ChargebackUtils.PrintXml(xmlRequest, Config.Get("printXml"), Config.Get("neuterXml"));
             try
             {
                 ConfigureCommunication();
                 var responseContent = communication.Put(SERVICE_ROUTE + "/" + caseId, ChargebackUtils.StringToBytes(xmlRequest));
                 var receivedBytes = responseContent.GetByteData();
                 var xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
-                if (bool.Parse(Config.Get("printXml")))
-                {
-                    Console.WriteLine(xmlResponse);
-                }
+                ChargebackUtils.PrintXml(xmlResponse, Config.Get("printXml"), Config.Get("neuterXml"));
                 return ChargebackUtils.DeserializeResponse<chargebackUpdateResponse>(xmlResponse);
             }
             catch (WebException we)
@@ -195,10 +188,7 @@ namespace ChargebackForDotNet
             {
                 return new ChargebackWebException(string.Format("Update Failed - HTTP {0} Error", httpStatusCode), httpStatusCode, rawResponse);
             }
-            if (bool.Parse(Config.Get("printXml")))
-            {
-                Console.WriteLine(rawResponse);
-            }
+            ChargebackUtils.PrintXml(rawResponse, Config.Get("printXml"), Config.Get("neuterXml"));
             var errorResponse = ChargebackUtils.DeserializeResponse<errorResponse>(rawResponse);
             var errorMessages = errorResponse.errors;
             return new ChargebackWebException(string.Format("Update Failed - HTTP {0} Error", httpStatusCode), httpStatusCode, rawResponse, errorMessages);

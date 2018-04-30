@@ -213,27 +213,5 @@ namespace ChargebackForDotNetTest.Unit
                 = request.RequestArbitration(caseId, note);
             Assert.AreEqual(expectedTxnId, response.transactionId);
         }
-        
-        
-//        [TestCase(1404, "Merchant requests arbitration test1", new string[]{""}, 1234567)]
-//        [TestCase(1404, null, 4568778)]
-//        public void TestErrorResponses(long caseId, string note, string[] errorMessages, int expectedTxnId)
-//        {
-//            string expectedXmlResponse = generateErrorXmlResponse();
-//            string expectedXmlRequest 
-//                = generateXmlRequest(activityType.MERCHANT_REQUESTS_ARBITRATION, null, note);
-//            var expectedSendingBytes = Utils.stringToBytes(expectedXmlRequest);
-//            var expectedResponseTuple = new ArrayList();
-//            expectedResponseTuple.Add("text/xml");
-//            expectedResponseTuple.Add(Utils.stringToBytes(expectedXmlResponse));
-//            Mock<Communication> commMock = new Mock<Communication>();
-//            commMock.Setup(c => c.put("/chargebacks/" + caseId, expectedSendingBytes))
-//                .Throws<ChargebackException>();
-//            var request
-//                = new chargebackUpdateRequest(commMock.Object);
-//            var response
-//                = request.RequestArbitration(caseId, note);
-//            Assert.AreEqual(expectedTxnId, response.transactionId);
-//        }
     }
 }

@@ -24,6 +24,7 @@ namespace ChargebackForDotNetTest.Functional
             configDict["merchantId"] = "101";
             configDict["host"] = "https://www.testvantivcnp.com/sandbox/new";
             configDict["printXml"] = "true";
+            configDict["neuterXml"] = "false";
             configDict["proxyHost"] = "websenseproxy";
             configDict["proxyPort"] = "8080";
             config = new Configuration(configDict);

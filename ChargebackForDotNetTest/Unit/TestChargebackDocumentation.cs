@@ -84,9 +84,9 @@ namespace ChargebackForDotNetTest.Unit
         
         
         
-//        [TestCase(1009, "test1.tif", new string[] {"test1.tif"}, "009", "Document Not Found")]
-//        [TestCase(1003, "test2.tif", new string[] {"test2.tif"}, "003", "Case Not Found")]
-        [ExpectedException(typeof(ChargebackDocumentationRequest))]
+        [TestCase(1009, "test1.tif", new string[] {"test1.tif"}, "009", "Document Not Found")]
+        [TestCase(1003, "test2.tif", new string[] {"test2.tif"}, "003", "Case Not Found")]
+        [ExpectedException(typeof(ChargebackDocumentException))]
         public void TestRetrieveDocumentFailure(long caseId, string documentId, string[] expectedDocumentIds, 
             string expectedResponseCode, string expectedResponseMessage)
         {
@@ -100,12 +100,6 @@ namespace ChargebackForDotNetTest.Unit
                 .Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
             var docResponse = docRequest.RetrieveDocument(caseId, documentId);
-//            Assert.True(docResponse is chargebackDocumentUploadResponse);
-//            var docUploadResponse = (chargebackDocumentUploadResponse) docResponse;
-//            Assert.AreEqual(caseId, docUploadResponse.caseId);
-//            Assert.AreEqual(expectedDocumentIds[0], docUploadResponse.documentId[0]);
-//            Assert.AreEqual(expectedResponseCode, docUploadResponse.responseCode);
-//            Assert.AreEqual(expectedResponseMessage, docUploadResponse.responseMessage);
         }
         
         [TestCase(1000, new string[] {"test1Doc1.tif", "test1Doc2.tif"}, "000", "Success")]

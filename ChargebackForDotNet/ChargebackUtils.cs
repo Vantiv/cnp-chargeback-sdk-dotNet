@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml.Serialization;
 
@@ -29,7 +30,7 @@ namespace ChargebackForDotNet
                 var fileName = Path.GetFileNameWithoutExtension(filePath);
                 var fileExt = Path.GetExtension(filePath);
                 var fileParentDir = Path.GetDirectoryName(filePath);
-                fileName += String.Format("[{0}]", DateTime.Now.ToString("yyyy-MM-dd[HH-mm-ss]"));
+                fileName += string.Format("[{0}]", DateTime.Now.ToString("yyyy-MM-dd[HH-mm-ss]"));
                 var newFilePath = Path.Combine(fileParentDir,fileName + fileExt);
                 filePath = newFilePath;
             }
@@ -60,6 +61,30 @@ namespace ChargebackForDotNet
         public static T DeserializeResponse<T>(string xmlResponse)
         {
             return (T) (new XmlSerializer(typeof(T))).Deserialize(new StringReader(xmlResponse));
+        }
+
+        public static void PrintXml(string xml, string printXml, string neuterXml)
+        {
+            if (bool.Parse(printXml))
+            {
+                if (bool.Parse(neuterXml))
+                {
+                    xml = NeuterXml(xml);
+                }
+                Console.WriteLine("\nXml : \n" + xml + "\n\n");
+            }
+        }
+
+        private static string NeuterXml(string xml)
+        {
+            const string pattern1 = "(?i)<cardNumberLast4>.*?</cardNumberLast4>";
+            const string pattern2 = "(?i)<token>.*?</token>";
+            
+            var rgx1 = new Regex(pattern1);
+            var rgx2 = new Regex(pattern2);
+            xml = rgx1.Replace(xml, "<cardNumberLast4>xxxx</cardNumberLast4>");
+            xml = rgx2.Replace(xml, "<token>xxxxxxxxxx</token>");
+            return xml;
         }
 
 

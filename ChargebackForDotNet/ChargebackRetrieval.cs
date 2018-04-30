@@ -112,10 +112,7 @@ namespace ChargebackForDotNet
                 var responseContent = _communication.Get(urlRoute);
                 var receivedBytes = responseContent.GetByteData();
                 var xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
-                if (bool.Parse(Config.Get("printXml")))
-                {
-                    Console.WriteLine(xmlResponse);
-                }
+                ChargebackUtils.PrintXml(xmlResponse, Config.Get("printXml"), Config.Get("neuterXml"));
                 return xmlResponse;
             }
             catch (WebException we)
@@ -143,10 +140,7 @@ namespace ChargebackForDotNet
             {
                 return new ChargebackWebException(string.Format("Retrieval Failed - HTTP {0} Error", httpStatusCode), httpStatusCode, rawResponse);
             }
-            if (bool.Parse(Config.Get("printXml")))
-            {
-                Console.WriteLine(rawResponse);
-            }
+            ChargebackUtils.PrintXml(rawResponse, Config.Get("printXml"), Config.Get("neuterXml"));
             var errorResponse = ChargebackUtils.DeserializeResponse<errorResponse>(rawResponse);
             var errorMessages = errorResponse.errors;
             return new ChargebackWebException(string.Format("Retrieval Failed - HTTP {0} Error", httpStatusCode), httpStatusCode, rawResponse, errorMessages);

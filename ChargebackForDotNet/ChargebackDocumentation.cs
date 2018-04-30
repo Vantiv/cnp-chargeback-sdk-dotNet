@@ -135,10 +135,7 @@ namespace ChargebackForDotNet
                                   "\n{1}", contentType, stringResponse));
             }
             var xmlResponse = ChargebackUtils.BytesToString(responseBytes);
-            if (bool.Parse(Config.Get("printXml")))
-            {
-                Console.WriteLine(xmlResponse);
-            }
+            ChargebackUtils.PrintXml(xmlResponse, Config.Get("printXml"), Config.Get("neuterXml"));
             var docResponse
                 = ChargebackUtils.DeserializeResponse<chargebackDocumentUploadResponse>(xmlResponse);
             return docResponse;
@@ -170,10 +167,7 @@ namespace ChargebackForDotNet
                 return new ChargebackWebException(string.Format("Document {0} Failed - HTTP {1} Error.", action, httpStatusCode), 
                     httpStatusCode, rawResponse);
             }
-            if (bool.Parse(Config.Get("printXml")))
-            {
-                Console.WriteLine(rawResponse);
-            }
+            ChargebackUtils.PrintXml(rawResponse, Config.Get("printXml"), Config.Get("neuterXml"));
             var errorResponse = ChargebackUtils.DeserializeResponse<errorResponse>(rawResponse);
             var errorMessages = errorResponse.errors;
             return new ChargebackWebException(string.Format("Document{0} Failed - HTTP {1} Error", action, httpStatusCode), 

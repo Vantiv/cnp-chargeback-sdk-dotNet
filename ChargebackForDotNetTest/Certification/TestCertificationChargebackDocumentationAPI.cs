@@ -36,7 +36,6 @@ namespace ChargebackForDotNetTest.Certification
             
             ChargebackDocumentationRequest docRequest
                 = new ChargebackDocumentationRequest();
-//            docRequest.config.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
             string test1Directory = Path.Combine(Directory.GetCurrentDirectory(), "TestCase1");
             Directory.CreateDirectory(test1Directory);
             
@@ -163,7 +162,6 @@ namespace ChargebackForDotNetTest.Certification
         {
             var docRequest
                 = new ChargebackDocumentationRequest();
-//            docRequest.config.setConfigValue("host", "https://www.testvantivcnp.com/sandbox/new");
             
             // Step 1. Upload the file named maxsize.tif to the fourth test location.
             var tifSize = 1024; // 1024 bytes = 1KB.

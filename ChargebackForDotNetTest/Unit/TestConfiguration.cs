@@ -28,6 +28,7 @@ namespace ChargebackForDotNetTest.Unit
             writer.WriteLine("merchantId=merchantId  ");
             writer.WriteLine("host= host  ");
             writer.WriteLine("printXml  =false");
+            writer.WriteLine("neuterXml = false");
             writer.WriteLine(" proxyHost= proxyHost");
             writer.WriteLine(" proxyPort  =proxyPort");
             writer.Close();
@@ -39,6 +40,7 @@ namespace ChargebackForDotNetTest.Unit
             Assert.AreEqual("merchantId", config.Get("merchantId"));
             Assert.AreEqual("host", config.Get("host"));
             Assert.AreEqual("false", config.Get("printXml"));
+            Assert.AreEqual("false", config.Get("neuterXml"));
             Assert.AreEqual("proxyHost", config.Get("proxyHost"));
             Assert.AreEqual("proxyPort", config.Get("proxyPort"));
             
@@ -54,6 +56,7 @@ namespace ChargebackForDotNetTest.Unit
             configDict["merchantId"] = "merchantId";
             configDict["host"] = "host";
             configDict["printXml"] = "false";
+            configDict["neuterXml"] = "false";
             configDict["proxyHost"] = "proxyHost";
             configDict["proxyPort"] = "proxyPort";
             
@@ -64,6 +67,7 @@ namespace ChargebackForDotNetTest.Unit
             Assert.AreEqual("merchantId", config.Get("merchantId"));
             Assert.AreEqual("host", config.Get("host"));
             Assert.AreEqual("false", config.Get("printXml"));
+            Assert.AreEqual("false", config.Get("neuterXml"));
             Assert.AreEqual("proxyHost", config.Get("proxyHost"));
             Assert.AreEqual("proxyPort", config.Get("proxyPort"));
         }
@@ -78,6 +82,7 @@ namespace ChargebackForDotNetTest.Unit
             writer.WriteLine("merchantId=merchantId  ");
             writer.WriteLine("host=host");
             writer.WriteLine("printXml=false");
+            writer.WriteLine("neuterXml=false");
             writer.WriteLine("proxyHost=proxyHost");
             writer.WriteLine("proxyPort=proxyPort");
             writer.WriteLine("Call Vantiv!!!");
@@ -94,6 +99,7 @@ namespace ChargebackForDotNetTest.Unit
                 Assert.AreEqual("merchantId", config.Get("merchantId"));
                 Assert.AreEqual("host", config.Get("host"));
                 Assert.AreEqual("false", config.Get("printXml"));
+                Assert.AreEqual("false", config.Get("neuterXml"));
                 Assert.AreEqual("proxyHost", config.Get("proxyHost"));
                 Assert.AreEqual("proxyPort", config.Get("proxyPort"));
 
@@ -119,6 +125,7 @@ namespace ChargebackForDotNetTest.Unit
             configDict["password"] = "password";
             configDict["host"] = "host";
             configDict["printXml"] = "false";
+            configDict["neuterXml"] = "false";
             configDict["proxyHost"] = "proxyHost";
             configDict["proxyPort"] = "proxyPort";
             Configuration config = new Configuration(configDict);
@@ -135,6 +142,7 @@ namespace ChargebackForDotNetTest.Unit
             configDict["merchantId"] = "merchantId";
             configDict["host"] = "host";
             configDict["printXml"] = "false";
+            configDict["neuterXml"] = "false";
             configDict["proxyHost"] = "proxyHost";
             configDict["proxyPort"] = "proxyPort";
             configDict["extraKey"] = "extraValue";
@@ -153,6 +161,7 @@ namespace ChargebackForDotNetTest.Unit
             writer.WriteLine("merchantId=merchantId  ");
             writer.WriteLine("host=host");
             writer.WriteLine("printXml=false");
+            writer.WriteLine("neuterXml=false");
             writer.WriteLine("proxyHost=proxyHost");
             writer.WriteLine("proxyPort=proxyPort");
             writer.Close();

@@ -61,8 +61,8 @@ namespace ChargebackForDotNet.Properties
             _configDictionary["password"] = null;
             _configDictionary["merchantId"] = null;
             _configDictionary["host"] = null;
-//            _configDictionary["downloadDirectory"] = null;
             _configDictionary["printXml"] = null;
+            _configDictionary["neuterXml"] = null;
             _configDictionary["proxyHost"] = null;
             _configDictionary["proxyPort"] = null;
         }
