@@ -26,11 +26,74 @@ Please contact [Vantiv eCommerce](http://developer.vantiv.com/community/ecommerc
 Setup
 -----
 
-1.) To install it, just copy ChargebackForDotNet.dll into your Visual Studio references.
+1.) To install it, copy ChargebackForDotNet.dll into your Visual Studio references.
 
-2.) You can configure it statically by setting the path to the configuration file, which contains [key=value], to the environment variable named 'chargebackConfigPath'. An example configuration file can be found at (https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/blob/2.x/sampleConfig.txt). If you are just trying it out, the username, password and merchant id don't matter, and you should choose the sandbox url at https://www.testvantivcnp.com/sandbox/new/services.
+2.) You can configure it statically by adding the following section to your project's App.config
+```
+    <configSections>
+        <sectionGroup name="vantivWorldpay">
+            <section name="chargebackSettings"
+                     type="System.Configuration.NameValueSectionHandler" />
+        </sectionGroup>
+    </configSections>
+    <vantivWorldpay>
+        <chargebackSettings>
+            <add key="username" value="myUsername" />
+            <add key="password" value="myPassword" />
+            <add key="merchantId" value="777777" />
+            <add key="host" value="https://www.testvantivcnp.com/sandbox/new/services" />
+            <add key="printXml" value="true" />
+            <add key="proxyHost" value="myProxyHost" />
+            <add key="proxyPort" value="7777" />
+            <add key="neuterXml" value="false" />
+        </chargebackSettings>
+    </vantivWorldpay>
+```
+    Also, you can use a different Configuration constructor to pass a file path to a simple configuration file that contains [key=value] settings; an example of this configuration file can be found at (https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/blob/2.x/sampleConfig.txt). 
+```
+    username = myUsername
+    password = myPassword
+    merchantId = 777777
+    host = https://www.testvantivcnp.com/sandbox/new/services
+    printXml = true
+    neuterXml = false
+    proxyHost = myProxyHost
+    proxyPort = 7777
+```
+    In addition, you can configure it dynamically by create a dictionary with required settings and call the Configuration constructor taking a dictionary.
 
-3.) Create a c# class similar to:  
+3.) Let's try our SDK with the Sandbox, which requires no valid username and password:  
+
+```c#
+using System;
+using ChargebackForDotNet;
+
+namespace Merchant
+{
+    internal class Program
+    {
+        public static void Main(string[] args)
+        {
+            var request = new ChargebackRetrievalRequest();
+            request.Config.Set("host", "https://www.testvantivcnp.com/sandbox/new/services");
+            var dateTime = new DateTime(2013,1,1);
+            var response = request.RetrieveByActivityDate(dateTime);
+            var cases = response.chargebackCase;
+            foreach (var c in cases)
+            {
+                Console.WriteLine("Case Id:" + c.caseId);
+            }
+        }
+    }
+}
+```
+
+4) Compile and run this file.  You should see the following result:
+~~~
+    Case Id:1288791001
+~~~
+
+5) In Step 3, you tried our .NET SDK with the Sandbox. Once you are registered to test with our Prelive environment, run the example with the following host (https://services.vantivprelive.com).
 
 ```c#
 using System;
@@ -56,19 +119,19 @@ namespace Merchant
 }
 ```
 
-4) Compile and run this file.  You should see the following result:
+6) The expected output should be:
 ~~~
-	Case Id:1288791001
-	Case Id:1288791002
-	Case Id:1288791003
-	Case Id:1288791004
-	Case Id:1288791005
-	Case Id:1288791006
-	Case Id:1288791007
-	Case Id:1288791008
-	Case Id:1288791009
-	Case Id:12887910010
-	Case Id:12887910011
+    Case Id:1288791001
+    Case Id:1288791002
+    Case Id:1288791003
+    Case Id:1288791004
+    Case Id:1288791005
+    Case Id:1288791006
+    Case Id:1288791007
+    Case Id:1288791008
+    Case Id:1288791009
+    Case Id:12887910010
+    Case Id:12887910011
 ~~~
 
 More examples can be found in [Functional and Unit Tests](https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/tree/2.x/ChargebackForDotNetTest)

@@ -1,7 +1,8 @@
-username = VantivMerchant
-password = abc123def456
-merchantId = 7777777
-host = https://services.vantivprelive.com
+username = myUsername
+password = myPassword
+merchantId = 777777
+host = https://www.testvantivcnp.com/sandbox/new/services
 printXml = true
-proxyHost = yourProxyHost
-proxyPort = 1234
+neuterXml = false
+proxyHost = myProxyHost
+proxyPort = 7777

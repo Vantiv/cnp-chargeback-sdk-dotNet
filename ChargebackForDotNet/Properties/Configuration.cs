@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
 using System.Net;
@@ -12,16 +13,13 @@ namespace ChargebackForDotNet.Properties
 
         public Configuration()
         {
-            string configPath = Environment.GetEnvironmentVariable("chargebackConfigPath");
-            if (configPath == null)
+            var settings = (NameValueCollection) ConfigurationManager.GetSection("vantivWorldpay/chargebackSettings");
+            InitializeConfig();
+            foreach (var key in settings.AllKeys)
             {
-                throw new ChargebackException("No configuration file." +
-                                              " Please set the environment variable 'chargebackConfigPath'" +
-                                              " to the location of config file.");
+                AddSettingToConfigDictionary(key, settings[key]); 
             }
 
-            InitializeConfig();
-            ReadAllSettings(configPath);
             ValidateConfigDictionary();
         }
 

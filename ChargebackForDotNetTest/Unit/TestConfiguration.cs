@@ -73,50 +73,6 @@ namespace ChargebackForDotNetTest.Unit
         }
 
         [Test]
-        public void TestConfigurationDefault()
-        {
-            string filename = "TestConfigurationDefault";
-            StreamWriter writer = new StreamWriter(File.Create(filename));
-            writer.WriteLine("username=username");
-            writer.WriteLine("password=password");
-            writer.WriteLine("merchantId=merchantId  ");
-            writer.WriteLine("host=host");
-            writer.WriteLine("printXml=false");
-            writer.WriteLine("neuterXml=false");
-            writer.WriteLine("proxyHost=proxyHost");
-            writer.WriteLine("proxyPort=proxyPort");
-            writer.WriteLine("Call Vantiv!!!");
-            writer.Close();
-            string originalConfigPath = Environment.GetEnvironmentVariable("chargebackConfigPath");
-            Environment.SetEnvironmentVariable("chargebackConfigPath", Path.Combine(Directory.GetCurrentDirectory(), filename));
-
-            try
-            {
-                Configuration config = new Configuration();
-
-                Assert.AreEqual("username", config.Get("username"));
-                Assert.AreEqual("password", config.Get("password"));
-                Assert.AreEqual("merchantId", config.Get("merchantId"));
-                Assert.AreEqual("host", config.Get("host"));
-                Assert.AreEqual("false", config.Get("printXml"));
-                Assert.AreEqual("false", config.Get("neuterXml"));
-                Assert.AreEqual("proxyHost", config.Get("proxyHost"));
-                Assert.AreEqual("proxyPort", config.Get("proxyPort"));
-
-            }
-            catch (ChargebackException ce)
-            {
-                throw new ChargebackException("" + ce);
-            }
-            finally
-            {
-                Console.WriteLine("Restoring env var and deleting file...");
-                Environment.SetEnvironmentVariable("chargebackConfigPath", originalConfigPath);
-                File.Delete(filename);
-            }
-        }
-
-        [Test]
         [ExpectedException(typeof(ChargebackException))]
         public void TestMissingSettingInConfig()
         {
