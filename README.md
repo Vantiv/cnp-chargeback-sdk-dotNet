@@ -49,13 +49,7 @@ Setup
         </chargebackSettings>
     </vantivWorldpay>
 ```
-
-
-
-    Also, you can use a different Configuration constructor to pass a file path to a simple configuration file that contains [key=value] settings; an example of this configuration file can be found at (https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/blob/2.x/sampleConfig.txt). 
-    
-    
-
+Also, you can use a different Configuration constructor to pass a file path to a simple configuration file that contains [key=value] settings; an example of this configuration file can be found at (https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/blob/2.x/sampleConfig.txt). 
 ```
     username = myUsername
     password = myPassword
@@ -66,8 +60,7 @@ Setup
     proxyHost = myProxyHost
     proxyPort = 7777
 ```
-    
-	In addition, you can configure it dynamically by create a dictionary with required settings and call the Configuration constructor taking a dictionary.
+In addition, you can configure it dynamically by create a dictionary with required settings and call the Configuration constructor taking a dictionary.
 
 3.) Let's try our SDK with the Sandbox, which requires no valid username and password:  
 
