@@ -62,7 +62,7 @@ Also, you can use a different Configuration constructor to pass a file path to a
 ```
 In addition, you can configure it dynamically by create a dictionary with required settings and call the Configuration constructor taking a dictionary.
 
-3.) Let's try our SDK with the Sandbox, which requires no valid username and password:  
+3.) Let's try our SDK with the Sandbox, which doesn't require a valid username and password:  
 
 ```c#
 using System;
