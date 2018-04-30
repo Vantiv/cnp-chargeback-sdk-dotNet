@@ -155,9 +155,6 @@
       <Name>ChargebackForDotNet</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="chargeback.config" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
