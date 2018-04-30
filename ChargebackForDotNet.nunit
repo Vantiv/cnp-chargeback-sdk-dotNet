@@ -1,10 +1,10 @@
 <NUnitProject>
   <Settings activeconfig="Debug" />
-  <Config name="Debug" binpathtype="Auto">
+  <Config name="Debug" binpathtype="Auto" configfile="App.config">
     <assembly path="ChargebackForDotNet\bin\Debug\ChargebackForDotNet.dll" />
     <assembly path="ChargebackForDotNetTest\bin\Debug\ChargebackForDotNetTest.exe" />
   </Config>
-  <Config name="Release" binpathtype="Auto">
+  <Config name="Release" binpathtype="Auto" configfile="App.config>
     <assembly path="ChargebackForDotNet\bin\Debug\ChargebackForDotNet.dll" />
     <assembly path="ChargebackForDotNetTest\bin\Debug\ChargebackForDotNetTest.exe" />
   </Config>
