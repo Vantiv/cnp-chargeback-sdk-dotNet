@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ChargebackForDotNet;
@@ -10,15 +9,15 @@ using NUnit.Framework;
 namespace ChargebackForDotNetTest.Functional
 {
     [TestFixture]
-    class TestCommunication
+    internal class TestCommunication
     {
-        private Communication comm;
-        private Configuration config;
+        private Communication _comm;
+        private Configuration _config;
 
         [SetUp]
         public void SetUp()
         {
-            Dictionary<string, string> configDict = new Dictionary<string, string>();
+            var configDict = new Dictionary<string, string>();
             configDict["username"] = "dotnet";
             configDict["password"] = "dotnet";
             configDict["merchantId"] = "101";
@@ -27,55 +26,53 @@ namespace ChargebackForDotNetTest.Functional
             configDict["neuterXml"] = "false";
             configDict["proxyHost"] = "websenseproxy";
             configDict["proxyPort"] = "8080";
-            config = new Configuration(configDict);
+            _config = new Configuration(configDict);
 
-            comm = new Communication();
-            comm.SetHost(config.Get("host"));
+            _comm = new Communication();
+            _comm.SetHost(_config.Get("host"));
         }
 
         [Test]
         public void TestGet()
         {
-            string date = "?date=2013-01-01";
-            string encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"),
+            const string date = "?date=2013-01-01";
+            var encoded = ChargebackUtils.Encode64(_config.Get("username") + ":" + _config.Get("password"),
                 "utf-8");
-            comm.AddToHeader("Authorization", "Basic " + encoded);
-            comm.SetContentType("application/com.vantivcnp.services-v2+xml");
-            comm.SetAccept("application/com.vantivcnp.services-v2+xml");
-            comm.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
-            var responseContent = comm.Get("/services/chargebacks/" + date);
+            _comm.AddToHeader("Authorization", "Basic " + encoded);
+            _comm.SetContentType("application/com.vantivcnp.services-v2+xml");
+            _comm.SetAccept("application/com.vantivcnp.services-v2+xml");
+            _comm.SetProxy(_config.Get("proxyHost"), int.Parse(_config.Get("proxyPort")));
+            var responseContent = _comm.Get("/services/chargebacks/" + date);
             var contentType = responseContent.GetContentType();
             var receivedBytes = responseContent.GetByteData();
             Assert.True(receivedBytes.Any());
             Console.WriteLine("Content type returned from the server::" + contentType);
-            string xmlResponse = Regex.Replace(ChargebackUtils.BytesToString(receivedBytes), @"\t|\n|\r", "");
+            var xmlResponse = Regex.Replace(ChargebackUtils.BytesToString(receivedBytes), @"\t|\n|\r", "");
             Console.WriteLine(xmlResponse);
-            string pattern = @"<?xml version=.* encoding=.* standalone=.*?>.*" +
-                             "<chargebackRetrievalResponse xmlns=.*<transactionId>.*</transactionId>.*" +
-                             "<chargebackCase>.*</chargebackCase>.*</chargebackRetrievalResponse>";
-            Regex regex = new Regex(pattern, RegexOptions.Multiline);
+            const string pattern = @"<?xml version=.* encoding=.* standalone=.*?>.*" +
+                                   "<chargebackRetrievalResponse xmlns=.*<transactionId>.*</transactionId>.*" +
+                                   "<chargebackCase>.*</chargebackCase>.*</chargebackRetrievalResponse>";
+            var regex = new Regex(pattern, RegexOptions.Multiline);
             Assert.True(regex.IsMatch(xmlResponse));
         }
 
         [Test]
         public void TestPut()
         {
-            var sendingBytes = new List<byte>();
-            var xmlRequest = "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>" +
-                                "<chargebackUpdateRequest xmlns='http://www.vantivcnp.com/chargebacks'>" +
-                                "<activityType>ADD_NOTE</activityType>" +
-                                "<note>Any note</note>" +
-                                "</chargebackUpdateRequest>";
-            sendingBytes = ChargebackUtils.StringToBytes(xmlRequest);
-            var caseId = 1000;
-            var encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"),
+            const string xmlRequest = "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>" +
+                                      "<chargebackUpdateRequest xmlns='http://www.vantivcnp.com/chargebacks'>" +
+                                      "<activityType>ADD_NOTE</activityType>" +
+                                      "<note>Any note</note>" +
+                                      "</chargebackUpdateRequest>";
+            var sendingBytes = ChargebackUtils.StringToBytes(xmlRequest);
+            const int caseId = 1000;
+            var encoded = ChargebackUtils.Encode64(_config.Get("username") + ":" + _config.Get("password"),
                 "utf-8");
-            comm.AddToHeader("Authorization", "Basic " + encoded);
-            comm.SetContentType("application/com.vantivcnp.services-v2+xml");
-            comm.SetAccept("application/com.vantivcnp.services-v2+xml");
-            comm.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
-            var responseContent = comm.Put("/services/chargebacks/" + caseId, sendingBytes);
-            var contentType = responseContent.GetContentType();
+            _comm.AddToHeader("Authorization", "Basic " + encoded);
+            _comm.SetContentType("application/com.vantivcnp.services-v2+xml");
+            _comm.SetAccept("application/com.vantivcnp.services-v2+xml");
+            _comm.SetProxy(_config.Get("proxyHost"), int.Parse(_config.Get("proxyPort")));
+            var responseContent = _comm.Put("/services/chargebacks/" + caseId, sendingBytes);
             var receivedBytes = responseContent.GetByteData();
             Assert.True(receivedBytes.Any());
             var xmlResponse = Regex.Replace(ChargebackUtils.BytesToString(receivedBytes), @"\t|\n|\r", "");
@@ -93,14 +90,13 @@ namespace ChargebackForDotNetTest.Functional
             var documentId = "callVantiv.pdf";
             var sendingBytes = ChargebackUtils.StringToBytes("Hello! Call Vantiv!");
 
-            var encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"), "utf-8");
-            comm.AddToHeader("Authorization", "Basic " + encoded);
-            comm.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
-            comm.SetContentType("image/tiff");
+            var encoded = ChargebackUtils.Encode64(_config.Get("username") + ":" + _config.Get("password"), "utf-8");
+            _comm.AddToHeader("Authorization", "Basic " + encoded);
+            _comm.SetProxy(_config.Get("proxyHost"), int.Parse(_config.Get("proxyPort")));
+            _comm.SetContentType("image/tiff");
             try
             {
-                var responseContent = comm.Post("/services/chargebacks/upload/" + caseId + "/" + documentId, sendingBytes);
-                var contentType = responseContent.GetContentType();
+                var responseContent = _comm.Post("/services/chargebacks/upload/" + caseId + "/" + documentId, sendingBytes);
                 var receivedBytes = responseContent.GetByteData();
                 Assert.True(receivedBytes.Any());
                 var xmlResponse = Regex.Replace(ChargebackUtils.BytesToString(receivedBytes), @"\t|\n|\r", "");
@@ -124,11 +120,10 @@ namespace ChargebackForDotNetTest.Functional
         {
             var caseId = 1000;
             const string documentId = "uploadTest.tiff";
-            var encoded = ChargebackUtils.Encode64(config.Get("username") + ":" + config.Get("password"), "utf-8");
-            comm.AddToHeader("Authorization", "Basic " + encoded);
-            comm.SetProxy(config.Get("proxyHost"), int.Parse(config.Get("proxyPort")));
-            var responseContent = comm.Delete(string.Format("/services/chargebacks/remove/{0}/{1}", caseId, documentId));
-            var contentType = responseContent.GetContentType();
+            var encoded = ChargebackUtils.Encode64(_config.Get("username") + ":" + _config.Get("password"), "utf-8");
+            _comm.AddToHeader("Authorization", "Basic " + encoded);
+            _comm.SetProxy(_config.Get("proxyHost"), int.Parse(_config.Get("proxyPort")));
+            var responseContent = _comm.Delete(string.Format("/services/chargebacks/remove/{0}/{1}", caseId, documentId));
             var receivedBytes = responseContent.GetByteData();
             Assert.True(receivedBytes.Any());
             var xmlResponse = Regex.Replace(ChargebackUtils.BytesToString(receivedBytes), @"\t|\n|\r", "");

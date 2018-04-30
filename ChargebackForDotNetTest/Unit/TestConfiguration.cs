@@ -1,28 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Text;
 using NUnit.Framework;
-using Moq;
-using System.Text.RegularExpressions;
 using ChargebackForDotNet;
 using ChargebackForDotNet.Properties;
-using NUnit.Core;
 
 
 namespace ChargebackForDotNetTest.Unit
 {
     [TestFixture]
-    class TestConfiguration
+    internal class TestConfiguration
     {
 
         [Test]
         public void TestConfigurationFromFile()
         {
             Console.WriteLine(Directory.GetCurrentDirectory());
-            string filename = "TestConfigurationFromFile";
-            StreamWriter writer = new StreamWriter(File.Create(filename));
+            const string filename = "TestConfigurationFromFile";
+            var writer = new StreamWriter(File.Create(filename));
             writer.WriteLine("username=  username");
             writer.WriteLine("  password  =  password");
             writer.WriteLine("merchantId=merchantId  ");
@@ -33,7 +28,7 @@ namespace ChargebackForDotNetTest.Unit
             writer.WriteLine(" proxyPort  =proxyPort");
             writer.Close();
             
-            Configuration config = new Configuration(filename);
+            var config = new Configuration(filename);
             
             Assert.AreEqual("username", config.Get("username"));
             Assert.AreEqual("password", config.Get("password"));
@@ -50,7 +45,7 @@ namespace ChargebackForDotNetTest.Unit
         [Test]
         public void TestConfigurationFromCustomDictionary()
         {
-            Dictionary<string, string> configDict = new Dictionary<string, string>();
+            var configDict = new Dictionary<string, string>();
             configDict["username"] = "username";
             configDict["password"] = "password";
             configDict["merchantId"] = "merchantId";
@@ -60,7 +55,7 @@ namespace ChargebackForDotNetTest.Unit
             configDict["proxyHost"] = "proxyHost";
             configDict["proxyPort"] = "proxyPort";
             
-            Configuration config = new Configuration(configDict);
+            var config = new Configuration(configDict);
             
             Assert.AreEqual("username", config.Get("username"));
             Assert.AreEqual("password", config.Get("password"));
@@ -76,7 +71,7 @@ namespace ChargebackForDotNetTest.Unit
         [ExpectedException(typeof(ChargebackException))]
         public void TestMissingSettingInConfig()
         {
-            Dictionary<string, string> configDict = new Dictionary<string, string>();
+            var configDict = new Dictionary<string, string>();
             configDict["username"] = "username";
             configDict["password"] = "password";
             configDict["host"] = "host";
@@ -84,15 +79,14 @@ namespace ChargebackForDotNetTest.Unit
             configDict["neuterXml"] = "false";
             configDict["proxyHost"] = "proxyHost";
             configDict["proxyPort"] = "proxyPort";
-            Configuration config = new Configuration(configDict);
-            
+            var configuration = new Configuration(configDict);
         }
 
         [Test]
         [ExpectedException(typeof(KeyNotFoundException))]
         public void TestInvalidSettingInConfig()
         {
-            Dictionary<string, string> configDict = new Dictionary<string, string>();
+            var configDict = new Dictionary<string, string>();
             configDict["username"] = "username";
             configDict["password"] = "password";
             configDict["merchantId"] = "merchantId";
@@ -102,16 +96,16 @@ namespace ChargebackForDotNetTest.Unit
             configDict["proxyHost"] = "proxyHost";
             configDict["proxyPort"] = "proxyPort";
             configDict["extraKey"] = "extraValue";
-            Configuration config = new Configuration(configDict);
-            string extraKey = config.Get("extraKey");
+            var config = new Configuration(configDict);
+            var extraKey = config.Get("extraKey");
         }
 
         [Test]
         public void TestPasswordWithEqualsSignInConfigFile()
         {
             Console.WriteLine(Directory.GetCurrentDirectory());
-            string filename = "TestConfigurationFromFile";
-            StreamWriter writer = new StreamWriter(File.Create(filename));
+            const string filename = "TestConfigurationFromFile";
+            var writer = new StreamWriter(File.Create(filename));
             writer.WriteLine("username=username");
             writer.WriteLine("password=pass=word");
             writer.WriteLine("merchantId=merchantId  ");
@@ -122,7 +116,7 @@ namespace ChargebackForDotNetTest.Unit
             writer.WriteLine("proxyPort=proxyPort");
             writer.Close();
             
-            Configuration config = new Configuration(filename);
+            var config = new Configuration(filename);
             
             Assert.AreEqual("pass=word", config.Get("password"));
             

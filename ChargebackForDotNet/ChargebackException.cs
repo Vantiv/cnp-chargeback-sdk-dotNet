@@ -1,48 +1,42 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using System.Management.Instrumentation;
-using System.Net;
-using System.Xml.Serialization;
-using ChargebackForDotNet.Properties;
 
 namespace ChargebackForDotNet
 {
     public class ChargebackException: Exception
     {
-        public string Message;
+        public string ErrorMessage;
 
-        public ChargebackException(string message) : base(message)
+        public ChargebackException(string errorMessage) : base(errorMessage)
         {
-            Message = message;
+            ErrorMessage = errorMessage;
         }
     }
     
     
     public class ChargebackWebException: Exception
     {
-        public readonly string Message;
+        public readonly string ErrorMessage;
         public readonly string RawReponse;
         public readonly int HttpStatusCode;
         public readonly string[] ErrorMessages;
 
-        public ChargebackWebException(string message, string raw) : base(message)
+        public ChargebackWebException(string errorMessage, string raw) : base(errorMessage)
         {
-            Message = message;
+            ErrorMessage = errorMessage;
             RawReponse = raw;
         }
 
-        public ChargebackWebException(string message, int httpStatusCode, string rawReponse):base(message)
+        public ChargebackWebException(string errorMessage, int httpStatusCode, string rawReponse):base(errorMessage)
         {
-            Message = message;
+            ErrorMessage = errorMessage;
             HttpStatusCode = httpStatusCode;
             RawReponse = rawReponse;  
         }
 
-        public ChargebackWebException(string message, int httpStatusCode, string errResponseXml, string[] errorMessages) 
-            : base(message + ExtractErrorMessages(errorMessages))
+        public ChargebackWebException(string errorMessage, int httpStatusCode, string errResponseXml, string[] errorMessages) 
+            : base(errorMessage + ExtractErrorMessages(errorMessages))
         {
-            Message = message;
+            ErrorMessage = errorMessage;
             HttpStatusCode = httpStatusCode;
             ErrorMessages = errorMessages;
             RawReponse = errResponseXml;
@@ -62,21 +56,15 @@ namespace ChargebackForDotNet
     
     public class ChargebackDocumentException: Exception
     {
-        public string Message;
-        public string rawReponse;
-        public string responseCode; 
+        public string ErrorMessage;
+        public string RawReponse;
+        public string ResponseCode; 
 
-        public ChargebackDocumentException(string message, string responseCode, string raw) : base(message)
+        public ChargebackDocumentException(string errorMessage, string responseCode, string raw) : base(errorMessage)
         {
-            Message = message;
-            this.responseCode = responseCode;
-            rawReponse = raw;
+            ErrorMessage = errorMessage;
+            ResponseCode = responseCode;
+            RawReponse = raw;
         }
-    }
-
-    public partial class errorResponse
-    {
-        // Additional implementation for errorResponse class
-        // should be written here.
     }
 }

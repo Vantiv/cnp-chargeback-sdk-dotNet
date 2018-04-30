@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace ChargebackForDotNetTest.Certification
 {
-    public class TestCertificationChargebackDocumentationAPI
+    public class TestCertificationChargebackDocumentationApi
     {
         
         [Test]

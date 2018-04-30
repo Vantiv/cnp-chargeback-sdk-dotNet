@@ -1,15 +1,8 @@
 ﻿using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ChargebackForDotNet.Properties;
 using System.Net;
-using System.Security.Authentication;
-using System.Text;
-using System.Threading;
 
 namespace ChargebackForDotNet
 {

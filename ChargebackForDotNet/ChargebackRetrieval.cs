@@ -1,22 +1,9 @@
 ﻿using System;
-using System.CodeDom;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.IO;
 using System.Net;
-using System.Xml.Serialization;
 using ChargebackForDotNet.Properties;
 
 namespace ChargebackForDotNet
 {
-    public partial class chargebackApiActivity
-    {
-    }
-
-    public partial class chargebackApiCase
-    {
-    }
     
     public class ChargebackRetrievalRequest
     {
@@ -145,11 +132,5 @@ namespace ChargebackForDotNet
             var errorMessages = errorResponse.errors;
             return new ChargebackWebException(string.Format("Retrieval Failed - HTTP {0} Error", httpStatusCode), httpStatusCode, rawResponse, errorMessages);
         }
-    }
-    
-    public partial class chargebackRetrievalResponse
-    {
-        // Additional implementation for chargebackRetrievalResponse
-        // should be in here.
     }
 }

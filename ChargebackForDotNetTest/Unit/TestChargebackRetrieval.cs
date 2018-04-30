@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Text;
+﻿using System.Text;
 using ChargebackForDotNet;
 using Moq;
 using NUnit.Framework;
@@ -16,44 +14,42 @@ namespace ChargebackForDotNetTest.Unit
         {
         }
 
-        private string generateXmlResponse(int transactionId, int nCases)
+        private string GenerateXmlResponse(int transactionId, int nCases)
         {
             var head = string.Format(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                 "<chargebackRetrievalResponse xmlns=\"http://www.vantivcnp.com/chargebacks\">" +
                 "    <transactionId>{0}</transactionId>", transactionId);
-            var body =
-                "    <chargebackCase>" +
-                "        <caseId>12887910010</caseId>" +
-                "        <merchantId>1288791</merchantId>" +
-                "        <dayIssuedByBank>2002-01-01</dayIssuedByBank>" +
-                "        <dateReceivedByVantivCnp>2018-04-12</dateReceivedByVantivCnp>" +
-                "        <vantivCnpTxnId>2110834816113</vantivCnpTxnId>" +
-                "        <cycle>Issuer Declined Pre-Arbitration</cycle>" +
-                "        <orderId>12345</orderId>" +
-                "        <cardNumberLast4>0001</cardNumberLast4>" +
-                "        <cardType>VISA</cardType>" +
-                "        <chargebackAmount>71000</chargebackAmount>" +
-                "        <chargebackCurrencyType>USD</chargebackCurrencyType>" +
-                "        <originalTxnDay>2002-01-01</originalTxnDay>" +
-                "        <chargebackType>D</chargebackType>" +
-                "        <reasonCode>11.3</reasonCode>" +
-                "        <reasonCodeDescription>Allocation Flow - Authorization - No Authorization</reasonCodeDescription>" +
-                "        <currentQueue>Merchant</currentQueue>" +
-                "        <acquirerReferenceNumber>7777777771</acquirerReferenceNumber>" +
-                "        <chargebackReferenceNumber>jjjjjjjjjj</chargebackReferenceNumber>" +
-                "        <bin>410000</bin>" +
-                "        <paymentAmount>4510</paymentAmount>" +
-                "        <activity>" +
-                "            <activityDate>2018-04-12</activityDate>" +
-                "            <activityType>Assign To Merchant</activityType>" +
-                "            <fromQueue>Vantiv</fromQueue>" +
-                "            <toQueue>Merchant Automated</toQueue>" +
-                "            <notes>Please work this case</notes>" +
-                "        </activity>" +
-                "    </chargebackCase>";
-            var foot =
-                "</chargebackRetrievalResponse>";
+            const string body = "    <chargebackCase>" +
+                                "        <caseId>12887910010</caseId>" +
+                                "        <merchantId>1288791</merchantId>" +
+                                "        <dayIssuedByBank>2002-01-01</dayIssuedByBank>" +
+                                "        <dateReceivedByVantivCnp>2018-04-12</dateReceivedByVantivCnp>" +
+                                "        <vantivCnpTxnId>2110834816113</vantivCnpTxnId>" +
+                                "        <cycle>Issuer Declined Pre-Arbitration</cycle>" +
+                                "        <orderId>12345</orderId>" +
+                                "        <cardNumberLast4>0001</cardNumberLast4>" +
+                                "        <cardType>VISA</cardType>" +
+                                "        <chargebackAmount>71000</chargebackAmount>" +
+                                "        <chargebackCurrencyType>USD</chargebackCurrencyType>" +
+                                "        <originalTxnDay>2002-01-01</originalTxnDay>" +
+                                "        <chargebackType>D</chargebackType>" +
+                                "        <reasonCode>11.3</reasonCode>" +
+                                "        <reasonCodeDescription>Allocation Flow - Authorization - No Authorization</reasonCodeDescription>" +
+                                "        <currentQueue>Merchant</currentQueue>" +
+                                "        <acquirerReferenceNumber>7777777771</acquirerReferenceNumber>" +
+                                "        <chargebackReferenceNumber>jjjjjjjjjj</chargebackReferenceNumber>" +
+                                "        <bin>410000</bin>" +
+                                "        <paymentAmount>4510</paymentAmount>" +
+                                "        <activity>" +
+                                "            <activityDate>2018-04-12</activityDate>" +
+                                "            <activityType>Assign To Merchant</activityType>" +
+                                "            <fromQueue>Vantiv</fromQueue>" +
+                                "            <toQueue>Merchant Automated</toQueue>" +
+                                "            <notes>Please work this case</notes>" +
+                                "        </activity>" +
+                                "    </chargebackCase>";
+            const string foot = "</chargebackRetrievalResponse>";
             var xmlResponse = new StringBuilder(head);
             for (var i = 0; i < nCases; i++)
             {
@@ -70,18 +66,18 @@ namespace ChargebackForDotNetTest.Unit
         [TestCase("2018-04-09", 2111123987, 0, true)]
         public void TestRetrieveByActivityDate(string date, int expectedId, int expectedNCases, bool expectedNull)
         {
-            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedXmlResponse = GenerateXmlResponse(expectedId, expectedNCases);
             var expectedResponseContent = new ResponseContent(
                 "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get("/chargebacks/?date=" + date))
                 .Returns(expectedResponseContent);
-            ChargebackRetrievalRequest request
+            var request
                 = new ChargebackRetrievalRequest(commMock.Object);
-            chargebackRetrievalResponse response
+            var response
                 = request.RetrieveByActivityDate(ChargebackUtils.ParseDate(date));
             Assert.AreEqual(expectedId, response.transactionId);
-            bool nullCase = response.chargebackCase == null;
+            var nullCase = response.chargebackCase == null;
             Assert.AreEqual(expectedNull, nullCase);
             if(!nullCase)
                 Assert.AreEqual(expectedNCases, response.chargebackCase.Length);
@@ -93,18 +89,18 @@ namespace ChargebackForDotNetTest.Unit
         public void TestRetrieveByActivityDateWithImpact(string date, bool impact,
             int expectedId, int expectedNCases, bool expectedNull)
         {
-            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedXmlResponse = GenerateXmlResponse(expectedId, expectedNCases);
             var expectedResponseContent = new ResponseContent(
                 "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get(string.Format("/chargebacks/?date={0}&financialOnly={1}", date, impact)))
                 .Returns(expectedResponseContent);
-            ChargebackRetrievalRequest request
+            var request
                 = new ChargebackRetrievalRequest(commMock.Object);
-            chargebackRetrievalResponse response
+            var response
                 = request.RetrieveByActivityDateWithImpact(ChargebackUtils.ParseDate(date), impact);
             Assert.AreEqual(expectedId, response.transactionId);
-            bool nullCase = response.chargebackCase == null;
+            var nullCase = response.chargebackCase == null;
             Assert.AreEqual(expectedNull, nullCase);
             if(!nullCase)
                 Assert.AreEqual(expectedNCases, response.chargebackCase.Length);
@@ -116,18 +112,18 @@ namespace ChargebackForDotNetTest.Unit
         public void TestRetrieveByActionable(bool actionable, int expectedId, int expectedNCases,
             bool expectedNull)
         {
-            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedXmlResponse = GenerateXmlResponse(expectedId, expectedNCases);
             var expectedResponseContent = new ResponseContent(
                 "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get(string.Format("/chargebacks/?actionable={0}", actionable)))
                 .Returns(expectedResponseContent);
-            ChargebackRetrievalRequest request
+            var request
                 = new ChargebackRetrievalRequest(commMock.Object);
-            chargebackRetrievalResponse response
+            var response
                 = request.RetrieveByActionable(actionable);
             Assert.AreEqual(expectedId, response.transactionId);
-            bool nullCase = response.chargebackCase == null;
+            var nullCase = response.chargebackCase == null;
             Assert.AreEqual(expectedNull, nullCase);
             if(!nullCase)
                 Assert.AreEqual(expectedNCases, response.chargebackCase.Length);
@@ -140,18 +136,18 @@ namespace ChargebackForDotNetTest.Unit
         public void TestRetrieveByCaseId(long caseId, int expectedId, int expectedNCases,
             bool expectedNull)
         {
-            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedXmlResponse = GenerateXmlResponse(expectedId, expectedNCases);
             var expectedResponseContent = new ResponseContent(
                 "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get(string.Format("/chargebacks/{0}", caseId)))
                 .Returns(expectedResponseContent);
-            ChargebackRetrievalRequest request
+            var request
                 = new ChargebackRetrievalRequest(commMock.Object);
-            chargebackRetrievalResponse response
+            var response
                 = request.RetrieveByCaseId(caseId);
             Assert.AreEqual(expectedId, response.transactionId);
-            bool nullCase = response.chargebackCase == null;
+            var nullCase = response.chargebackCase == null;
             Assert.AreEqual(expectedNull, nullCase);
             if(!nullCase)
                 Assert.AreEqual(expectedNCases, response.chargebackCase.Length);
@@ -163,18 +159,18 @@ namespace ChargebackForDotNetTest.Unit
         public void TestRetrieveByToken(string token, int expectedId, int expectedNCases,
             bool expectedNull)
         {
-            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedXmlResponse = GenerateXmlResponse(expectedId, expectedNCases);
             var expectedResponseContent = new ResponseContent(
                 "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get(string.Format("/chargebacks/?token={0}", token)))
                 .Returns(expectedResponseContent);
-            ChargebackRetrievalRequest request
+            var request
                 = new ChargebackRetrievalRequest(commMock.Object);
-            chargebackRetrievalResponse response
+            var response
                 = request.RetrieveByToken(token);
             Assert.AreEqual(expectedId, response.transactionId);
-            bool nullCase = response.chargebackCase == null;
+            var nullCase = response.chargebackCase == null;
             Assert.AreEqual(expectedNull, nullCase);
             if(!nullCase)
                 Assert.AreEqual(expectedNCases, response.chargebackCase.Length);
@@ -186,22 +182,22 @@ namespace ChargebackForDotNetTest.Unit
         public void TestRetrieveByCardNumber(string cardNumber, string expirationDate,
             int expectedId, int expectedNCases, bool expectedNull)
         {
-            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedXmlResponse = GenerateXmlResponse(expectedId, expectedNCases);
             var expectedResponseContent = new ResponseContent(
                 "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             var cardExpirationdate = ChargebackUtils.ParseDate(expirationDate);
             var stringCardExpirationdate = cardExpirationdate.ToString("MMyy");
             string expectedQuery =
                 string.Format("/chargebacks/?cardNumber={0}&expirationDate={1}", cardNumber, stringCardExpirationdate);
             commMock.Setup(c => c.Get(expectedQuery))
                 .Returns(expectedResponseContent);
-            ChargebackRetrievalRequest request
+            var request
                 = new ChargebackRetrievalRequest(commMock.Object);
-            chargebackRetrievalResponse response
+            var response
                 = request.RetrieveByCardNumber(cardNumber, cardExpirationdate.Month, cardExpirationdate.Year);
             Assert.AreEqual(expectedId, response.transactionId);
-            bool nullCase = response.chargebackCase == null;
+            var nullCase = response.chargebackCase == null;
             Assert.AreEqual(expectedNull, nullCase);
             if(!nullCase)
                 Assert.AreEqual(expectedNCases, response.chargebackCase.Length);
@@ -212,18 +208,18 @@ namespace ChargebackForDotNetTest.Unit
         [TestCase("333333333", 1234567, 0, true)]
         public void TestRetrieveByArn(string arn, int expectedId, int expectedNCases, bool expectedNull)
         {
-            var expectedXmlResponse = generateXmlResponse(expectedId, expectedNCases);
+            var expectedXmlResponse = GenerateXmlResponse(expectedId, expectedNCases);
             var expectedResponseContent = new ResponseContent(
                 "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get(string.Format("/chargebacks/?arn={0}", arn)))
                 .Returns(expectedResponseContent);
-            ChargebackRetrievalRequest request
+            var request
                 = new ChargebackRetrievalRequest(commMock.Object);
-            chargebackRetrievalResponse response
+            var response
                 = request.RetrieveByArn(arn);
             Assert.AreEqual(expectedId, response.transactionId);
-            bool nullCase = response.chargebackCase == null;
+            var nullCase = response.chargebackCase == null;
             Assert.AreEqual(expectedNull, nullCase);
             if(!nullCase)
                 Assert.AreEqual(expectedNCases, response.chargebackCase.Length);

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using ChargebackForDotNet;
 using ChargebackForDotNet.Properties;
 using NUnit.Framework;
@@ -12,12 +10,12 @@ namespace ChargebackForDotNetTest.Functional
     [TestFixture]
     public class TestDocumentation
     {
-        private ChargebackDocumentationRequest docRequest;
+        private ChargebackDocumentationRequest _docRequest;
 
         [SetUp]
         public void SetUp()
         {
-            Dictionary<string, string> configDict = new Dictionary<string, string>();
+            var configDict = new Dictionary<string, string>();
             configDict["username"] = "dotnet";
             configDict["password"] = "dotnet";
             configDict["merchantId"] = "101";
@@ -27,15 +25,14 @@ namespace ChargebackForDotNetTest.Functional
             configDict["proxyHost"] = "websenseproxy";
             configDict["proxyPort"] = "8080";
             Configuration config = new Configuration(configDict);
-            
-            docRequest = new ChargebackDocumentationRequest();
-            docRequest.Config = config;
+
+            _docRequest = new ChargebackDocumentationRequest {Config = config};
         }
         
         [Test]
         public void TestRetrieveDocument()
         {
-            var docResponse = docRequest.RetrieveDocument(1000, "doc.tiff");
+            var docResponse = _docRequest.RetrieveDocument(1000, "doc.tiff");
             Assert.NotNull(docResponse);
             Assert.Less(0, docResponse.Count);
         }
@@ -44,14 +41,13 @@ namespace ChargebackForDotNetTest.Functional
         [ExpectedException(typeof(ChargebackDocumentException))]
         public void TestRetrieveDocument_DocumentNotFound_009()
         {
-            var docResponse
-                = docRequest.RetrieveDocument(10009, "testDoc.tiff");
+            _docRequest.RetrieveDocument(10009, "testDoc.tiff");
         }
         
         [Test]
         public void TestListDocument()
         {
-            chargebackDocumentUploadResponse docResponse = docRequest.ListDocuments(1000);
+            chargebackDocumentUploadResponse docResponse = _docRequest.ListDocuments(1000);
             Assert.NotNull(docResponse);
             Assert.AreEqual("000", docResponse.responseCode);
             Assert.AreEqual("Success".ToLower(), docResponse.responseMessage.ToLower());
@@ -60,7 +56,7 @@ namespace ChargebackForDotNetTest.Functional
         [Test]
         public void TestDeleteDocument()
         {
-            chargebackDocumentUploadResponse docResponse = docRequest.DeleteDocument(1000, "logo.tiff");
+            chargebackDocumentUploadResponse docResponse = _docRequest.DeleteDocument(1000, "logo.tiff");
             Assert.NotNull(docResponse);
             Assert.AreEqual("000", docResponse.responseCode);
             Assert.AreEqual("Success".ToLower(), docResponse.responseMessage.ToLower());
@@ -77,7 +73,7 @@ namespace ChargebackForDotNetTest.Functional
 
             try
             {
-                var docResponse = docRequest.UploadDocument(1000, tiffFilePath);
+                var docResponse = _docRequest.UploadDocument(1000, tiffFilePath);
                 Assert.NotNull(docResponse);
                 Assert.AreEqual("000", docResponse.responseCode);
                 Assert.AreEqual("Success".ToLower(), docResponse.responseMessage.ToLower());
@@ -104,7 +100,7 @@ namespace ChargebackForDotNetTest.Functional
 
             try
             {
-                var docResponse = docRequest.ReplaceDocument(1000, documentId, tiffFilePath);
+                var docResponse = _docRequest.ReplaceDocument(1000, documentId, tiffFilePath);
                 Assert.NotNull(docResponse);
                 Assert.AreEqual("000", docResponse.responseCode);
                 Assert.AreEqual("Success".ToLower(), docResponse.responseMessage.ToLower());

@@ -93,7 +93,7 @@ namespace Merchant
     Case Id:1288791001
 ~~~
 
-5) In Step 3, you tried our .NET SDK with the Sandbox. Once you are registered to test with our Prelive environment, run the example with the following host (https://services.vantivprelive.com).
+5) In Step 3, you've tried our .NET SDK with the Sandbox. Once you are registered to test with our Prelive environment, run the example with the following host (https://services.vantivprelive.com).
 
 ```c#
 using System;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.ComponentModel;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
 using ChargebackForDotNet;
@@ -22,17 +19,17 @@ namespace ChargebackForDotNetTest.Unit
         private string generateXmlResponse(long caseId, string[] documentIds, 
             string responseCode, string responseMessage)
         {
-            string headTemplate = 
+            var headTemplate = 
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                 "<chargebackDocumentUploadResponse xmlns=\"http://www.vantivcnp.com/chargebacks\">" +
                 "    <merchantId>101</merchantId>" +
                 "    <caseId>{0}</caseId>";
-            string footTemplate =
+            var footTemplate =
                 "    <responseCode>{0}</responseCode>" +
                 "    <responseMessage>{1}</responseMessage>" +
                 "</chargebackDocumentUploadResponse>";
-            string head = string.Format(headTemplate, caseId);
-            string foot = string.Format(footTemplate, responseCode, responseMessage);
+            var head = string.Format(headTemplate, caseId);
+            var foot = string.Format(footTemplate, responseCode, responseMessage);
             var xmlResponse = new StringBuilder(head);
 
             if (documentIds != null)
@@ -47,15 +44,13 @@ namespace ChargebackForDotNetTest.Unit
             return xmlResponse.ToString();
         }
         
-        private string generateErrorXmlResponse(string[] errorMessages)
+        private string GenerateErrorXmlResponse(string[] errorMessages)
         {
-            string head =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                "<errorResponse>" +
-                "<errors>";
-            string foot =
-                "</errors>" +
-                "</errorResponse>";
+            const string head = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                                "<errorResponse>" +
+                                "<errors>";
+            const string foot = "</errors>" +
+                                "</errorResponse>";
             var xmlResponse = new StringBuilder(head);
             foreach (var error in errorMessages)
             {
@@ -70,11 +65,11 @@ namespace ChargebackForDotNetTest.Unit
         [TestCase(1000, "test1.tif")]
         public void TestRetrieveDocument(long caseId, string documentId)
         {
-            string expectedFileContent = "To test document retrieval";
+            const string expectedFileContent = "To test document retrieval";
             var expectedRetrievedFileContent = ChargebackUtils.StringToBytes(expectedFileContent);
             var expectedResponseContent = new ResponseContent(
                 "image/tiff", expectedRetrievedFileContent);
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get(string.Format("/services/chargebacks/retrieve/{0}/{1}", caseId, documentId)))
                 .Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
@@ -84,8 +79,8 @@ namespace ChargebackForDotNetTest.Unit
         
         
         
-        [TestCase(1009, "test1.tif", new string[] {"test1.tif"}, "009", "Document Not Found")]
-        [TestCase(1003, "test2.tif", new string[] {"test2.tif"}, "003", "Case Not Found")]
+        [TestCase(1009, "test1.tif", new[] {"test1.tif"}, "009", "Document Not Found")]
+        [TestCase(1003, "test2.tif", new[] {"test2.tif"}, "003", "Case Not Found")]
         [ExpectedException(typeof(ChargebackDocumentException))]
         public void TestRetrieveDocumentFailure(long caseId, string documentId, string[] expectedDocumentIds, 
             string expectedResponseCode, string expectedResponseMessage)
@@ -95,14 +90,14 @@ namespace ChargebackForDotNetTest.Unit
             var expectedResponseContent = new ResponseContent(
                 "application/com.vantivcnp.services-v2+xml",
                 ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get(string.Format("/services/chargebacks/retrieve/{0}/{1}", caseId, documentId)))
                 .Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
-            var docResponse = docRequest.RetrieveDocument(caseId, documentId);
+            docRequest.RetrieveDocument(caseId, documentId);
         }
         
-        [TestCase(1000, new string[] {"test1Doc1.tif", "test1Doc2.tif"}, "000", "Success")]
+        [TestCase(1000, new[] {"test1Doc1.tif", "test1Doc2.tif"}, "000", "Success")]
         [TestCase(1009, null, "009", "Document Not Found")]
         [TestCase(1003, null, "003", "Case Not Found")]
         public void TestListDocument(long caseId, string[] expectedDocumentIds, 
@@ -114,7 +109,7 @@ namespace ChargebackForDotNetTest.Unit
                 = new ResponseContent(
                     "application/com.vantivcnp.services-v2+xml",
                     ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Get(string.Format("/services/chargebacks/list/{0}", caseId)))
                 .Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
@@ -125,9 +120,9 @@ namespace ChargebackForDotNetTest.Unit
             Assert.AreEqual(expectedResponseMessage, docUploadResponse.responseMessage);
         }
         
-        [TestCase(1000, "test1.tif", new string[] {"test1.tif"}, "000", "Success")]
-        [TestCase(1009, "test2.tif", new string[] {"test2.tif"}, "009", "Document Not Found")]
-        [TestCase(1003, "test3.tif", new string[] {"test3.tif"}, "003", "Case Not Found")]
+        [TestCase(1000, "test1.tif", new[] {"test1.tif"}, "000", "Success")]
+        [TestCase(1009, "test2.tif", new[] {"test2.tif"}, "009", "Document Not Found")]
+        [TestCase(1003, "test3.tif", new[] {"test3.tif"}, "003", "Case Not Found")]
         public void TestDeleteDocument(long caseId, string documentId, string[] expectedDocumentIds, 
             string expectedResponseCode, string expectedResponseMessage)
         {
@@ -136,7 +131,7 @@ namespace ChargebackForDotNetTest.Unit
             var expectedResponseContent
                 = new ResponseContent("application/com.vantivcnp.services-v2+xml",
                     ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Delete(string.Format("/services/chargebacks/remove/{0}/{1}", caseId, documentId)))
                 .Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
@@ -147,8 +142,8 @@ namespace ChargebackForDotNetTest.Unit
             Assert.AreEqual(expectedResponseMessage, docUploadResponse.responseMessage);
         }
         
-        [TestCase(1000, "test1.tif", new string[] {"test1.tif"}, "000", "Success")]
-        [TestCase(1003, "test3.tif", new string[] {"test3.tif"}, "003", "Case Not Found")]
+        [TestCase(1000, "test1.tif", new[] {"test1.tif"}, "000", "Success")]
+        [TestCase(1003, "test3.tif", new[] {"test3.tif"}, "003", "Case Not Found")]
         public void TestUploadDocument(long caseId, string documentId, string[] expectedDocumentIds, 
             string expectedResponseCode, string expectedResponseMessage)
         {
@@ -162,7 +157,7 @@ namespace ChargebackForDotNetTest.Unit
             var expectedResponseContent = new ResponseContent(
                 "application/com.vantivcnp.services-v2+xml",
                 ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Post(string.Format("/services/chargebacks/upload/{0}/{1}", caseId, documentId), 
                     sendingBytes)).Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
@@ -174,9 +169,9 @@ namespace ChargebackForDotNetTest.Unit
         }
         
         
-        [TestCase(1000, "test1.tif", new string[] {"test1.tif"}, "000", "Success")]
-        [TestCase(1009, "test2.tif", new string[] {"test2.tif"}, "009", "Document Not Found")]
-        [TestCase(1003, "test3.tif", new string[] {"test3.tif"}, "003", "Case Not Found")]
+        [TestCase(1000, "test1.tif", new[] {"test1.tif"}, "000", "Success")]
+        [TestCase(1009, "test2.tif", new[] {"test2.tif"}, "009", "Document Not Found")]
+        [TestCase(1003, "test3.tif", new[] {"test3.tif"}, "003", "Case Not Found")]
         public void TestReplaceDocument(long caseId, string documentId, string[] expectedDocumentIds, 
             string expectedResponseCode, string expectedResponseMessage)
         {
@@ -191,7 +186,7 @@ namespace ChargebackForDotNetTest.Unit
                 = new ResponseContent(
                     "application/com.vantivcnp.services-v2+xml",
                     ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Put(string.Format("/services/chargebacks/replace/{0}/{1}", caseId, documentId), 
                 sendingBytes)).Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);

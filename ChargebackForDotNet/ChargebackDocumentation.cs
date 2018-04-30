@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Policy;
-using System.Xml.Serialization;
 using ChargebackForDotNet.Properties;
 
 namespace ChargebackForDotNet
@@ -174,11 +169,5 @@ namespace ChargebackForDotNet
                 httpStatusCode, rawResponse, errorMessages);
         }
         
-    }
-    
-    public partial class chargebackDocumentUploadResponse
-    {
-        // Additional implementation for chargebackDocumentUploadResponse class
-        // should be written here.
     }
 }

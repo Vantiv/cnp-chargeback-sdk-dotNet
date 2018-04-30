@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Linq;
-using System.Runtime.InteropServices;
 using ChargebackForDotNet;
-using ChargebackForDotNet.Properties;
 using NUnit.Framework;
 
 namespace ChargebackForDotNetTest.Certification
 {
     [TestFixture]
-    public class TestCertificationChargebackAPI
+    public class TestCertificationChargebackApi
     {
         [Test]
         public void Test_2_1_1_RetrieveByAParticularDate()
@@ -50,7 +47,7 @@ namespace ChargebackForDotNetTest.Certification
             chargebackRetrievalResponse retrievalResponse = retrievalRequest.RetrieveByArn("1111111111");
             long caseId = retrievalResponse.chargebackCase[0].caseId;
             
-            chargebackUpdateRequest updateRequest = new chargebackUpdateRequest();
+            ChargebackUpdateRequest updateRequest = new ChargebackUpdateRequest();
             long milSec = DateTime.Now.Millisecond;
             string expectedNote = milSec + " Call Vantiv!";
             chargebackUpdateResponse updateResponse = updateRequest.AddNote(caseId, expectedNote);
@@ -78,7 +75,7 @@ namespace ChargebackForDotNetTest.Certification
             ChargebackRetrievalRequest retrievalRequest = new ChargebackRetrievalRequest();
             chargebackRetrievalResponse retrievalResponse = retrievalRequest.RetrieveByArn("2222222222");
             long caseId = retrievalResponse.chargebackCase[0].caseId;
-            chargebackUpdateRequest updateRequest = new chargebackUpdateRequest();
+            ChargebackUpdateRequest updateRequest = new ChargebackUpdateRequest();
             updateRequest.Represent(caseId, "Test2_1_3RequestRepresentment");
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
@@ -105,7 +102,7 @@ namespace ChargebackForDotNetTest.Certification
             ChargebackRetrievalRequest retrievalRequest = new ChargebackRetrievalRequest();
             chargebackRetrievalResponse retrievalResponse = retrievalRequest.RetrieveByArn("4444444444");
             long caseId = retrievalResponse.chargebackCase[0].caseId;
-            chargebackUpdateRequest updateRequest = new chargebackUpdateRequest();
+            ChargebackUpdateRequest updateRequest = new ChargebackUpdateRequest();
             updateRequest.AcceptLiability(caseId, "Test2_1_4AssumingLiability");
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
@@ -123,7 +120,7 @@ namespace ChargebackForDotNetTest.Certification
             long caseId = retrievalResponse.chargebackCase[0].caseId;
             
             // Step 2-3. Verify that your system correctly handle the error.
-            chargebackUpdateRequest updateRequest = new chargebackUpdateRequest();
+            ChargebackUpdateRequest updateRequest = new ChargebackUpdateRequest();
             try
             {
                 updateRequest.AcceptLiability(caseId, "Test2_1_5ErrorMessage");
@@ -131,7 +128,7 @@ namespace ChargebackForDotNetTest.Certification
             }
             catch(ChargebackWebException ce)
             {
-                Console.WriteLine("Exception message:" + ce.Message);
+                Console.WriteLine("Exception message:" + ce.ErrorMessage);
                 Console.WriteLine("End exception message.");
                 Assert.AreEqual("Cannot perform activity <Merchant Accepts Liability> " +
                                 "for case <"+caseId+"> in queue <Merchant Assumed>", ce.ErrorMessages[0]);
@@ -160,7 +157,7 @@ namespace ChargebackForDotNetTest.Certification
             var retrievalRequest = new ChargebackRetrievalRequest();
             var retrievalResponse = retrievalRequest.RetrieveByArn("5555555550");
             var caseId = retrievalResponse.chargebackCase[0].caseId;
-            var updateRequest = new chargebackUpdateRequest();
+            var updateRequest = new ChargebackUpdateRequest();
             updateRequest.Represent(caseId);
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
@@ -188,7 +185,7 @@ namespace ChargebackForDotNetTest.Certification
             var retrievalRequest = new ChargebackRetrievalRequest();
             var retrievalResponse = retrievalRequest.RetrieveByArn("5555555552");
             var caseId = retrievalResponse.chargebackCase[0].caseId;
-            var updateRequest = new chargebackUpdateRequest();
+            var updateRequest = new ChargebackUpdateRequest();
             updateRequest.AcceptLiability(caseId);
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
@@ -205,7 +202,7 @@ namespace ChargebackForDotNetTest.Certification
             var retrievalRequest = new ChargebackRetrievalRequest();
             var retrievalResponse = retrievalRequest.RetrieveByArn("6666666660");
             var caseId = retrievalResponse.chargebackCase[0].caseId;
-            var updateRequest = new chargebackUpdateRequest();
+            var updateRequest = new ChargebackUpdateRequest();
             updateRequest.AcceptLiability(caseId);
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
@@ -222,7 +219,7 @@ namespace ChargebackForDotNetTest.Certification
             var retrievalRequest = new ChargebackRetrievalRequest();
             var retrievalResponse = retrievalRequest.RetrieveByArn("7777777770");
             var caseId = retrievalResponse.chargebackCase[0].caseId;
-            var updateRequest = new chargebackUpdateRequest();
+            var updateRequest = new ChargebackUpdateRequest();
             updateRequest.Represent(caseId);
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
@@ -250,7 +247,7 @@ namespace ChargebackForDotNetTest.Certification
             var retrievalRequest = new ChargebackRetrievalRequest();
             var retrievalResponse = retrievalRequest.RetrieveByArn("7777777772");
             var caseId = retrievalResponse.chargebackCase[0].caseId;
-            var updateRequest = new chargebackUpdateRequest();
+            var updateRequest = new ChargebackUpdateRequest();
             updateRequest.Represent(caseId);
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.

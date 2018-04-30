@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Text;
+﻿using System.Text;
 using ChargebackForDotNet;
 using Moq;
 using NUnit.Framework;
@@ -53,15 +52,13 @@ namespace ChargebackForDotNetTest.Unit
             return head + foot;
         }
 
-        private string generateErrorXmlResponse(string[] errorMessages)
+        private string GenerateErrorXmlResponse(string[] errorMessages)
         {
-            var head =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                "<errorResponse>" +
-                "<errors>";
-            var foot =
-                "</errors>" +
-                "</errorResponse>";
+            const string head = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                                "<errorResponse>" +
+                                "<errors>";
+            const string foot = "</errors>" +
+                                "</errorResponse>";
             var xmlResponse = new StringBuilder(head);
             foreach (var error in errorMessages)
             {
@@ -81,11 +78,11 @@ namespace ChargebackForDotNetTest.Unit
             var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseContent = new ResponseContent(
                 "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseContent);
             var request
-                = new chargebackUpdateRequest(commMock.Object);
+                = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.AssignToUser(caseId, assignedTo, note);
             Assert.AreEqual(expectedTxnId, response.transactionId);
@@ -100,11 +97,11 @@ namespace ChargebackForDotNetTest.Unit
             var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseContent = new ResponseContent(
                 "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseContent);
             var request
-                = new chargebackUpdateRequest(commMock.Object);
+                = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.AddNote(caseId, note);
             Assert.AreEqual(expectedTxnId, response.transactionId);
@@ -120,11 +117,11 @@ namespace ChargebackForDotNetTest.Unit
             var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseContent = new ResponseContent(
                 "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseContent);
             var request
-                = new chargebackUpdateRequest(commMock.Object);
+                = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.AcceptLiability(caseId, note);
             Assert.AreEqual(expectedTxnId, response.transactionId);
@@ -141,11 +138,11 @@ namespace ChargebackForDotNetTest.Unit
             var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseContent = new ResponseContent(
                 "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseContent);
             var request
-                = new chargebackUpdateRequest(commMock.Object);
+                = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.Represent(caseId, representedAmount, note);
             Assert.AreEqual(expectedTxnId, response.transactionId);
@@ -162,11 +159,11 @@ namespace ChargebackForDotNetTest.Unit
             var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseContent = new ResponseContent(
                 "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseContent);
             var request
-                = new chargebackUpdateRequest(commMock.Object);
+                = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.Represent(caseId, note);
             Assert.AreEqual(expectedTxnId, response.transactionId);
@@ -183,11 +180,11 @@ namespace ChargebackForDotNetTest.Unit
             var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseContent = new ResponseContent(
                 "text/xml",ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseContent);
             var request
-                = new chargebackUpdateRequest(commMock.Object);
+                = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.Respond(caseId, note);
             Assert.AreEqual(expectedTxnId, response.transactionId);
@@ -204,11 +201,11 @@ namespace ChargebackForDotNetTest.Unit
             var expectedSendingBytes = ChargebackUtils.StringToBytes(expectedXmlRequest);
             var expectedResponseContent = new ResponseContent(
                 "text/xml", ChargebackUtils.StringToBytes(expectedXmlResponse));
-            Mock<Communication> commMock = new Mock<Communication>();
+            var commMock = new Mock<Communication>();
             commMock.Setup(c => c.Put("/chargebacks/" + caseId, expectedSendingBytes))
                 .Returns(expectedResponseContent);
             var request
-                = new chargebackUpdateRequest(commMock.Object);
+                = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.RequestArbitration(caseId, note);
             Assert.AreEqual(expectedTxnId, response.transactionId);

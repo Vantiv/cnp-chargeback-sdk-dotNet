@@ -1,42 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Mime;
-using System.Xml.Serialization;
+﻿using System.Net;
 using ChargebackForDotNet.Properties;
 
 namespace ChargebackForDotNet
 {
-    public partial class chargebackUpdateRequest
+    public class ChargebackUpdateRequest
     {
-        private const string SERVICE_ROUTE = "/chargebacks";
+        private const string ServiceRoute = "/chargebacks";
         
-        private Configuration configurationField;
+        private Configuration _configurationField;
 
         public Configuration Config
         {
             get
             {
-                if (configurationField == null)
+                if (_configurationField == null)
                 {
                     // load from file
-                    configurationField = new Configuration();
+                    _configurationField = new Configuration();
                 }
-                return configurationField;
+                return _configurationField;
             }
-            set { configurationField = value; }
+            set { _configurationField = value; }
         }
 
         private Communication communication;
 
-        public chargebackUpdateRequest()
+        public ChargebackUpdateRequest()
         {
             communication = new Communication();
         }
         
-        public chargebackUpdateRequest(Communication comm)
+        public ChargebackUpdateRequest(Communication comm)
         {
             communication = comm;
         }
@@ -155,7 +149,7 @@ namespace ChargebackForDotNet
             try
             {
                 ConfigureCommunication();
-                var responseContent = communication.Put(SERVICE_ROUTE + "/" + caseId, ChargebackUtils.StringToBytes(xmlRequest));
+                var responseContent = communication.Put(ServiceRoute + "/" + caseId, ChargebackUtils.StringToBytes(xmlRequest));
                 var receivedBytes = responseContent.GetByteData();
                 var xmlResponse = ChargebackUtils.BytesToString(receivedBytes);
                 ChargebackUtils.PrintXml(xmlResponse, Config.Get("printXml"), Config.Get("neuterXml"));
@@ -193,11 +187,5 @@ namespace ChargebackForDotNet
             var errorMessages = errorResponse.errors;
             return new ChargebackWebException(string.Format("Update Failed - HTTP {0} Error", httpStatusCode), httpStatusCode, rawResponse, errorMessages);
         }
-    }
-     
-    public partial class chargebackUpdateResponse
-    {
-        // Additional implementation for chargebackUpdateResponse
-        // should be in here.
     }
 }

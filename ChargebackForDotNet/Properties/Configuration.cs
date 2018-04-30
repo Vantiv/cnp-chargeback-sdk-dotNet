@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
-using System.Net;
-
 namespace ChargebackForDotNet.Properties
 {
     public class Configuration
@@ -13,7 +11,7 @@ namespace ChargebackForDotNet.Properties
 
         public Configuration()
         {
-            var settings = (NameValueCollection) ConfigurationManager.GetSection("vantivWorldpay/chargebackSettings");
+            var settings = (NameValueCollection) ConfigurationManager.GetSection("vantivEcommerce/chargebackSettings");
             InitializeConfig();
             foreach (var key in settings.AllKeys)
             {
@@ -48,7 +46,7 @@ namespace ChargebackForDotNet.Properties
 
         public void Set(string key, string value)
         {
-            string oldValue = _configDictionary[key];
+//            var oldValue = _configDictionary[key];
             _configDictionary[key] = value;
         }
         
@@ -71,12 +69,12 @@ namespace ChargebackForDotNet.Properties
             {
                 throw new ChargebackException("No Configuration file at " + filePath);
             }
-            StreamReader reader = new StreamReader(File.OpenRead(filePath));
-            string[] settings = reader.ReadToEnd().Split('\n');
+            var reader = new StreamReader(File.OpenRead(filePath));
+            var settings = reader.ReadToEnd().Split('\n');
             reader.Close();
             foreach (var setting in settings)
             {
-                string[] keyValPair = setting.Split(new char[]{'='}, 2);
+                var keyValPair = setting.Split(new[]{'='}, 2);
                 if (keyValPair.Length != 2)
                 {
                     Console.WriteLine("Warning: '{0}' is not a valid setting[skipped]", setting);
