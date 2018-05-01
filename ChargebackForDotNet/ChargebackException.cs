@@ -2,6 +2,7 @@
 
 namespace ChargebackForDotNet
 {
+    [Serializable]
     public class ChargebackException: Exception
     {
         public string ErrorMessage;
@@ -11,8 +12,8 @@ namespace ChargebackForDotNet
             ErrorMessage = errorMessage;
         }
     }
-    
-    
+
+    [Serializable]
     public class ChargebackWebException: Exception
     {
         public readonly string ErrorMessage;
@@ -53,7 +54,7 @@ namespace ChargebackForDotNet
         }
     }
 
-    
+    [Serializable]
     public class ChargebackDocumentException: Exception
     {
         public string ErrorMessage;
