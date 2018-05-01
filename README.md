@@ -9,9 +9,9 @@ About Vantiv eCommerce
 [Vantiv eCommerce](https://developer.vantiv.com/community/ecommerce) powers the payment processing engines for leading companies that sell directly to consumers through  internet retail, direct response marketing (TV, radio and telephone), and online services. Vantiv eCommerce is the leading authority in card-not-present (CNP) commerce, transaction processing and merchant services.
 
 
-About this Chargeback SDK
+About this Chargeback .NET SDK
 --------------
-The Vantiv eCommerce .NET Chargeback SDK is a C# implementation of the [Vantiv eCommerce](https://developer.vantiv.com/docs/DOC-1196) Chargeback API. This Chargeback SDK was created to make it as easy as possible to process your chargebacks and upload documents supporting your cases with Vantiv eCommerce. This Chargeback SDK utilizes the HTTPS protocol to securely connect to Vantiv eCommerce. Using the Chargeback SDK requires coordination with the Vantiv eCommerce team in order to be provided with credentials for accessing our systems.
+The Vantiv eCommerce Chargeback .NET SDK is a C# implementation of the [Vantiv eCommerce](https://developer.vantiv.com/docs/DOC-1196) Chargeback API. This Chargeback SDK was created to make it as easy as possible to process your chargebacks and upload documents supporting your cases with Vantiv eCommerce. This Chargeback SDK utilizes the HTTPS protocol to securely connect to Vantiv eCommerce. Using the Chargeback SDK requires coordination with the Vantiv eCommerce team in order to be provided with credentials for accessing our systems.
 
 Each .NET Chargeback SDK release supports all of the functionality present in the associated Vantiv eCommerce Chargeback API version (e.g., Chargeback SDK v2.1 supports Vantiv eCommerce Chargeback API v2.1). Please see the online copy of our Chargeback XSD for Vantiv eCommerce XML to get more details on what the Vantiv eCommerce Chargeback API supports.
 
@@ -26,7 +26,7 @@ Please contact [Vantiv eCommerce](http://developer.vantiv.com/community/ecommerc
 Setup
 -----
 
-1.) To install it, copy ChargebackForDotNet.dll into your Visual Studio references.
+1.) To install it, copy ChargebackSdkForNet.dll into your Visual Studio references.
 
 2.) You can configure it statically by adding the following section to your project's App.config
 ```
@@ -66,7 +66,7 @@ In addition, you can configure it dynamically by create a dictionary with requir
 
 ```c#
 using System;
-using ChargebackForDotNet;
+using ChargebackSdkForNet;
 
 namespace Merchant
 {
@@ -97,7 +97,7 @@ namespace Merchant
 
 ```c#
 using System;
-using ChargebackForDotNet;
+using ChargebackSdkForNet;
 
 namespace Merchant
 {
@@ -134,6 +134,6 @@ namespace Merchant
     Case Id:12887910011
 ~~~
 
-More examples can be found in [Functional and Unit Tests](https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/tree/2.x/ChargebackForDotNetTest)
+More examples can be found in [Functional and Unit Tests](https://github.com/Vantiv/cnp-chargeback-sdk-dotNet/tree/2.x/ChargebackSdkForNetTest)
 
 Please contact Vantiv eCommerce with any further questions. You can reach us at sdksupport@Vantiv.com.
