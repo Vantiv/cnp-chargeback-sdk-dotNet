@@ -93,7 +93,7 @@ namespace ChargebackSdkForNet
             {
                 ConfigureCommunication();
                 var responseContent = _communication.Delete(
-                    string.Format(ServiceRoute+"/remove/{0}/{1}", caseId, documentId));
+                    string.Format(ServiceRoute+"/delete/{0}/{1}", caseId, documentId));
                 return HandleResponse(responseContent);
             }
             catch (WebException we)

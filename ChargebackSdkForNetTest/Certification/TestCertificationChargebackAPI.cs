@@ -26,7 +26,7 @@ namespace ChargebackSdkForNetTest.Certification
             Assert.AreEqual("7777777770", cases[8].acquirerReferenceNumber);
             Assert.AreEqual("7777777771", cases[9].acquirerReferenceNumber);
             Assert.AreEqual("7777777772", cases[10].acquirerReferenceNumber);
-/*            Assert.AreEqual("FIRST_CHARGBACK", cases[0].cycle);
+/*          Assert.AreEqual("FIRST_CHARGBACK", cases[0].cycle);
             Assert.AreEqual("FIRST_CHARGBACK", cases[1].cycle);
             Assert.AreEqual("FIRST_CHARGBACK", cases[2].cycle);
             Assert.AreEqual("FIRST_CHARGBACK", cases[3].cycle);

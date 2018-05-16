@@ -123,7 +123,7 @@ namespace ChargebackSdkForNetTest.Functional
             var encoded = ChargebackUtils.Encode64(_config.Get("username") + ":" + _config.Get("password"), "utf-8");
             _comm.AddToHeader("Authorization", "Basic " + encoded);
             _comm.SetProxy(_config.Get("proxyHost"), int.Parse(_config.Get("proxyPort")));
-            var responseContent = _comm.Delete(string.Format("/services/chargebacks/remove/{0}/{1}", caseId, documentId));
+            var responseContent = _comm.Delete(string.Format("/services/chargebacks/delete/{0}/{1}", caseId, documentId));
             var receivedBytes = responseContent.GetByteData();
             Assert.True(receivedBytes.Any());
             var xmlResponse = Regex.Replace(ChargebackUtils.BytesToString(receivedBytes), @"\t|\n|\r", "");

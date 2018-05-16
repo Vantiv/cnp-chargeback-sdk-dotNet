@@ -132,7 +132,7 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ResponseContent("application/com.vantivcnp.services-v2+xml",
                     ChargebackUtils.StringToBytes(expectedXmlResponse));
             var commMock = new Mock<Communication>();
-            commMock.Setup(c => c.Delete(string.Format("/services/chargebacks/remove/{0}/{1}", caseId, documentId)))
+            commMock.Setup(c => c.Delete(string.Format("/services/chargebacks/delete/{0}/{1}", caseId, documentId)))
                 .Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
             var docUploadResponse = docRequest.DeleteDocument(caseId, documentId);            
@@ -198,7 +198,7 @@ namespace ChargebackSdkForNetTest.Unit
         }
 
         [TearDown]
-        public void RemoveTestFiles()
+        public void DeleteTestFiles()
         {
             var fileNames = Directory.GetFiles(Directory.GetCurrentDirectory());
             foreach (var fileName in fileNames)
