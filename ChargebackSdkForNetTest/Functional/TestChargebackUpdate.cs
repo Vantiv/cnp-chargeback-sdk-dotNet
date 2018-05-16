@@ -129,7 +129,7 @@ namespace ChargebackSdkForNetTest.Functional
                 Assert.True(ce.ErrorMessage.Contains("Update Failed - HTTP 400 Error"));
                 
                 Assert.AreEqual("Bad Request. Error in request. " +
-                                "Poorly formatted xml or cannot perform activity.", ce.ErrorMessages[0]);
+                                "Poorly formatted header/xml or cannot perform activity.", ce.ErrorMessages[0]);
             }
         }
         
