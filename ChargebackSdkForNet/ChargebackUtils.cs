@@ -13,6 +13,20 @@ namespace ChargebackSdkForNet
 {
     public class ChargebackUtils
     {
+        private static String defaultType = "application/octet-stream";
+        private static Dictionary<string, string> ExtensionMap = new Dictionary<string, string>();
+
+        static ChargebackUtils()
+        {
+            ExtensionMap.Add("tiff", "image/tiff");
+            ExtensionMap.Add("png", "image/png");
+            ExtensionMap.Add("jpg", "image/jpeg");
+            ExtensionMap.Add("jpeg", "image/jpeg");
+            ExtensionMap.Add("jpe", "image/jpeg");
+            ExtensionMap.Add("gif", "image/gif");
+            ExtensionMap.Add("pdf", "application/pdf");
+        }
+
         public static string BytesToString(List<byte> bytes)
         {
             return Encoding.UTF8.GetString(bytes.ToArray());
@@ -98,12 +112,28 @@ namespace ChargebackSdkForNet
 
         public static string GetMimeMapping(string fileName)
         {
-            var assembly = Assembly.GetAssembly(typeof(HttpApplication));
-            var mimeMappingType = assembly.GetType("System.Web.MimeMapping");
-            var getMimeMappingMethod = mimeMappingType.GetMethod("GetMimeMapping", 
-                BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
-                BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-            return (string)getMimeMappingMethod.Invoke(null /*static method*/, new[] { fileName });
+            int dot_pos = fileName.LastIndexOf(".");
+            if (dot_pos < 0)
+            {
+                return defaultType;
+            }
+            else
+            {
+                String file_ext = fileName.Substring(dot_pos + 1);
+                if (file_ext.Count() == 0)
+                {
+                    return defaultType;
+                }
+                else
+                {
+                    if (ExtensionMap.ContainsKey(file_ext))
+                        return ExtensionMap[file_ext];
+                    else
+                        return defaultType;
+                }
+            }
         }
+
+
     }
 }

@@ -1,4 +1,9 @@
 = Vantiv Now Worldpay eCommerce Chargeback SDK CHANGELOG
 
+== Version 2.1.1 (May 22, 2018)
+* Added MIME Types support for the following file extensions:
+	- tiff, png, jpg, gif, pdf
+* Replaced all instances of remove to delete according to new changes in Chargeback Sandbox
+
 == Version 2.1.0 (April 30, 2018)
 * Initial release.

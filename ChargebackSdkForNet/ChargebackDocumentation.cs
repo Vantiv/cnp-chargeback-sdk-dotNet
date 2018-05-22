@@ -147,7 +147,7 @@ namespace ChargebackSdkForNet
         }
         
         private void ConfigureCommunicationForUpload(string filePath)
-        {           
+        {
             ConfigureCommunication();
             _communication.SetContentType(ChargebackUtils.GetMimeMapping(Path.GetFileName(filePath)));
         }

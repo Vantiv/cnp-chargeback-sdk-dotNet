@@ -90,7 +90,7 @@ namespace ChargebackSdkForNetTest.Certification
             chargebackDocumentUploadResponse = docRequest.ListDocuments(caseId);
             Assert.False(chargebackDocumentUploadResponse.documentId.Contains(tiffFilename));
             
-            /*Remove all files created and uploaded for tests.*/
+            /*Delete all files created and uploaded for tests.*/
             // Local files.
             string[] fileNames = Directory.GetFiles(Directory.GetCurrentDirectory());
             foreach (var file in fileNames)
