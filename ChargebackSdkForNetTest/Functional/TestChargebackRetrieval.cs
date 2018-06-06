@@ -70,7 +70,7 @@ namespace ChargebackSdkForNetTest.Functional
         public void TestRetrieveByCardNumber()
         {
             var retrievalResponse = 
-                _retrievalRequest.RetrieveByCardNumber(0001.ToString(), 2, 1998);
+                _retrievalRequest.RetrieveByCardNumber(2222222222222222222.ToString(), 2, 1998);
             Assert.NotNull(retrievalResponse);
             Assert.NotNull(retrievalResponse.transactionId);
             Assert.NotNull(retrievalResponse.chargebackCase);
