@@ -21,7 +21,7 @@ namespace ChargebackSdkForNetTest.Functional
             configDict["username"] = "dotnet";
             configDict["password"] = "dotnet";
             configDict["merchantId"] = "101";
-            configDict["host"] = "https://www.testvantivcnp.com/spring";
+            configDict["host"] = "https://www.testvantivcnp.com/sandbox/new";
             configDict["printXml"] = "true";
             configDict["neuterXml"] = "false";
             configDict["proxyHost"] = "websenseproxy";
