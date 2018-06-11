@@ -24,7 +24,11 @@ namespace ChargebackSdkForNetTest.Functional
             //configDict["proxyHost"] = "websenseproxy";
             //configDict["proxyPort"] = "8080";
             
-            String configDict = Environment.GetEnvironmentVariable("CHARGEBACK_PROPERTIES");
+            String configFile = Environment.GetEnvironmentVariable("CHARGEBACK_PROPERTIES");
+
+            Console.WriteLine("CheckOne    :" + configFile);
+
+            var config = new Configuration(configFile);
 
             _retrievalRequest = new ChargebackRetrievalRequest {Config = config};
         }
