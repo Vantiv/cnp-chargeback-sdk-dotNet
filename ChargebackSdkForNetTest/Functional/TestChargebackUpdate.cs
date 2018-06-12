@@ -14,19 +14,10 @@ namespace ChargebackSdkForNetTest.Functional
         [TestFixtureSetUp]
         public void SetUp()
         {
-            //var configDict = new Dictionary<string, string>();
-            //configDict["username"] = "dotnet";
-            //configDict["password"] = "dotnet";
-            //configDict["merchantId"] = "101";
-            //configDict["host"] = "https://www.testvantivcnp.com/sandbox/new/services";
-            //configDict["printXml"] = "true";
-            //configDict["neuterXml"] = "false";
-            //configDict["proxyHost"] = "websenseproxy";
-            //configDict["proxyPort"] = "8080";
-            
-            String config = Environment.GetEnvironmentVariable("CHARGEBACK_PROPERTIES");
 
-            _updateRequest = new ChargebackUpdateRequest {Config = config};
+
+            _updateRequest = new ChargebackUpdateRequest();
+
         }
 
         [Test]

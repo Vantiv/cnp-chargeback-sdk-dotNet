@@ -15,18 +15,7 @@ namespace ChargebackSdkForNetTest.Functional
         [SetUp]
         public void SetUp()
         {
-            var configDict = new Dictionary<string, string>();
-            configDict["username"] = "dotnet";
-            configDict["password"] = "dotnet";
-            configDict["merchantId"] = "101";
-            configDict["host"] = "https://www.testvantivcnp.com/sandbox/new";
-            configDict["printXml"] = "true";
-            configDict["neuterXml"] = "false";
-            configDict["proxyHost"] = "websenseproxy";
-            configDict["proxyPort"] = "8080";
-            Configuration config = new Configuration(configDict);
-
-            _docRequest = new ChargebackDocumentationRequest {Config = config};
+            _docRequest = new ChargebackDocumentationRequest();
         }
         
         [Test]

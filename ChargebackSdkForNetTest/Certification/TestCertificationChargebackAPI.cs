@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using ChargebackSdkForNet;
+using ChargebackSdkForNet.Properties;
 using NUnit.Framework;
 
 namespace ChargebackSdkForNetTest.Certification
@@ -7,11 +9,25 @@ namespace ChargebackSdkForNetTest.Certification
     [TestFixture]
     public class TestCertificationChargebackApi
     {
+        private ChargebackRetrievalRequest _retrievalRequest;
+        private ChargebackUpdateRequest _updateRequest;
+
+        [TestFixtureSetUp]
+        public void SetUp()
+        {
+
+
+            var config = new Configuration();
+            config.Set("host", "https://services.vantivprelive.com");
+            _retrievalRequest = new ChargebackRetrievalRequest { Config = config};
+            _updateRequest = new ChargebackUpdateRequest { Config = config };
+        }
+
+
         [Test]
         public void Test_2_1_1_RetrieveByAParticularDate()
         {
-            ChargebackRetrievalRequest request = new ChargebackRetrievalRequest();
-            chargebackRetrievalResponse response = request.RetrieveByActivityDate(ChargebackUtils.ParseDate("2013-1-1"));
+            chargebackRetrievalResponse response = _retrievalRequest.RetrieveByActivityDate(ChargebackUtils.ParseDate("2013-1-1"));
             Assert.NotNull(response);
             Assert.AreEqual(11, response.chargebackCase.Length);
             chargebackApiCase[] cases = response.chargebackCase;
@@ -43,18 +59,16 @@ namespace ChargebackSdkForNetTest.Certification
         public void Test_2_1_2_AddNote()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 1111111111.
-            ChargebackRetrievalRequest retrievalRequest = new ChargebackRetrievalRequest();
-            chargebackRetrievalResponse retrievalResponse = retrievalRequest.RetrieveByArn("1111111111");
+            chargebackRetrievalResponse retrievalResponse = _retrievalRequest.RetrieveByArn("1111111111");
             long caseId = retrievalResponse.chargebackCase[0].caseId;
             
-            ChargebackUpdateRequest updateRequest = new ChargebackUpdateRequest();
             long milSec = DateTime.Now.Millisecond;
             string expectedNote = milSec + " Call Vantiv!";
-            chargebackUpdateResponse updateResponse = updateRequest.AddNote(caseId, expectedNote);
+            chargebackUpdateResponse updateResponse = _updateRequest.AddNote(caseId, expectedNote);
             Assert.NotNull(updateResponse);
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
-            retrievalResponse = retrievalRequest.RetrieveByArn("1111111111");
+            retrievalResponse = _retrievalRequest.RetrieveByArn("1111111111");
             chargebackApiActivity[] activities = retrievalResponse.chargebackCase[0].activity;
             foreach (var activity in activities)
             {
@@ -72,24 +86,22 @@ namespace ChargebackSdkForNetTest.Certification
         public void Test_2_1_3_RequestRepresentment()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 2222222222.
-            ChargebackRetrievalRequest retrievalRequest = new ChargebackRetrievalRequest();
-            chargebackRetrievalResponse retrievalResponse = retrievalRequest.RetrieveByArn("2222222222");
+            chargebackRetrievalResponse retrievalResponse = _retrievalRequest.RetrieveByArn("2222222222");
             long caseId = retrievalResponse.chargebackCase[0].caseId;
-            ChargebackUpdateRequest updateRequest = new ChargebackUpdateRequest();
-            updateRequest.Represent(caseId, "Test2_1_3RequestRepresentment");
+            _updateRequest.Represent(caseId, "Test2_1_3RequestRepresentment");
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
-            retrievalResponse = retrievalRequest.RetrieveByArn("2222222222");
+            retrievalResponse = _retrievalRequest.RetrieveByArn("2222222222");
             chargebackApiActivity[] activities = retrievalResponse.chargebackCase[0].activity;
             Assert.AreEqual(activityType.MERCHANT_REPRESENT, activities[activities.Length - 1].activityType);
             
             // Step 3. Perform a new activity for the case retrieved from ARN 3333333333.
-            retrievalResponse = retrievalRequest.RetrieveByArn("3333333333");
+            retrievalResponse = _retrievalRequest.RetrieveByArn("3333333333");
             caseId = retrievalResponse.chargebackCase[0].caseId;
-            updateRequest.Represent(caseId, 10027, "Test2_1_3RequestRepresentment");
+            _updateRequest.Represent(caseId, 10027, "Test2_1_3RequestRepresentment");
             
             // Step 4. Verify that the new activity has been appended to the activity list for the case.
-            retrievalResponse = retrievalRequest.RetrieveByArn("3333333333");
+            retrievalResponse = _retrievalRequest.RetrieveByArn("3333333333");
             activities = retrievalResponse.chargebackCase[0].activity;
             Assert.AreEqual(activityType.MERCHANT_REPRESENT, activities[activities.Length - 1].activityType);
         }
@@ -99,14 +111,12 @@ namespace ChargebackSdkForNetTest.Certification
         public void Test_2_1_4_AssumingLiability()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 4444444444.
-            ChargebackRetrievalRequest retrievalRequest = new ChargebackRetrievalRequest();
-            chargebackRetrievalResponse retrievalResponse = retrievalRequest.RetrieveByArn("4444444444");
+            chargebackRetrievalResponse retrievalResponse = _retrievalRequest.RetrieveByArn("4444444444");
             long caseId = retrievalResponse.chargebackCase[0].caseId;
-            ChargebackUpdateRequest updateRequest = new ChargebackUpdateRequest();
-            updateRequest.AcceptLiability(caseId, "Test2_1_4AssumingLiability");
+            _updateRequest.AcceptLiability(caseId, "Test2_1_4AssumingLiability");
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
-            retrievalResponse = retrievalRequest.RetrieveByCaseId(caseId);
+            retrievalResponse = _retrievalRequest.RetrieveByCaseId(caseId);
             chargebackApiActivity[] activities = retrievalResponse.chargebackCase[0].activity;
             Assert.AreEqual(activityType.MERCHANT_ACCEPTS_LIABILITY, activities[activities.Length - 1].activityType);
         }
@@ -115,15 +125,13 @@ namespace ChargebackSdkForNetTest.Certification
         public void Test_2_1_5_ErrorMessage()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 4444444444.
-            ChargebackRetrievalRequest retrievalRequest = new ChargebackRetrievalRequest();
-            chargebackRetrievalResponse retrievalResponse = retrievalRequest.RetrieveByArn("4444444444");
+            chargebackRetrievalResponse retrievalResponse = _retrievalRequest.RetrieveByArn("4444444444");
             long caseId = retrievalResponse.chargebackCase[0].caseId;
             
             // Step 2-3. Verify that your system correctly handle the error.
-            ChargebackUpdateRequest updateRequest = new ChargebackUpdateRequest();
             try
             {
-                updateRequest.AcceptLiability(caseId, "Test2_1_5ErrorMessage");
+                _updateRequest.AcceptLiability(caseId, "Test2_1_5ErrorMessage");
                 Assert.Fail();
             }
             catch(ChargebackWebException ce)
@@ -140,7 +148,7 @@ namespace ChargebackSdkForNetTest.Certification
             // Step 5-6 Verify that your system correctly handle the error.
             try
             {
-                retrievalRequest.RetrieveByCaseId(caseId);
+                _retrievalRequest.RetrieveByCaseId(caseId);
                 Assert.Fail();
             }
             catch(ChargebackWebException ce)
@@ -154,24 +162,24 @@ namespace ChargebackSdkForNetTest.Certification
         public void Test_2_1_6_DeclineAVisaPreArbitrationCase()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 5555555550.
-            var retrievalRequest = new ChargebackRetrievalRequest();
-            var retrievalResponse = retrievalRequest.RetrieveByArn("5555555550");
+
+            var retrievalResponse = _retrievalRequest.RetrieveByArn("5555555550");
             var caseId = retrievalResponse.chargebackCase[0].caseId;
-            var updateRequest = new ChargebackUpdateRequest();
-            updateRequest.Represent(caseId);
+
+            _updateRequest.Represent(caseId);
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
-            retrievalResponse = retrievalRequest.RetrieveByCaseId(caseId);
+            retrievalResponse = _retrievalRequest.RetrieveByCaseId(caseId);
             chargebackApiActivity[] activities = retrievalResponse.chargebackCase[0].activity;
             Assert.AreEqual(activityType.MERCHANT_REPRESENT, activities[activities.Length - 1].activityType);
             
             // Step 3. Perform a new activity for the case retrieved from ARN 5555555551.
-            retrievalResponse = retrievalRequest.RetrieveByArn("5555555551");
+            retrievalResponse = _retrievalRequest.RetrieveByArn("5555555551");
             caseId = retrievalResponse.chargebackCase[0].caseId;
-            updateRequest.Represent(caseId, 10051);
+            _updateRequest.Represent(caseId, 10051);
             
             // Step 4. Verify that the new activity has been appended to the activity list for the case.
-            retrievalResponse = retrievalRequest.RetrieveByCaseId(caseId);
+            retrievalResponse = _retrievalRequest.RetrieveByCaseId(caseId);
             activities = retrievalResponse.chargebackCase[0].activity;
             Assert.AreEqual(activityType.MERCHANT_REPRESENT, activities[activities.Length - 1].activityType);
             Assert.AreEqual(10051, activities[activities.Length - 1].settlementAmount);
@@ -182,14 +190,14 @@ namespace ChargebackSdkForNetTest.Certification
         public void Test_2_1_7_AssumeLiabilityOfAVisaPreArbitration()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 5555555552.
-            var retrievalRequest = new ChargebackRetrievalRequest();
-            var retrievalResponse = retrievalRequest.RetrieveByArn("5555555552");
+
+            var retrievalResponse = _retrievalRequest.RetrieveByArn("5555555552");
             var caseId = retrievalResponse.chargebackCase[0].caseId;
-            var updateRequest = new ChargebackUpdateRequest();
-            updateRequest.AcceptLiability(caseId);
+
+            _updateRequest.AcceptLiability(caseId);
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
-            retrievalResponse = retrievalRequest.RetrieveByCaseId(caseId);
+            retrievalResponse = _retrievalRequest.RetrieveByCaseId(caseId);
             chargebackApiActivity[] activities = retrievalResponse.chargebackCase[0].activity;
             Assert.AreEqual(activityType.MERCHANT_ACCEPTS_LIABILITY, activities[activities.Length - 1].activityType);
         }
@@ -199,14 +207,14 @@ namespace ChargebackSdkForNetTest.Certification
         public void Test_2_1_8_AssumeLiabilityOfAVisaArbitration()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 6666666660.
-            var retrievalRequest = new ChargebackRetrievalRequest();
-            var retrievalResponse = retrievalRequest.RetrieveByArn("6666666660");
+
+            var retrievalResponse = _retrievalRequest.RetrieveByArn("6666666660");
             var caseId = retrievalResponse.chargebackCase[0].caseId;
-            var updateRequest = new ChargebackUpdateRequest();
-            updateRequest.AcceptLiability(caseId);
+
+            _updateRequest.AcceptLiability(caseId);
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
-            retrievalResponse = retrievalRequest.RetrieveByCaseId(caseId);
+            retrievalResponse = _retrievalRequest.RetrieveByCaseId(caseId);
             chargebackApiActivity[] activities = retrievalResponse.chargebackCase[0].activity;
             Assert.AreEqual(activityType.MERCHANT_ACCEPTS_LIABILITY, activities[activities.Length - 1].activityType);
         }
@@ -216,24 +224,24 @@ namespace ChargebackSdkForNetTest.Certification
         public void Test_2_1_9_DeclineAVisaIssuerDeclinedPreAbitrationCase()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 7777777770.
-            var retrievalRequest = new ChargebackRetrievalRequest();
-            var retrievalResponse = retrievalRequest.RetrieveByArn("7777777770");
+
+            var retrievalResponse = _retrievalRequest.RetrieveByArn("7777777770");
             var caseId = retrievalResponse.chargebackCase[0].caseId;
-            var updateRequest = new ChargebackUpdateRequest();
-            updateRequest.Represent(caseId);
+
+            _updateRequest.Represent(caseId);
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
-            retrievalResponse = retrievalRequest.RetrieveByCaseId(caseId);
+            retrievalResponse = _retrievalRequest.RetrieveByCaseId(caseId);
             chargebackApiActivity[] activities = retrievalResponse.chargebackCase[0].activity;
             Assert.AreEqual(activityType.MERCHANT_REPRESENT, activities[activities.Length - 1].activityType);
             
             // Step 3. Perform a new activity for the case retrieved from ARN 7777777771.
-            retrievalResponse = retrievalRequest.RetrieveByArn("7777777771");
+            retrievalResponse = _retrievalRequest.RetrieveByArn("7777777771");
             caseId = retrievalResponse.chargebackCase[0].caseId;
-            updateRequest.Represent(caseId, 10071);
+            _updateRequest.Represent(caseId, 10071);
             
             // Step 4. Verify that the new activity has been appended to the activity list for the case.
-            retrievalResponse = retrievalRequest.RetrieveByCaseId(caseId);
+            retrievalResponse = _retrievalRequest.RetrieveByCaseId(caseId);
             activities = retrievalResponse.chargebackCase[0].activity;
             Assert.AreEqual(activityType.MERCHANT_REPRESENT, activities[activities.Length - 1].activityType);
             Assert.AreEqual(10071, activities[activities.Length - 1].settlementAmount);
@@ -244,14 +252,12 @@ namespace ChargebackSdkForNetTest.Certification
         public void Test_2_1_9_AssumeLiabilityOfAVisaIssuerDeclinedPreAbitrationCase()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 7777777772.
-            var retrievalRequest = new ChargebackRetrievalRequest();
-            var retrievalResponse = retrievalRequest.RetrieveByArn("7777777772");
+            var retrievalResponse = _retrievalRequest.RetrieveByArn("7777777772");
             var caseId = retrievalResponse.chargebackCase[0].caseId;
-            var updateRequest = new ChargebackUpdateRequest();
-            updateRequest.Represent(caseId);
+            _updateRequest.Represent(caseId);
             
             // Step 2. Verify that the new activity has been appended to the activity list for the case.
-            retrievalResponse = retrievalRequest.RetrieveByCaseId(caseId);
+            retrievalResponse = _retrievalRequest.RetrieveByCaseId(caseId);
             chargebackApiActivity[] activities = retrievalResponse.chargebackCase[0].activity;
             Assert.AreEqual(activityType.MERCHANT_ACCEPTS_LIABILITY, activities[activities.Length - 1].activityType);
         }
