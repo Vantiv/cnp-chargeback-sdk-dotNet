@@ -17,6 +17,7 @@ namespace ChargebackSdkForNetTest.Functional
         [SetUp]
         public void SetUp()
         {
+            _config = new Configuration();
             _comm = new Communication();
         }
 
