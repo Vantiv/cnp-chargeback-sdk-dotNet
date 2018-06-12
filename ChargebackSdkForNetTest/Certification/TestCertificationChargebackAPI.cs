@@ -16,7 +16,6 @@ namespace ChargebackSdkForNetTest.Certification
         public void SetUp()
         {
 
-
             var config = new Configuration();
             config.Set("host", "https://services.vantivprelive.com");
             _retrievalRequest = new ChargebackRetrievalRequest { Config = config};

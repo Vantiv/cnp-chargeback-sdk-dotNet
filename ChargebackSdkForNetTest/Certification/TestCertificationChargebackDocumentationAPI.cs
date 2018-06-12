@@ -2,13 +2,25 @@
 using System.IO;
 using System.Linq;
 using ChargebackSdkForNet;
+using ChargebackSdkForNet.Properties;
 using NUnit.Framework;
 
 namespace ChargebackSdkForNetTest.Certification
 {
     public class TestCertificationChargebackDocumentationApi
     {
-        
+        private ChargebackDocumentationRequest _docRequest;
+
+        [TestFixtureSetUp]
+        public void SetUp()
+        {
+
+            var config = new Configuration();
+            config.Set("host", "https://services.vantivprelive.com");
+            _docRequest = new ChargebackDocumentationRequest { Config = config };
+
+        }
+
         [Test]
         [Ignore("Cannot run multiple times on Prelive.")]
         public void TestCase1()
@@ -34,40 +46,38 @@ namespace ChargebackSdkForNetTest.Certification
             writer.WriteLine("Prototype a file.");
             writer.Close();
             
-            ChargebackDocumentationRequest docRequest
-                = new ChargebackDocumentationRequest();
             string test1Directory = Path.Combine(Directory.GetCurrentDirectory(), "TestCase1");
             Directory.CreateDirectory(test1Directory);
             
-            long caseId = int.Parse(docRequest.Config.Get("merchantId") + "001");
+            long caseId = int.Parse(_docRequest.Config.Get("merchantId") + "001");
             var tiffResponse
-                = docRequest.UploadDocument(caseId, tiffFilename);
+                = _docRequest.UploadDocument(caseId, tiffFilename);
             var pdfResponse
-                = docRequest.UploadDocument(caseId, pdfFilename);
+                = _docRequest.UploadDocument(caseId, pdfFilename);
             var gifResponse
-                = docRequest.UploadDocument(caseId, gifFilename);
+                = _docRequest.UploadDocument(caseId, gifFilename);
             var jpgResponse
-                = docRequest.UploadDocument(caseId, jpgFilename);
+                = _docRequest.UploadDocument(caseId, jpgFilename);
             Assert.AreEqual("000", tiffResponse.responseCode);
             Assert.AreEqual("000", pdfResponse.responseCode);
             Assert.AreEqual("000", gifResponse.responseCode);
             Assert.AreEqual("000", jpgResponse.responseCode);
             
             // Step 2. List documents to check success of the uploaded documents.
-            var listDocResponse = docRequest.ListDocuments(caseId);
+            var listDocResponse = _docRequest.ListDocuments(caseId);
             Assert.True(listDocResponse.documentId.Contains(tiffFilename));
             Assert.True(listDocResponse.documentId.Contains(pdfFilename));
             Assert.True(listDocResponse.documentId.Contains(gifFilename));
             Assert.True(listDocResponse.documentId.Contains(jpgFilename));
             
             // Step 3. Verify your code can retrieve documents.
-            var retrieveDocResponse = docRequest.RetrieveDocument(caseId, tiffFilename);
+            var retrieveDocResponse = _docRequest.RetrieveDocument(caseId, tiffFilename);
             Assert.Less(0, retrieveDocResponse.Count);
-            retrieveDocResponse = docRequest.RetrieveDocument(caseId, pdfFilename);
+            retrieveDocResponse = _docRequest.RetrieveDocument(caseId, pdfFilename);
             Assert.Less(0, retrieveDocResponse.Count);
-            retrieveDocResponse = docRequest.RetrieveDocument(caseId, gifFilename);
+            retrieveDocResponse = _docRequest.RetrieveDocument(caseId, gifFilename);
             Assert.Less(0, retrieveDocResponse.Count);
-            retrieveDocResponse = docRequest.RetrieveDocument(caseId, jpgFilename);
+            retrieveDocResponse = _docRequest.RetrieveDocument(caseId, jpgFilename);
             Assert.Less(0, retrieveDocResponse.Count);
             
             // Step 4. Verify your code can replace a document.
@@ -75,19 +85,19 @@ namespace ChargebackSdkForNetTest.Certification
             writer = new StreamWriter(File.Create(jpgReplacingFilename));
             writer.WriteLine("Prototype a file.");
             writer.Close();
-            var chargebackDocumentUploadResponse = docRequest.ReplaceDocument(caseId, "TestCase1.jpg", jpgReplacingFilename);
+            var chargebackDocumentUploadResponse = _docRequest.ReplaceDocument(caseId, "TestCase1.jpg", jpgReplacingFilename);
             Assert.AreEqual("000", chargebackDocumentUploadResponse.responseCode);
 
             // Step 5. Try to retrieve the replaced file.
-            retrieveDocResponse = docRequest.RetrieveDocument(caseId, jpgReplacingFilename);
+            retrieveDocResponse = _docRequest.RetrieveDocument(caseId, jpgReplacingFilename);
             Assert.Less(0, retrieveDocResponse.Count);
             
             // Step 6. Verify that your code can delete documents.
-            chargebackDocumentUploadResponse = docRequest.DeleteDocument(caseId, tiffFilename);
+            chargebackDocumentUploadResponse = _docRequest.DeleteDocument(caseId, tiffFilename);
             Assert.AreEqual("000", chargebackDocumentUploadResponse.responseCode);
             
             // Step 7. Verify the successful deletion by listing documents.
-            chargebackDocumentUploadResponse = docRequest.ListDocuments(caseId);
+            chargebackDocumentUploadResponse = _docRequest.ListDocuments(caseId);
             Assert.False(chargebackDocumentUploadResponse.documentId.Contains(tiffFilename));
             
             /*Delete all files created and uploaded for tests.*/
@@ -103,11 +113,11 @@ namespace ChargebackSdkForNetTest.Certification
             }
             Directory.Delete(test1Directory, true);
             // Remote files.
-            chargebackDocumentUploadResponse = docRequest.DeleteDocument(caseId, pdfFilename);
+            chargebackDocumentUploadResponse = _docRequest.DeleteDocument(caseId, pdfFilename);
             Assert.AreEqual("000", chargebackDocumentUploadResponse.responseCode);
-            chargebackDocumentUploadResponse = docRequest.DeleteDocument(caseId, gifFilename);
+            chargebackDocumentUploadResponse = _docRequest.DeleteDocument(caseId, gifFilename);
             Assert.AreEqual("000", chargebackDocumentUploadResponse.responseCode);
-            chargebackDocumentUploadResponse = docRequest.DeleteDocument(caseId, jpgFilename);
+            chargebackDocumentUploadResponse = _docRequest.DeleteDocument(caseId, jpgFilename);
             Assert.AreEqual("000", chargebackDocumentUploadResponse.responseCode);
         }
         
@@ -121,11 +131,9 @@ namespace ChargebackSdkForNetTest.Certification
             writer.WriteLine("Prototype a file.");
             writer.Close();
             
-            var docRequest
-                = new ChargebackDocumentationRequest();
-            long caseId = Int32.Parse(docRequest.Config.Get("merchantId") + "002");
+            long caseId = Int32.Parse(_docRequest.Config.Get("merchantId") + "002");
             var tiffResponse
-                = docRequest.UploadDocument(caseId, tiffFilename);
+                = _docRequest.UploadDocument(caseId, tiffFilename);
             
             // Step 2. Verify that you receive the response code 010.
             Assert.AreEqual("010", tiffResponse.responseCode);
@@ -143,11 +151,9 @@ namespace ChargebackSdkForNetTest.Certification
             writer.WriteLine("Prototype a file.");
             writer.Close();
             
-            var docRequest
-                = new ChargebackDocumentationRequest();
-            long caseId = Int32.Parse(docRequest.Config.Get("merchantId") + "003");
+            long caseId = Int32.Parse(_docRequest.Config.Get("merchantId") + "003");
             var tiffResponse
-                = docRequest.UploadDocument(caseId, tiffFilename);
+                = _docRequest.UploadDocument(caseId, tiffFilename);
             
             // Step 2. Verify that you receive the response code 004.
             Assert.AreEqual("004", tiffResponse.responseCode);
@@ -160,8 +166,6 @@ namespace ChargebackSdkForNetTest.Certification
         [Ignore("Cannot run multiple times on Prelive.")]
         public void TestCase4()
         {
-            var docRequest
-                = new ChargebackDocumentationRequest();
             
             // Step 1. Upload the file named maxsize.tif to the fourth test location.
             var tifSize = 1024; // 1024 bytes = 1KB.
@@ -170,9 +174,9 @@ namespace ChargebackSdkForNetTest.Certification
             var fileBytes = new byte[tifSize];
             fileCreator.Write(fileBytes, 0, fileBytes.Length);
             fileCreator.Close();
-            var caseId = int.Parse(docRequest.Config.Get("merchantId") + "004");
+            var caseId = int.Parse(_docRequest.Config.Get("merchantId") + "004");
             var maxSizeResponse
-                = docRequest.UploadDocument(caseId, tifFilename);
+                = _docRequest.UploadDocument(caseId, tifFilename);
             File.Delete(tifFilename);
             
             // Step 2. Verify that you receive the response code 005.
@@ -188,7 +192,7 @@ namespace ChargebackSdkForNetTest.Certification
             fileCreator.Close();
             Console.WriteLine("Finish writing the file " + hugeFilename);
             chargebackDocumentUploadResponse hugeSizeResponse
-                = docRequest.UploadDocument(caseId, hugeFilename);
+                = _docRequest.UploadDocument(caseId, hugeFilename);
             File.Delete(hugeFilename);
             
             // Step 4. Verify that you receive the response code 012.
@@ -203,7 +207,7 @@ namespace ChargebackSdkForNetTest.Certification
             fileCreator.Write(fileBytes, 0, fileBytes.Length);
             fileCreator.Close();
             chargebackDocumentUploadResponse mediumSizeResponse
-                = docRequest.UploadDocument(caseId, mediumFilename);
+                = _docRequest.UploadDocument(caseId, mediumFilename);
             File.Delete(mediumFilename);
             // Step 6. Verify that you receive the response code 008.
             Assert.AreEqual("008", mediumSizeResponse.responseCode);
