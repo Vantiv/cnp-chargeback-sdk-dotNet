@@ -11,14 +11,18 @@ namespace ChargebackSdkForNetTest.Functional
     [TestFixture]
     internal class TestCommunication
     {
+
         private Communication _comm;
         private Configuration _config;
 
         [SetUp]
         public void SetUp()
         {
+
             _config = new Configuration();
             _comm = new Communication();
+            _comm.SetHost(_config.Get("host"));
+
         }
 
         [Test]
