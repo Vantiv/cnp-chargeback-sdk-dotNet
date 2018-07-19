@@ -115,7 +115,10 @@ namespace ChargebackSdkForNet
             _communication.AddToHeader("Authorization", "Basic " + encoded);
             _communication.SetContentType("application/com.vantivcnp.services-v2+xml");
             _communication.SetAccept("application/com.vantivcnp.services-v2+xml");
-            _communication.SetProxy(Config.Get("proxyHost"), int.Parse(Config.Get("proxyPort")));
+            if (!String.IsNullOrEmpty(Config.Get("proxyHost")) && !String.IsNullOrEmpty(s))
+            {
+                _communication.SetProxy(Config.Get("proxyHost"), int.Parse(Config.Get("proxyPort")));
+            }
         }       
         
         private ChargebackWebException ChargebackRetrievalWebException(WebException we)
