@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Vantiv/cnp-chargeback-sdk-dotNet.svg?branch=2.x)](https://travis-ci.org/Vantiv/cnp-chargeback-sdk-dotNet)
+
 Vantiv eCommerce .NET Chargeback SDK
 =====================
 
