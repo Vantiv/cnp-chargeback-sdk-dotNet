@@ -115,7 +115,7 @@ namespace ChargebackSdkForNet
             _communication.AddToHeader("Authorization", "Basic " + encoded);
             _communication.SetContentType("application/com.vantivcnp.services-v2+xml");
             _communication.SetAccept("application/com.vantivcnp.services-v2+xml");
-            if (!String.IsNullOrEmpty(Config.Get("proxyHost")) && !String.IsNullOrEmpty(s))
+            if (!String.IsNullOrEmpty(Config.Get("proxyHost")) && !String.IsNullOrEmpty(Config.Get("proxyPort")))
             {
                 _communication.SetProxy(Config.Get("proxyHost"), int.Parse(Config.Get("proxyPort")));
             }

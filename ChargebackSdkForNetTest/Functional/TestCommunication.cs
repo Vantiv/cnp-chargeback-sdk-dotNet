@@ -34,7 +34,10 @@ namespace ChargebackSdkForNetTest.Functional
             _comm.AddToHeader("Authorization", "Basic " + encoded);
             _comm.SetContentType("application/com.vantivcnp.services-v2+xml");
             _comm.SetAccept("application/com.vantivcnp.services-v2+xml");
-            _comm.SetProxy(_config.Get("proxyHost"), int.Parse(_config.Get("proxyPort")));
+            if (!String.IsNullOrEmpty(_config.Get("proxyHost")) && !String.IsNullOrEmpty(_config.Get("proxyPort")))
+            {
+                _comm.SetProxy(_config.Get("proxyHost"), int.Parse(_config.Get("proxyPort")));
+            }
             var responseContent = _comm.Get("/services/chargebacks/" + date);
             var contentType = responseContent.GetContentType();
             var receivedBytes = responseContent.GetByteData();
@@ -64,7 +67,10 @@ namespace ChargebackSdkForNetTest.Functional
             _comm.AddToHeader("Authorization", "Basic " + encoded);
             _comm.SetContentType("application/com.vantivcnp.services-v2+xml");
             _comm.SetAccept("application/com.vantivcnp.services-v2+xml");
-            _comm.SetProxy(_config.Get("proxyHost"), int.Parse(_config.Get("proxyPort")));
+            if (!String.IsNullOrEmpty(_config.Get("proxyHost")) && !String.IsNullOrEmpty(_config.Get("proxyPort")))
+            {
+                _comm.SetProxy(_config.Get("proxyHost"), int.Parse(_config.Get("proxyPort")));
+            }
             var responseContent = _comm.Put("/services/chargebacks/" + caseId, sendingBytes);
             var receivedBytes = responseContent.GetByteData();
             Assert.True(receivedBytes.Any());
@@ -85,7 +91,10 @@ namespace ChargebackSdkForNetTest.Functional
 
             var encoded = ChargebackUtils.Encode64(_config.Get("username") + ":" + _config.Get("password"), "utf-8");
             _comm.AddToHeader("Authorization", "Basic " + encoded);
-            _comm.SetProxy(_config.Get("proxyHost"), int.Parse(_config.Get("proxyPort")));
+            if (!String.IsNullOrEmpty(_config.Get("proxyHost")) && !String.IsNullOrEmpty(_config.Get("proxyPort")))
+            {
+                _comm.SetProxy(_config.Get("proxyHost"), int.Parse(_config.Get("proxyPort")));
+            }
             _comm.SetContentType("image/tiff");
             try
             {
@@ -115,7 +124,10 @@ namespace ChargebackSdkForNetTest.Functional
             const string documentId = "uploadTest.tiff";
             var encoded = ChargebackUtils.Encode64(_config.Get("username") + ":" + _config.Get("password"), "utf-8");
             _comm.AddToHeader("Authorization", "Basic " + encoded);
-            _comm.SetProxy(_config.Get("proxyHost"), int.Parse(_config.Get("proxyPort")));
+            if (!String.IsNullOrEmpty(_config.Get("proxyHost")) && !String.IsNullOrEmpty(_config.Get("proxyPort")))
+            {
+                _comm.SetProxy(_config.Get("proxyHost"), int.Parse(_config.Get("proxyPort")));
+            }
             var responseContent = _comm.Delete(string.Format("/services/chargebacks/delete/{0}/{1}", caseId, documentId));
             var receivedBytes = responseContent.GetByteData();
             Assert.True(receivedBytes.Any());

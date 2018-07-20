@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System;
 using ChargebackSdkForNet.Properties;
 
 namespace ChargebackSdkForNet
@@ -169,7 +170,10 @@ namespace ChargebackSdkForNet
             communication.AddToHeader("Authorization", "Basic " + encoded);
             communication.SetContentType("application/com.vantivcnp.services-v2+xml");
             communication.SetAccept("application/com.vantivcnp.services-v2+xml");
-            communication.SetProxy(Config.Get("proxyHost"), int.Parse(Config.Get("proxyPort")));
+            if (!String.IsNullOrEmpty(Config.Get("proxyHost")) && !String.IsNullOrEmpty(Config.Get("proxyPort")))
+            {
+                communication.SetProxy(Config.Get("proxyHost"), int.Parse(Config.Get("proxyPort")));
+            }
         }
 
 

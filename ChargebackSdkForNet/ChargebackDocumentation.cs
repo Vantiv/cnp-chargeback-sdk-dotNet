@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -142,7 +143,7 @@ namespace ChargebackSdkForNet
             string encoded = ChargebackUtils.Encode64(
                 Config.Get("username") + ":" + Config.Get("password"), "utf-8");
             _communication.AddToHeader("Authorization", "Basic " + encoded);
-            if (!String.IsNullOrEmpty(Config.Get("proxyHost")) && !String.IsNullOrEmpty(s))
+            if (!String.IsNullOrEmpty(Config.Get("proxyHost")) && !String.IsNullOrEmpty(Config.Get("proxyPort")))
             {
                 _communication.SetProxy(Config.Get("proxyHost"), int.Parse(Config.Get("proxyPort")));
             }
