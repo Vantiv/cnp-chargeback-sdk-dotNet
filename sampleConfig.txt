@@ -1,7 +1,7 @@
 username = myUsername
 password = myPassword
 merchantId = 777777
-host = https://www.testvantivcnp.com/sandbox/new/services
+host = https://www.testvantivcnp.com/sandbox/services
 printXml = true
 neuterXml = false
 proxyHost = myProxyHost
