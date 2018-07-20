@@ -24,6 +24,7 @@ namespace ChargebackSdkForNetTest.Certification
 
 
         [Test]
+        [Ignore("Added for reference")]
         public void Test_2_1_1_RetrieveByAParticularDate()
         {
             chargebackRetrievalResponse response = _retrievalRequest.RetrieveByActivityDate(ChargebackUtils.ParseDate("2013-1-1"));
@@ -55,6 +56,7 @@ namespace ChargebackSdkForNetTest.Certification
         }
 
         [Test]
+        [Ignore("Added for reference")]
         public void Test_2_1_2_AddNote()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 1111111111.
@@ -121,6 +123,7 @@ namespace ChargebackSdkForNetTest.Certification
         }
 
         [Test]
+        [Ignore("Added for reference")]
         public void Test_2_1_5_ErrorMessage()
         {
             // Step 1. Perform a new activity for the case retrieved from ARN 4444444444.

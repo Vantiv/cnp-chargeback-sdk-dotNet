@@ -143,6 +143,7 @@ namespace ChargebackSdkForNetTest.Certification
         }
         
         [Test]
+        [Ignore("Added for reference")]
         public void TestCase3()
         {
             // Step 1. Upload one file to the second test location.
