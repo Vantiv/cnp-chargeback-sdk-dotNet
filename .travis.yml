@@ -3,7 +3,7 @@ solution: ChargebackSdkForNet.sln
 notifications:
   email:
     - sdksupport@vantiv.com
-dotnet: 2.1
+dotnet: 2.2
 install:
   - nuget restore ChargebackSdkForNet.sln
   - nuget install xunit.runners -Version 2.0.0 -OutputDirectory testrunner
