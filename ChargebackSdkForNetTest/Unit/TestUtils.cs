@@ -3,30 +3,24 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using ChargebackSdkForNet;
-using NUnit.Framework;
+using Xunit;
 
 namespace ChargebackSdkForNetTest.Unit
 {
-    [TestFixture]
     public class TestUtils
     {
-        [TestFixtureSetUp]
-        public void SetUp()
-        {
-            
-        }
-        
-        [TestCase("@Hello World!")]
-        [TestCase("0123456789")]
-        [TestCase("empty        spaces")]
+        [Theory]
+        [InlineData("@Hello World!")]
+        [InlineData("0123456789")]
+        [InlineData("empty        spaces")]
         public void TestBytesToString(string testString)
         {
             var bytes = Encoding.ASCII.GetBytes(testString).ToList();
             var result = ChargebackUtils.BytesToString(bytes);
-            Assert.AreEqual(testString, result);
+            Assert.Equal(testString, result);
         }
         
-        [Test]
+        [Fact]
         public void TestStringToBytes()
         {
             const string helloWorld = "@Hello World!";
@@ -34,11 +28,11 @@ namespace ChargebackSdkForNetTest.Unit
             var resultBytes = ChargebackUtils.StringToBytes(helloWorld);
             for(var i = 0; i < bytes.Count; i++)
             {
-                Assert.AreEqual(bytes[i], resultBytes[i]);
+                Assert.Equal(bytes[i], resultBytes[i]);
             }
         }
         
-        [Test]
+        [Fact]
         public void TestBytesToFile()
         {
             const int size1Kb = 1024;
@@ -47,20 +41,21 @@ namespace ChargebackSdkForNetTest.Unit
             var f = File.Create(fileName);
             f.Write(bytes, 0, bytes.Length);
             f.Close();
-            Assert.IsTrue(File.Exists(fileName));
-            Assert.AreEqual(size1Kb, (new FileInfo(fileName)).Length);
+            Assert.True(File.Exists(fileName));
+            Assert.Equal(size1Kb, (new FileInfo(fileName)).Length);
             File.Delete(fileName);
         }
         
-        [TestCase("abcdef123456!@#$%^ABCDEF")]
-        [TestCase("this password should be 64 encoded")]
+        [Theory]
+        [InlineData("abcdef123456!@#$%^ABCDEF")]
+        [InlineData("this password should be 64 encoded")]
         public void TestEncode64(string password)
         {
             var expectedEncodedPassword = Convert.ToBase64String(Encoding.GetEncoding("utf-8").GetBytes(password));
-            Assert.AreEqual(expectedEncodedPassword, ChargebackUtils.Encode64(password, "utf-8"));
+            Assert.Equal(expectedEncodedPassword, ChargebackUtils.Encode64(password, "utf-8"));
         }
         
-        [Test]
+        [Fact]
         public void TestDeserializeResponse()
         {
             

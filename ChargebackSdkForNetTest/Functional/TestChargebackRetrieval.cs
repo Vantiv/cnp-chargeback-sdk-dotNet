@@ -2,23 +2,20 @@
 using System.Collections.Generic;
 using ChargebackSdkForNet;
 using ChargebackSdkForNet.Properties;
-using NUnit.Framework;
+using Xunit;
 
 namespace ChargebackSdkForNetTest.Functional
 {
-    [TestFixture]
     public class TestChargebackrRetrieval
     {
         private ChargebackRetrievalRequest _retrievalRequest;
 
-        [TestFixtureSetUp]
-        public void SetUp()
+        public TestChargebackrRetrieval()
         {
-
             _retrievalRequest = new ChargebackRetrievalRequest();
         }
 
-        [Test]
+        [Fact]
         public void TestChargebackRetrievalDate()
         {
             var retrievalResponse = 
@@ -28,7 +25,7 @@ namespace ChargebackSdkForNetTest.Functional
             Assert.NotNull(retrievalResponse.chargebackCase);
         }
 
-        [Test]
+        [Fact]
         public void TestRetrieveByActivityDateWithFinancialImpact()
         {
             var retrievalResponse = 
@@ -38,7 +35,7 @@ namespace ChargebackSdkForNetTest.Functional
             Assert.NotNull(retrievalResponse.chargebackCase);
         }
         
-        [Test]
+        [Fact]
         public void TestRetrieveActionable()
         {
             var retrievalResponse = _retrievalRequest.RetrieveByActionable(true);
@@ -47,7 +44,7 @@ namespace ChargebackSdkForNetTest.Functional
             Assert.NotNull(retrievalResponse.chargebackCase);
         }
             
-        [Test]
+        [Fact]
         public void TestRetrieveByCaseId()
         {
             var retrievalResponse = _retrievalRequest.RetrieveByCaseId(1288791001);
@@ -56,7 +53,7 @@ namespace ChargebackSdkForNetTest.Functional
             Assert.NotNull(retrievalResponse.chargebackCase);
         }
             
-        [Test]
+        [Fact]
         public void TestRetrieveByCardNumber()
         {
             var retrievalResponse = 
@@ -66,7 +63,7 @@ namespace ChargebackSdkForNetTest.Functional
             Assert.NotNull(retrievalResponse.chargebackCase);
         }
             
-        [Test]
+        [Fact]
         public void TestRetrieveByArn()
         {
             var retrievalResponse = _retrievalRequest.RetrieveByArn(5555555551.ToString());

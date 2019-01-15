@@ -1,18 +1,12 @@
 ﻿using System.Text;
 using ChargebackSdkForNet;
 using Moq;
-using NUnit.Framework;
+using Xunit;
 
 namespace ChargebackSdkForNetTest.Unit
 {
-    [TestFixture]
     public class TestChargebackUpdate
     {
-        [SetUp]
-        public void SetUp()
-        {
-            
-        }
 
         private string generateXmlRequest(activityType activityType, string assignedTo, string note,
             bool representedAmountFieldSpecified = false, long representedAmount = 0)
@@ -69,8 +63,9 @@ namespace ChargebackSdkForNetTest.Unit
             return xmlResponse.ToString();
         }
 
-        [TestCase(1000, "test1@assign.com.com", "Assign to test1", 1234567)]
-        [TestCase(1000, "test2@assign.com.com", null, 4568778)]
+        [Theory]
+        [InlineData(1000, "test1@assign.com.com", "Assign to test1", 1234567)]
+        [InlineData(1000, "test2@assign.com.com", null, 4568778)]
         public void TestAssignToUser(long caseId, string assignedTo, string note, int expectedTxnId)
         {
             var expectedXmlResponse = generateXmlResponse(expectedTxnId);
@@ -85,11 +80,11 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.AssignToUser(caseId, assignedTo, note);
-            Assert.AreEqual(expectedTxnId, response.transactionId);
+            Assert.Equal(expectedTxnId, response.transactionId);
         }
         
-        
-        [TestCase(1000, "Note test1", 1234567)]
+        [Theory]
+        [InlineData(1000, "Note test1", 1234567)]
         public void TestAddNote(long caseId, string note, int expectedTxnId)
         {
             var expectedXmlResponse = generateXmlResponse(expectedTxnId);
@@ -104,12 +99,12 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.AddNote(caseId, note);
-            Assert.AreEqual(expectedTxnId, response.transactionId);
+            Assert.Equal(expectedTxnId, response.transactionId);
         }
         
-        
-        [TestCase(1000, "Accept liability test1", 1234567)]
-        [TestCase(1000, null, 4568778)]
+        [Theory]
+        [InlineData(1000, "Accept liability test1", 1234567)]
+        [InlineData(1000, null, 4568778)]
         public void TestAcceptLiability(long caseId, string note, int expectedTxnId)
         {
             var expectedXmlResponse = generateXmlResponse(expectedTxnId);
@@ -124,12 +119,12 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.AcceptLiability(caseId, note);
-            Assert.AreEqual(expectedTxnId, response.transactionId);
+            Assert.Equal(expectedTxnId, response.transactionId);
         }
         
-        
-        [TestCase(1000, 5000, "Merchant represent with amount test1", 1234567)]
-        [TestCase(1000, 2050, null, 4568778)]
+        [Theory]
+        [InlineData(1000, 5000, "Merchant represent with amount test1", 1234567)]
+        [InlineData(1000, 2050, null, 4568778)]
         public void TestRepresentWithRepresentedAmount(long caseId, long representedAmount, string note, int expectedTxnId)
         {
             var expectedXmlResponse = generateXmlResponse(expectedTxnId);
@@ -145,12 +140,12 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.Represent(caseId, representedAmount, note);
-            Assert.AreEqual(expectedTxnId, response.transactionId);
+            Assert.Equal(expectedTxnId, response.transactionId);
         }
         
-        
-        [TestCase(1000, "Merchant represent without amount test1", 1234567)]
-        [TestCase(1000, null, 4568778)]
+        [Theory]
+        [InlineData(1000, "Merchant represent without amount test1", 1234567)]
+        [InlineData(1000, null, 4568778)]
         public void TestRepresentWithoutRepresenedAmount(long caseId, string note, int expectedTxnId)
         {
             var expectedXmlResponse = generateXmlResponse(expectedTxnId);
@@ -166,12 +161,12 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.Represent(caseId, note);
-            Assert.AreEqual(expectedTxnId, response.transactionId);
+            Assert.Equal(expectedTxnId, response.transactionId);
         }
 
-
-        [TestCase(1000, "Merchant respond test1", 1234567)]
-        [TestCase(1000, null, 4568778)]
+        [Theory]
+        [InlineData(1000, "Merchant respond test1", 1234567)]
+        [InlineData(1000, null, 4568778)]
         public void TestRespond(long caseId, string note, int expectedTxnId)
         {
             var expectedXmlResponse = generateXmlResponse(expectedTxnId);
@@ -187,12 +182,12 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.Respond(caseId, note);
-            Assert.AreEqual(expectedTxnId, response.transactionId);
+            Assert.Equal(expectedTxnId, response.transactionId);
         }
         
-        
-        [TestCase(1000, "Merchant requests arbitration test1", 1234567)]
-        [TestCase(1000, null, 4568778)]
+        [Theory]
+        [InlineData(1000, "Merchant requests arbitration test1", 1234567)]
+        [InlineData(1000, null, 4568778)]
         public void TestRequestArbitration(long caseId, string note, int expectedTxnId)
         {
             var expectedXmlResponse = generateXmlResponse(expectedTxnId);
@@ -208,7 +203,7 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackUpdateRequest(commMock.Object);
             var response
                 = request.RequestArbitration(caseId, note);
-            Assert.AreEqual(expectedTxnId, response.transactionId);
+            Assert.Equal(expectedTxnId, response.transactionId);
         }
     }
 }

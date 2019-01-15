@@ -4,19 +4,17 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ChargebackSdkForNet;
 using ChargebackSdkForNet.Properties;
-using NUnit.Framework;
+using Xunit;
 
 namespace ChargebackSdkForNetTest.Functional
 {
-    [TestFixture]
-    internal class TestCommunication
+    public class TestCommunication
     {
 
         private Communication _comm;
         private Configuration _config;
 
-        [SetUp]
-        public void SetUp()
+        public TestCommunication()
         {
 
             _config = new Configuration();
@@ -25,7 +23,7 @@ namespace ChargebackSdkForNetTest.Functional
 
         }
 
-        [Test]
+        [Fact]
         public void TestGet()
         {
             const string date = "?date=2013-01-01";
@@ -52,7 +50,7 @@ namespace ChargebackSdkForNetTest.Functional
             Assert.True(regex.IsMatch(xmlResponse));
         }
 
-        [Test]
+        [Fact]
         public void TestPut()
         {
             const string xmlRequest = "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>" +
@@ -82,7 +80,7 @@ namespace ChargebackSdkForNetTest.Functional
             Assert.True(regex.IsMatch(xmlResponse));
         }
 
-        [Test]
+        [Fact]
         public void TestPost()
         {
             var caseId = 1000;
@@ -113,11 +111,11 @@ namespace ChargebackSdkForNetTest.Functional
             }
             catch (Exception e)
             {
-                Assert.Fail("Post failed" + e);
+                Assert.True(false, "Post failed" + e);
             }
         }
 
-        [Test]
+        [Fact]
         public void TestDelete()
         {
             var caseId = 1000;

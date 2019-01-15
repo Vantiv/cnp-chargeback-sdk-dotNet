@@ -3,19 +3,13 @@ using System.Linq;
 using System.Text;
 using ChargebackSdkForNet;
 using Moq;
-using NUnit.Framework;
+using Xunit;
+using System;
 
 namespace ChargebackSdkForNetTest.Unit
 {
-    [TestFixture]
-    public class TestChargebackDocumentation
+    public class TestChargebackDocumentation : IDisposable
     {
-        [SetUp]
-        public void SetUp()
-        {
-            
-        }
-        
         private string generateXmlResponse(long caseId, string[] documentIds, 
             string responseCode, string responseMessage)
         {
@@ -61,8 +55,8 @@ namespace ChargebackSdkForNetTest.Unit
             return xmlResponse.ToString();
         }
 
-
-        [TestCase(1000, "test1.tif")]
+        [Theory]
+        [InlineData(1000, "test1.tif")]
         public void TestRetrieveDocument(long caseId, string documentId)
         {
             const string expectedFileContent = "To test document retrieval";
@@ -74,32 +68,40 @@ namespace ChargebackSdkForNetTest.Unit
                 .Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
             var docResponse = docRequest.RetrieveDocument(caseId, documentId);
-            Assert.Less(0, docResponse.Count);
+            Assert.True(0 < docResponse.Count);
         }
         
         
-        
-        [TestCase(1009, "test1.tif", new[] {"test1.tif"}, "009", "Document Not Found")]
-        [TestCase(1003, "test2.tif", new[] {"test2.tif"}, "003", "Case Not Found")]
-        [ExpectedException(typeof(ChargebackDocumentException))]
+        [Theory]
+        [InlineData(1009, "test1.tif", new[] {"test1.tif"}, "009", "Document Not Found")]
+        [InlineData(1003, "test2.tif", new[] {"test2.tif"}, "003", "Case Not Found")]
         public void TestRetrieveDocumentFailure(long caseId, string documentId, string[] expectedDocumentIds, 
             string expectedResponseCode, string expectedResponseMessage)
         {
-            var expectedXmlResponse = generateXmlResponse(caseId, expectedDocumentIds,
-                expectedResponseCode, expectedResponseMessage);
-            var expectedResponseContent = new ResponseContent(
-                "application/com.vantivcnp.services-v2+xml",
-                ChargebackUtils.StringToBytes(expectedXmlResponse));
-            var commMock = new Mock<Communication>();
-            commMock.Setup(c => c.Get(string.Format("/services/chargebacks/retrieve/{0}/{1}", caseId, documentId)))
-                .Returns(expectedResponseContent);
-            var docRequest = new ChargebackDocumentationRequest(commMock.Object);
-            docRequest.RetrieveDocument(caseId, documentId);
+            try
+            {
+                var expectedXmlResponse = generateXmlResponse(caseId, expectedDocumentIds,
+                    expectedResponseCode, expectedResponseMessage);
+                var expectedResponseContent = new ResponseContent(
+                    "application/com.vantivcnp.services-v2+xml",
+                    ChargebackUtils.StringToBytes(expectedXmlResponse));
+                var commMock = new Mock<Communication>();
+                commMock.Setup(c => c.Get(string.Format("/services/chargebacks/retrieve/{0}/{1}", caseId, documentId)))
+                    .Returns(expectedResponseContent);
+                var docRequest = new ChargebackDocumentationRequest(commMock.Object);
+                docRequest.RetrieveDocument(caseId, documentId);
+                Assert.True(false, "No exception thrown");
+            }
+            catch (ChargebackDocumentException e)
+            {
+                Assert.True(true);
+            }
         }
         
-        [TestCase(1000, new[] {"test1Doc1.tif", "test1Doc2.tif"}, "000", "Success")]
-        [TestCase(1009, null, "009", "Document Not Found")]
-        [TestCase(1003, null, "003", "Case Not Found")]
+        [Theory]
+        [InlineData(1000, new[] {"test1Doc1.tif", "test1Doc2.tif"}, "000", "Success")]
+        [InlineData(1009, null, "009", "Document Not Found")]
+        [InlineData(1003, null, "003", "Case Not Found")]
         public void TestListDocument(long caseId, string[] expectedDocumentIds, 
             string expectedResponseCode, string expectedResponseMessage)
         {
@@ -114,15 +116,16 @@ namespace ChargebackSdkForNetTest.Unit
                 .Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
             var docUploadResponse = docRequest.ListDocuments(caseId);            
-            Assert.AreEqual(caseId, docUploadResponse.caseId);
-            Assert.AreEqual(expectedDocumentIds, docUploadResponse.documentId);
-            Assert.AreEqual(expectedResponseCode, docUploadResponse.responseCode);
-            Assert.AreEqual(expectedResponseMessage, docUploadResponse.responseMessage);
+            Assert.Equal(caseId, docUploadResponse.caseId);
+            Assert.Equal(expectedDocumentIds, docUploadResponse.documentId);
+            Assert.Equal(expectedResponseCode, docUploadResponse.responseCode);
+            Assert.Equal(expectedResponseMessage, docUploadResponse.responseMessage);
         }
         
-        [TestCase(1000, "test1.tif", new[] {"test1.tif"}, "000", "Success")]
-        [TestCase(1009, "test2.tif", new[] {"test2.tif"}, "009", "Document Not Found")]
-        [TestCase(1003, "test3.tif", new[] {"test3.tif"}, "003", "Case Not Found")]
+        [Theory]
+        [InlineData(1000, "test1.tif", new[] {"test1.tif"}, "000", "Success")]
+        [InlineData(1009, "test2.tif", new[] {"test2.tif"}, "009", "Document Not Found")]
+        [InlineData(1003, "test3.tif", new[] {"test3.tif"}, "003", "Case Not Found")]
         public void TestDeleteDocument(long caseId, string documentId, string[] expectedDocumentIds, 
             string expectedResponseCode, string expectedResponseMessage)
         {
@@ -136,14 +139,15 @@ namespace ChargebackSdkForNetTest.Unit
                 .Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
             var docUploadResponse = docRequest.DeleteDocument(caseId, documentId);            
-            Assert.AreEqual(caseId, docUploadResponse.caseId);
-            Assert.AreEqual(expectedDocumentIds, docUploadResponse.documentId);
-            Assert.AreEqual(expectedResponseCode, docUploadResponse.responseCode);
-            Assert.AreEqual(expectedResponseMessage, docUploadResponse.responseMessage);
+            Assert.Equal(caseId, docUploadResponse.caseId);
+            Assert.Equal(expectedDocumentIds, docUploadResponse.documentId);
+            Assert.Equal(expectedResponseCode, docUploadResponse.responseCode);
+            Assert.Equal(expectedResponseMessage, docUploadResponse.responseMessage);
         }
         
-        [TestCase(1000, "test1.tif", new[] {"test1.tif"}, "000", "Success")]
-        [TestCase(1003, "test3.tif", new[] {"test3.tif"}, "003", "Case Not Found")]
+        [Theory]
+        [InlineData(1000, "test1.tif", new[] {"test1.tif"}, "000", "Success")]
+        [InlineData(1003, "test3.tif", new[] {"test3.tif"}, "003", "Case Not Found")]
         public void TestUploadDocument(long caseId, string documentId, string[] expectedDocumentIds, 
             string expectedResponseCode, string expectedResponseMessage)
         {
@@ -162,16 +166,16 @@ namespace ChargebackSdkForNetTest.Unit
                     sendingBytes)).Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
             var docUploadResponse = docRequest.UploadDocument(caseId, tiffFilePath);            
-            Assert.AreEqual(caseId, docUploadResponse.caseId);
-            Assert.AreEqual(expectedDocumentIds, docUploadResponse.documentId);
-            Assert.AreEqual(expectedResponseCode, docUploadResponse.responseCode);
-            Assert.AreEqual(expectedResponseMessage, docUploadResponse.responseMessage);
+            Assert.Equal(caseId, docUploadResponse.caseId);
+            Assert.Equal(expectedDocumentIds, docUploadResponse.documentId);
+            Assert.Equal(expectedResponseCode, docUploadResponse.responseCode);
+            Assert.Equal(expectedResponseMessage, docUploadResponse.responseMessage);
         }
         
-        
-        [TestCase(1000, "test1.tif", new[] {"test1.tif"}, "000", "Success")]
-        [TestCase(1009, "test2.tif", new[] {"test2.tif"}, "009", "Document Not Found")]
-        [TestCase(1003, "test3.tif", new[] {"test3.tif"}, "003", "Case Not Found")]
+        [Theory]
+        [InlineData(1000, "test1.tif", new[] {"test1.tif"}, "000", "Success")]
+        [InlineData(1009, "test2.tif", new[] {"test2.tif"}, "009", "Document Not Found")]
+        [InlineData(1003, "test3.tif", new[] {"test3.tif"}, "003", "Case Not Found")]
         public void TestReplaceDocument(long caseId, string documentId, string[] expectedDocumentIds, 
             string expectedResponseCode, string expectedResponseMessage)
         {
@@ -191,14 +195,13 @@ namespace ChargebackSdkForNetTest.Unit
                 sendingBytes)).Returns(expectedResponseContent);
             var docRequest = new ChargebackDocumentationRequest(commMock.Object);
             var docUploadResponse = docRequest.ReplaceDocument(caseId, documentId, tiffFilePath);            
-            Assert.AreEqual(caseId, docUploadResponse.caseId);
-            Assert.AreEqual(expectedDocumentIds, docUploadResponse.documentId);
-            Assert.AreEqual(expectedResponseCode, docUploadResponse.responseCode);
-            Assert.AreEqual(expectedResponseMessage, docUploadResponse.responseMessage);
+            Assert.Equal(caseId, docUploadResponse.caseId);
+            Assert.Equal(expectedDocumentIds, docUploadResponse.documentId);
+            Assert.Equal(expectedResponseCode, docUploadResponse.responseCode);
+            Assert.Equal(expectedResponseMessage, docUploadResponse.responseMessage);
         }
 
-        [TearDown]
-        public void DeleteTestFiles()
+        public void Dispose()
         {
             var fileNames = Directory.GetFiles(Directory.GetCurrentDirectory());
             foreach (var fileName in fileNames)

@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using ChargebackSdkForNet;
 using ChargebackSdkForNet.Properties;
-using NUnit.Framework;
+using Xunit;
 
 namespace ChargebackSdkForNetTest.Unit
 {
-    [TestFixture]
-    internal class TestConfiguration
+    public class TestConfiguration
     {
 
-        [Test]
+        [Fact]
         public void TestConfigurationFromFile()
         {
             Console.WriteLine(Directory.GetCurrentDirectory());
@@ -29,19 +28,19 @@ namespace ChargebackSdkForNetTest.Unit
             
             var config = new Configuration(filename);
             
-            Assert.AreEqual("username", config.Get("username"));
-            Assert.AreEqual("password", config.Get("password"));
-            Assert.AreEqual("merchantId", config.Get("merchantId"));
-            Assert.AreEqual("host", config.Get("host"));
-            Assert.AreEqual("false", config.Get("printXml"));
-            Assert.AreEqual("false", config.Get("neuterXml"));
-            Assert.AreEqual("proxyHost", config.Get("proxyHost"));
-            Assert.AreEqual("proxyPort", config.Get("proxyPort"));
+            Assert.Equal("username", config.Get("username"));
+            Assert.Equal("password", config.Get("password"));
+            Assert.Equal("merchantId", config.Get("merchantId"));
+            Assert.Equal("host", config.Get("host"));
+            Assert.Equal("false", config.Get("printXml"));
+            Assert.Equal("false", config.Get("neuterXml"));
+            Assert.Equal("proxyHost", config.Get("proxyHost"));
+            Assert.Equal("proxyPort", config.Get("proxyPort"));
             
             File.Delete(filename);
         }
 
-        [Test]
+        [Fact]
         public void TestConfigurationFromCustomDictionary()
         {
             var configDict = new Dictionary<string, string>();
@@ -56,18 +55,17 @@ namespace ChargebackSdkForNetTest.Unit
             
             var config = new Configuration(configDict);
             
-            Assert.AreEqual("username", config.Get("username"));
-            Assert.AreEqual("password", config.Get("password"));
-            Assert.AreEqual("merchantId", config.Get("merchantId"));
-            Assert.AreEqual("host", config.Get("host"));
-            Assert.AreEqual("false", config.Get("printXml"));
-            Assert.AreEqual("false", config.Get("neuterXml"));
-            Assert.AreEqual("proxyHost", config.Get("proxyHost"));
-            Assert.AreEqual("proxyPort", config.Get("proxyPort"));
+            Assert.Equal("username", config.Get("username"));
+            Assert.Equal("password", config.Get("password"));
+            Assert.Equal("merchantId", config.Get("merchantId"));
+            Assert.Equal("host", config.Get("host"));
+            Assert.Equal("false", config.Get("printXml"));
+            Assert.Equal("false", config.Get("neuterXml"));
+            Assert.Equal("proxyHost", config.Get("proxyHost"));
+            Assert.Equal("proxyPort", config.Get("proxyPort"));
         }
 
-        [Test]
-        [ExpectedException(typeof(ChargebackException))]
+        [Fact]
         public void TestMissingSettingInConfig()
         {
             var configDict = new Dictionary<string, string>();
@@ -78,11 +76,10 @@ namespace ChargebackSdkForNetTest.Unit
             configDict["neuterXml"] = "false";
             configDict["proxyHost"] = "proxyHost";
             configDict["proxyPort"] = "proxyPort";
-            var configuration = new Configuration(configDict);
+            Exception ex = Assert.Throws<ChargebackException>(() => new Configuration(configDict));
         }
 
-        [Test]
-        [ExpectedException(typeof(KeyNotFoundException))]
+        [Fact]
         public void TestInvalidSettingInConfig()
         {
             var configDict = new Dictionary<string, string>();
@@ -96,10 +93,10 @@ namespace ChargebackSdkForNetTest.Unit
             configDict["proxyPort"] = "proxyPort";
             configDict["extraKey"] = "extraValue";
             var config = new Configuration(configDict);
-            var extraKey = config.Get("extraKey");
+            Exception ex = Assert.Throws<KeyNotFoundException>(() => config.Get("extraKey"));
         }
 
-        [Test]
+        [Fact]
         public void TestPasswordWithEqualsSignInConfigFile()
         {
             Console.WriteLine(Directory.GetCurrentDirectory());
@@ -117,7 +114,7 @@ namespace ChargebackSdkForNetTest.Unit
             
             var config = new Configuration(filename);
             
-            Assert.AreEqual("pass=word", config.Get("password"));
+            Assert.Equal("pass=word", config.Get("password"));
             
             File.Delete(filename);
         }

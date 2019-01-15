@@ -1,18 +1,12 @@
 ﻿using System.Text;
 using ChargebackSdkForNet;
 using Moq;
-using NUnit.Framework;
+using Xunit;
 
 namespace ChargebackSdkForNetTest.Unit
 {
-    [TestFixture]
     public class TestChargebackRetrieval
     {
-            
-        [SetUp]
-        public void SetUp()
-        {
-        }
 
         private string GenerateXmlResponse(int transactionId, int nCases)
         {
@@ -60,10 +54,11 @@ namespace ChargebackSdkForNetTest.Unit
             return xmlResponse.ToString();
         }
 
-        [TestCase("1234-12-09", 1234567890, 1, false)]
-        [TestCase("1253-12-09", 2117084919, 2, false)]
-        [TestCase("1253-04-09", 1559459335, 1, false)]
-        [TestCase("2018-04-09", 2111123987, 0, true)]
+        [Theory]
+        [InlineData("1234-12-09", 1234567890, 1, false)]
+        [InlineData("1253-12-09", 2117084919, 2, false)]
+        [InlineData("1253-04-09", 1559459335, 1, false)]
+        [InlineData("2018-04-09", 2111123987, 0, true)]
         public void TestRetrieveByActivityDate(string date, int expectedId, int expectedNCases, bool expectedNull)
         {
             var expectedXmlResponse = GenerateXmlResponse(expectedId, expectedNCases);
@@ -76,16 +71,17 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackRetrievalRequest(commMock.Object);
             var response
                 = request.RetrieveByActivityDate(ChargebackUtils.ParseDate(date));
-            Assert.AreEqual(expectedId, response.transactionId);
+            Assert.Equal(expectedId, response.transactionId);
             var nullCase = response.chargebackCase == null;
-            Assert.AreEqual(expectedNull, nullCase);
+            Assert.Equal(expectedNull, nullCase);
             if(!nullCase)
-                Assert.AreEqual(expectedNCases, response.chargebackCase.Length);
+                Assert.Equal(expectedNCases, response.chargebackCase.Length);
         }
 
-        [TestCase("2018-04-22", true, 1234567, 3, false)]
-        [TestCase("2018-04-22", false, 1234567, 1, false)]
-        [TestCase("2018-04-28", true, 1234567, 0, true)]
+        [Theory]
+        [InlineData("2018-04-22", true, 1234567, 3, false)]
+        [InlineData("2018-04-22", false, 1234567, 1, false)]
+        [InlineData("2018-04-28", true, 1234567, 0, true)]
         public void TestRetrieveByActivityDateWithImpact(string date, bool impact,
             int expectedId, int expectedNCases, bool expectedNull)
         {
@@ -99,16 +95,17 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackRetrievalRequest(commMock.Object);
             var response
                 = request.RetrieveByActivityDateWithImpact(ChargebackUtils.ParseDate(date), impact);
-            Assert.AreEqual(expectedId, response.transactionId);
+            Assert.Equal(expectedId, response.transactionId);
             var nullCase = response.chargebackCase == null;
-            Assert.AreEqual(expectedNull, nullCase);
+            Assert.Equal(expectedNull, nullCase);
             if(!nullCase)
-                Assert.AreEqual(expectedNCases, response.chargebackCase.Length);
+                Assert.Equal(expectedNCases, response.chargebackCase.Length);
         }
 
-        [TestCase(true, 1234567, 3, false)]
-        [TestCase(true, 1234567, 1, false)]
-        [TestCase(false, 1234567, 0, true)]
+        [Theory]
+        [InlineData(true, 1234567, 3, false)]
+        [InlineData(true, 1234567, 1, false)]
+        [InlineData(false, 1234567, 0, true)]
         public void TestRetrieveByActionable(bool actionable, int expectedId, int expectedNCases,
             bool expectedNull)
         {
@@ -122,17 +119,17 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackRetrievalRequest(commMock.Object);
             var response
                 = request.RetrieveByActionable(actionable);
-            Assert.AreEqual(expectedId, response.transactionId);
+            Assert.Equal(expectedId, response.transactionId);
             var nullCase = response.chargebackCase == null;
-            Assert.AreEqual(expectedNull, nullCase);
+            Assert.Equal(expectedNull, nullCase);
             if(!nullCase)
-                Assert.AreEqual(expectedNCases, response.chargebackCase.Length);
+                Assert.Equal(expectedNCases, response.chargebackCase.Length);
         }
 
-        
-        [TestCase(11111, 1234567, 3, false)]
-        [TestCase(22222, 1234567, 1, false)]
-        [TestCase(33333, 1234567, 0, true)]
+        [Theory]
+        [InlineData(11111, 1234567, 3, false)]
+        [InlineData(22222, 1234567, 1, false)]
+        [InlineData(33333, 1234567, 0, true)]
         public void TestRetrieveByCaseId(long caseId, int expectedId, int expectedNCases,
             bool expectedNull)
         {
@@ -146,16 +143,17 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackRetrievalRequest(commMock.Object);
             var response
                 = request.RetrieveByCaseId(caseId);
-            Assert.AreEqual(expectedId, response.transactionId);
+            Assert.Equal(expectedId, response.transactionId);
             var nullCase = response.chargebackCase == null;
-            Assert.AreEqual(expectedNull, nullCase);
+            Assert.Equal(expectedNull, nullCase);
             if(!nullCase)
-                Assert.AreEqual(expectedNCases, response.chargebackCase.Length);
+                Assert.Equal(expectedNCases, response.chargebackCase.Length);
         }
 
-        [TestCase("12asde589", 1234567, 3, false)]
-        [TestCase("12autde5801", 1234567, 1, false)]
-        [TestCase("dfhkfhiwrjfjg65jg6j1f6ftj165", 1234567, 0, true)]
+        [Theory]
+        [InlineData("12asde589", 1234567, 3, false)]
+        [InlineData("12autde5801", 1234567, 1, false)]
+        [InlineData("dfhkfhiwrjfjg65jg6j1f6ftj165", 1234567, 0, true)]
         public void TestRetrieveByToken(string token, int expectedId, int expectedNCases,
             bool expectedNull)
         {
@@ -169,16 +167,17 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackRetrievalRequest(commMock.Object);
             var response
                 = request.RetrieveByToken(token);
-            Assert.AreEqual(expectedId, response.transactionId);
+            Assert.Equal(expectedId, response.transactionId);
             var nullCase = response.chargebackCase == null;
-            Assert.AreEqual(expectedNull, nullCase);
+            Assert.Equal(expectedNull, nullCase);
             if(!nullCase)
-                Assert.AreEqual(expectedNCases, response.chargebackCase.Length);
+                Assert.Equal(expectedNCases, response.chargebackCase.Length);
         }
 
-        [TestCase("1234566375237", "2018-04-1", 1234567, 3, false)]
-        [TestCase("1234784575237", "2018-04-1", 1234567, 1, false)]
-        [TestCase("11111111111111","2018-02-1", 1234567, 0, true)]
+        [Theory]
+        [InlineData("1234566375237", "2018-04-1", 1234567, 3, false)]
+        [InlineData("1234784575237", "2018-04-1", 1234567, 1, false)]
+        [InlineData("11111111111111","2018-02-1", 1234567, 0, true)]
         public void TestRetrieveByCardNumber(string cardNumber, string expirationDate,
             int expectedId, int expectedNCases, bool expectedNull)
         {
@@ -196,16 +195,17 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackRetrievalRequest(commMock.Object);
             var response
                 = request.RetrieveByCardNumber(cardNumber, cardExpirationdate.Month, cardExpirationdate.Year);
-            Assert.AreEqual(expectedId, response.transactionId);
+            Assert.Equal(expectedId, response.transactionId);
             var nullCase = response.chargebackCase == null;
-            Assert.AreEqual(expectedNull, nullCase);
+            Assert.Equal(expectedNull, nullCase);
             if(!nullCase)
-                Assert.AreEqual(expectedNCases, response.chargebackCase.Length);
+                Assert.Equal(expectedNCases, response.chargebackCase.Length);
         }
 
-        [TestCase("111111111", 1234567, 3, false)]
-        [TestCase("222222222", 1234567, 1, false)]
-        [TestCase("333333333", 1234567, 0, true)]
+        [Theory]
+        [InlineData("111111111", 1234567, 3, false)]
+        [InlineData("222222222", 1234567, 1, false)]
+        [InlineData("333333333", 1234567, 0, true)]
         public void TestRetrieveByArn(string arn, int expectedId, int expectedNCases, bool expectedNull)
         {
             var expectedXmlResponse = GenerateXmlResponse(expectedId, expectedNCases);
@@ -218,11 +218,11 @@ namespace ChargebackSdkForNetTest.Unit
                 = new ChargebackRetrievalRequest(commMock.Object);
             var response
                 = request.RetrieveByArn(arn);
-            Assert.AreEqual(expectedId, response.transactionId);
+            Assert.Equal(expectedId, response.transactionId);
             var nullCase = response.chargebackCase == null;
-            Assert.AreEqual(expectedNull, nullCase);
+            Assert.Equal(expectedNull, nullCase);
             if(!nullCase)
-                Assert.AreEqual(expectedNCases, response.chargebackCase.Length);
+                Assert.Equal(expectedNCases, response.chargebackCase.Length);
         }
     }
 }

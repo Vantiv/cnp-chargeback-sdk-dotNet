@@ -3,55 +3,52 @@ using System.Collections.Generic;
 using System.IO;
 using ChargebackSdkForNet;
 using ChargebackSdkForNet.Properties;
-using NUnit.Framework;
+using Xunit;
 
 namespace ChargebackSdkForNetTest.Functional
 {
-    [TestFixture]
     public class TestDocumentation
     {
         private ChargebackDocumentationRequest _docRequest;
 
-        [SetUp]
-        public void SetUp()
+        public TestDocumentation()
         {
             _docRequest = new ChargebackDocumentationRequest();
         }
         
-        [Test]
+        [Fact]
         public void TestRetrieveDocument()
         {
             var docResponse = _docRequest.RetrieveDocument(1000, "doc.tiff");
             Assert.NotNull(docResponse);
-            Assert.Less(0, docResponse.Count);
+            Assert.True(0 < docResponse.Count);
         }
         
-        [Test]
-        [ExpectedException(typeof(ChargebackDocumentException))]
+        [Fact]
         public void TestRetrieveDocument_DocumentNotFound_009()
         {
-            _docRequest.RetrieveDocument(10009, "testDoc.tiff");
+            Assert.Throws<ChargebackDocumentException>(() => _docRequest.RetrieveDocument(10009, "testDoc.tiff"));
         }
         
-        [Test]
+        [Fact]
         public void TestListDocument()
         {
             chargebackDocumentUploadResponse docResponse = _docRequest.ListDocuments(1000);
             Assert.NotNull(docResponse);
-            Assert.AreEqual("000", docResponse.responseCode);
-            Assert.AreEqual("Success".ToLower(), docResponse.responseMessage.ToLower());
+            Assert.Equal("000", docResponse.responseCode);
+            Assert.Equal("Success".ToLower(), docResponse.responseMessage.ToLower());
         }
         
-        [Test]
+        [Fact]
         public void TestDeleteDocument()
         {
             chargebackDocumentUploadResponse docResponse = _docRequest.DeleteDocument(1000, "logo.tiff");
             Assert.NotNull(docResponse);
-            Assert.AreEqual("000", docResponse.responseCode);
-            Assert.AreEqual("Success".ToLower(), docResponse.responseMessage.ToLower());
+            Assert.Equal("000", docResponse.responseCode);
+            Assert.Equal("Success".ToLower(), docResponse.responseMessage.ToLower());
         }
 
-        [Test]
+        [Fact]
         public void TestUploadDocument()
         {
             const string documentId = "uploadTest.tiff";
@@ -64,13 +61,13 @@ namespace ChargebackSdkForNetTest.Functional
             {
                 var docResponse = _docRequest.UploadDocument(1000, tiffFilePath);
                 Assert.NotNull(docResponse);
-                Assert.AreEqual("000", docResponse.responseCode);
-                Assert.AreEqual("Success".ToLower(), docResponse.responseMessage.ToLower());
+                Assert.Equal("000", docResponse.responseCode);
+                Assert.Equal("Success".ToLower(), docResponse.responseMessage.ToLower());
             }
 
             catch (Exception e)
             {
-                Assert.Fail("Upload Test failed" + e);
+                Assert.True(false, "Upload Test failed" + e);
             }
             finally
             {
@@ -78,7 +75,7 @@ namespace ChargebackSdkForNetTest.Functional
             }
         }
 
-        [Test]
+        [Fact]
         public void TestReplaceDocument()
         {
             const string documentId = "uploadTest.tiff";
@@ -91,13 +88,13 @@ namespace ChargebackSdkForNetTest.Functional
             {
                 var docResponse = _docRequest.ReplaceDocument(1000, documentId, tiffFilePath);
                 Assert.NotNull(docResponse);
-                Assert.AreEqual("000", docResponse.responseCode);
-                Assert.AreEqual("Success".ToLower(), docResponse.responseMessage.ToLower());
+                Assert.Equal("000", docResponse.responseCode);
+                Assert.Equal("Success".ToLower(), docResponse.responseMessage.ToLower());
             }
 
             catch (Exception e)
             {
-                Assert.Fail("Upload Test failed" + e);
+                Assert.True(false, "Upload Test failed" + e);
             }
             finally
             {
