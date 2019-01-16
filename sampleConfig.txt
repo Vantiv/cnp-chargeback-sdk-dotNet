@@ -4,5 +4,3 @@ merchantId = 777777
 host = https://www.testvantivcnp.com/sandbox/services
 printXml = true
 neuterXml = false
-proxyHost = myProxyHost
-proxyPort = 7777

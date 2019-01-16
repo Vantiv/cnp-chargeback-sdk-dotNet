@@ -12,12 +12,19 @@ namespace ChargebackSdkForNet.Properties
 
         public Configuration()
         {
-            var settings = (NameValueCollection) ConfigurationManager.GetSection("vantivEcommerce/chargebackSettings");
             InitializeConfig();
-            foreach (var key in settings.AllKeys)
+
+            _configDictionary = new Dictionary<string, string>
             {
-                AddSettingToConfigDictionary(key, settings[key]); 
-            }
+                {"username", Settings.Default.username},
+                {"password", Settings.Default.password},
+                {"merchantId", Settings.Default.merchantId},
+                {"host", Settings.Default.host},
+                {"printXml", Settings.Default.printXml},
+                {"neuterXml", Settings.Default.neuterXml},
+                {"proxyHost", Settings.Default.proxyHost},
+                {"proxyPort", Settings.Default.proxyPort}
+             };
 
             ValidateConfigDictionary();
         }
@@ -34,7 +41,7 @@ namespace ChargebackSdkForNet.Properties
             InitializeConfig();
             foreach (var key in config.Keys)
             {
-                AddSettingToConfigDictionary(key, config[key]); 
+                AddSettingToConfigDictionary(key, config[key]);
             }
 
             ValidateConfigDictionary();
@@ -47,10 +54,10 @@ namespace ChargebackSdkForNet.Properties
 
         public void Set(string key, string value)
         {
-//            var oldValue = _configDictionary[key];
+            //            var oldValue = _configDictionary[key];
             _configDictionary[key] = value;
         }
-        
+
         private void InitializeConfig()
         {
             _configDictionary = new Dictionary<string, string>();
@@ -75,14 +82,14 @@ namespace ChargebackSdkForNet.Properties
             reader.Close();
             foreach (var setting in settings)
             {
-                var keyValPair = setting.Split(new[]{'='}, 2);
+                var keyValPair = setting.Split(new[] { '=' }, 2);
                 if (keyValPair.Length != 2)
                 {
                     Console.WriteLine("Warning: '{0}' is not a valid setting[skipped]", setting);
                     continue;
-                }           
-                
-                AddSettingToConfigDictionary(keyValPair[0].Trim(), keyValPair[1].Trim());   
+                }
+
+                AddSettingToConfigDictionary(keyValPair[0].Trim(), keyValPair[1].Trim());
             }
         }
 
@@ -107,5 +114,17 @@ namespace ChargebackSdkForNet.Properties
             }
         }
 
+        private void DefaultConfig()
+        {
+            _configDictionary = new Dictionary<string, string>();
+            _configDictionary["username"] = "dummyUser";
+            _configDictionary["password"] = "dummyPass";
+            _configDictionary["merchantId"] = "123456";
+            _configDictionary["host"] = "https://www.testvantivcnp.com/sandbox";
+            _configDictionary["printXml"] = "true";
+            _configDictionary["neuterXml"] = "false";
+            _configDictionary["proxyHost"] = "";
+            _configDictionary["proxyPort"] = "";
+        }
     }
 }
