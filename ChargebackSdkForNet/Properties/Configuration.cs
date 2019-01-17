@@ -113,18 +113,5 @@ namespace ChargebackSdkForNet.Properties
                 }
             }
         }
-
-        private void DefaultConfig()
-        {
-            _configDictionary = new Dictionary<string, string>();
-            _configDictionary["username"] = "dummyUser";
-            _configDictionary["password"] = "dummyPass";
-            _configDictionary["merchantId"] = "123456";
-            _configDictionary["host"] = "https://www.testvantivcnp.com/sandbox";
-            _configDictionary["printXml"] = "true";
-            _configDictionary["neuterXml"] = "false";
-            _configDictionary["proxyHost"] = "";
-            _configDictionary["proxyPort"] = "";
-        }
     }
 }

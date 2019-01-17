@@ -85,18 +85,6 @@ namespace ChargebackSdkForNet.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("false")]
-        public string neuterXml {
-            get {
-                return ((string)(this["neuterXml"]));
-            }
-            set {
-                this["neuterXml"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string proxyHost {
             get {
@@ -116,6 +104,18 @@ namespace ChargebackSdkForNet.Properties {
             }
             set {
                 this["proxyPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("false")]
+        public string neuterXml {
+            get {
+                return ((string)(this["neuterXml"]));
+            }
+            set {
+                this["neuterXml"] = value;
             }
         }
     }
