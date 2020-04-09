@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ChargebackSdkForNet")]
 [assembly: AssemblyDescription("Chargeback SDK For .Net")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Vantiv Now Worldpay")]
+[assembly: AssemblyCompany("Worldpay from FIS")]
 [assembly: AssemblyProduct("ChargebackSdkForNet")]
-[assembly: AssemblyCopyright("Copyright © Vantiv Now Worldpay 2018")]
+[assembly: AssemblyCopyright("Copyright © Worldpay from FIS 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.1.1")]
-[assembly: AssemblyFileVersion("2.1.1")]
+[assembly: AssemblyVersion("2.1.2")]
+[assembly: AssemblyFileVersion("2.1.2")]
